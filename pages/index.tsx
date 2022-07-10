@@ -22,8 +22,7 @@ const Home: NextPage = () => {
         </h1>
 
         <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.tsx</code>
+          A commodity derivative powered by automated market makers.
         </p>
 
         <List /> 

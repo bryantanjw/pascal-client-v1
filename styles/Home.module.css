@@ -88,7 +88,6 @@
 .card:hover,
 .card:focus,
 .card:active {
-  color: #0070f3;
   border-color: #0070f3;
 }
 
@@ -101,6 +100,10 @@
 .card h3 {
   opacity: 75%;
   margin: 0 0 1rem 0;
+}
+
+.card h4 {
+  font-size:  0.9rem;
 }
 
 .card p {

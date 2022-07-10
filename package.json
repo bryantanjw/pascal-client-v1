@@ -13,11 +13,15 @@
     "@chakra-ui/react": "^2.2.1",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
+    "@pythnetwork/client": "^2.7.1",
+    "@solana/wallet-adapter-base": "^0.9.7",
+    "@solana/web3.js": "^1.47.3",
     "framer-motion": "^6",
     "next": "12.2.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-icons": "^4.4.0"
+    "react-icons": "^4.4.0",
+    "recharts": "^2.1.12"
   },
   "devDependencies": {
     "@types/node": "18.0.0",

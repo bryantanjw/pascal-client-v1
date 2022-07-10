@@ -1,50 +1,50 @@
 [
     {
-        "id": 1,
+        "questionId": 1,
         "ticker": "SPY",
-        "description": "S&P500 start-of-day value",
+        "title": "S&P500 start-of-day value",
+        "recurrence": "Daily",
         "category": "Financials",
         "price": 1.00,
-        "odds": {
-            "Yes": 50.00,
-            "No": 50.00
-        },
         "liquidity": 0.00,
         "volume": 0.00,
         "closing_date": "2022-06-10T09:30:00-0400",
-        "slug": "spy",
         "symbol": "Equity.US.SPY/USD"
     },
     {
-        "id": 2,
+        "questionId": 2,
         "ticker": "SPY",
-        "description": "S&P500 start-of-week value",
+        "title": "S&P500 start-of-week value",
+        "recurrence": "Weekly",
         "category": "Financials",
         "price": 1.00,
-        "odds": {
-            "Yes": 50.00,
-            "No": 50.00
-        },
         "liquidity": 0.00,
         "volume": 0.00,
         "closing_date": "2022-05-31T09:30:00-0400",
-        "slug": "spy",
         "symbol": "Equity.US.SPY/USD"
     },
     {
-        "id": 3,
+        "questionId": 3,
         "ticker": "TSLA",
-        "description": "TSLA start-of-day value",
+        "title": "TSLA start-of-day value",
+        "recurrence": "Daily",
         "category": "Financials",
         "price": 1.00,
-        "odds": {
-            "Yes": 50.00,
-            "No": 50.00
-        },
         "liquidity": 0.00,
         "volume": 0.00,
         "closing_date": "2022-05-31T09:30:00-0400",
-        "slug": "tsla",
         "symbol": "Equity.US.TSLA/USD"
+    },
+    {
+        "questionId": 4,
+        "ticker": "",
+        "title": "Inflation",
+        "recurrence": "Monthly",
+        "category": "Economics",
+        "price": 1.00,
+        "liquidity": 0.00,
+        "volume": 0.00,
+        "closing_date": "2022-05-31T09:30:00-0400",
+        "symbol": ""
     }
 ]
