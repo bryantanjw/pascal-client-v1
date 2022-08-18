@@ -1,4 +1,4 @@
-import products from "./products.json";
+import markets from "./markets.json";
 
 export default async function handler(req, res) {
     if (req.method === "POST") {
@@ -6,13 +6,13 @@ export default async function handler(req, res) {
         console.log(slug)
 
         if (!slug) {
-            res.status(400).send("Missing questionId");
+            res.status(400).send("Missing marketId");
         }
 
-        const product = products.find((p) => p.questionId == slug)
+        const market = markets.find((p) => p.marketId == slug)
         
-        if (product) {
-            const { ...props } = product
+        if (market) {
+            const { ...props } = market
             console.log("Item found.", props)
             return res.status(200).send({ props });
         } else {
@@ -22,5 +22,4 @@ export default async function handler(req, res) {
     } else {
         res.status(405).send(`Method ${req.method} not allowed`);
     }
-    
 }

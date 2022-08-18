@@ -1,8 +1,8 @@
 [
     {
-        "questionId": 1,
+        "marketId": 1,
         "ticker": "SPY",
-        "title": "S&P500 start-of-day value",
+        "title": "S&P500 daily close price",
         "recurrence": "Daily",
         "category": "Financials",
         "price": 1.00,
@@ -12,9 +12,9 @@
         "symbol": "Equity.US.SPY/USD"
     },
     {
-        "questionId": 2,
+        "marketId": 2,
         "ticker": "SPY",
-        "title": "S&P500 start-of-week value",
+        "title": "S&P500 weekly close price",
         "recurrence": "Weekly",
         "category": "Financials",
         "price": 1.00,
@@ -24,9 +24,9 @@
         "symbol": "Equity.US.SPY/USD"
     },
     {
-        "questionId": 3,
+        "marketId": 3,
         "ticker": "TSLA",
-        "title": "TSLA start-of-day value",
+        "title": "TSLA daily close price",
         "recurrence": "Daily",
         "category": "Financials",
         "price": 1.00,
@@ -36,7 +36,7 @@
         "symbol": "Equity.US.TSLA/USD"
     },
     {
-        "questionId": 4,
+        "marketId": 4,
         "ticker": "",
         "title": "Inflation",
         "recurrence": "Monthly",

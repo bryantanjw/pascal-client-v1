@@ -10,44 +10,10 @@ import { FaRegChartBar, FaChartLine } from 'react-icons/fa'
 import { ViewIcon, ArrowBackIcon } from '@chakra-ui/icons'
 import TopBar from 'components/TopBar'
 import Swap from './Swap'
-import { getPythProgramKeyForCluster, PythConnection, PythHttpClient, PriceStatus } from '@pythnetwork/client'
 import { Connection, PublicKey } from "@solana/web3.js"
-import { Chart }from './Chart'
 import WithSubnavigation from './TopBar'
 
-const ProductView = ({ p }) => {
-    const [pythData, setPythData] = useState<any[]>([])
-    const [price, setPrice] = useState(0)
-    const [confidence, setConfidence] = useState(0)
-
-    const connection = new Connection("https://api.mainnet-beta.solana.com")
-    const pythPubicKey = new PublicKey(
-        "FsJ3A3u2vn5cTVofAjvy6y5kwABJAqYWpe4975bi2epH"  // Pyth mainnet public key
-    )
-
-    // Request one-off HTTP request to get current price without subscribing ongoing updates
-    // and avoid getting rate-limited
-    async function getPythData(): Promise<void> {
-        const pythClient = new PythHttpClient(connection, pythPubicKey)
-        const data = await pythClient.getData()
-
-        for (const symbol of data.symbols) {
-            const price = data.productPrice.get(symbol)!
-
-            if (price.price && price.confidence) {
-                // tslint:disable-next-line:no-console
-                console.log(`${symbol}: $${price.price} \xB1$${price.confidence}`)
-            } else {
-                // tslint:disable-next-line:no-console
-                console.log(`${symbol}: price currently unavailable. status is ${PriceStatus[price.status]}`)
-            }
-        }
-    }
-
-    // Pyth connection configuration
-    useEffect(() => {
-        
-    }, [])
+const MarketView = ({ p }) => {
 
     return (
         <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
@@ -61,7 +27,7 @@ const ProductView = ({ p }) => {
                     <Heading color={'gray.700'} fontWeight={500} size={'sm'}>{p.props.title}</Heading>
                 </HStack>
                 
-                {/* ProductInfo component */}
+                {/* MarketInfo component */}
                 <Box border={'1px'} rounded={'xl'} borderColor={'gray.200'} boxShadow={'sm'}>
                     <VStack py={4} alignItems={'start'} spacing={0} width={'100%'}>
                         <Stack pt={2} px={8}>
@@ -94,9 +60,6 @@ const ProductView = ({ p }) => {
                             </VStack>
                         </HStack>
 
-                        <Text>Price of ${p.props.ticker}: {price} &plusmn{confidence}</Text>
-                        <Chart data={pythData} />
-
                         <Divider />
 
                         <HStack cursor={'default'} px={8} pt={4} spacing={8}>
@@ -111,7 +74,7 @@ const ProductView = ({ p }) => {
                         </HStack>
                     </VStack>
                 </Box>
-                {/* ProductInfo component */}
+                {/* MarketInfo component */}
 
                 <Stack py={4}>
                     <Box border={'1px'} rounded={'xl'} borderColor={'gray.200'} boxShadow={'sm'}>
@@ -145,4 +108,4 @@ const ProductView = ({ p }) => {
     )
 }
 
-export default ProductView
+export default MarketView

@@ -1,6 +1,8 @@
-export const fetchProductData = async (slug) => {
+import { server } from '../config'
+
+export const fetchMarketData = async (slug) => {
     try {
-        const response = await fetch("http://localhost:3000/api/fetchProductData", {
+        const response = await fetch(`${server}/api/fetchMarketData`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

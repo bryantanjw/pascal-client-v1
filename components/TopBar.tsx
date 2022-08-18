@@ -15,6 +15,7 @@ import {
     useBreakpointValue,
     useDisclosure,
 } from '@chakra-ui/react';
+import { ColorModeSwitcher } from './ColorModeSwitcher';
 import {
     HamburgerIcon,
     CloseIcon,
@@ -31,7 +32,7 @@ export default function WithSubnavigation() {
             <Flex
                 bg={useColorModeValue('white', 'gray.800')}
                 color={useColorModeValue('gray.600', 'white')}
-                minH={'60px'}
+                minH={'70px'}
                 py={{ base: 2 }}
                 px={{ base: 4 }}
                 borderBottom={1}
@@ -70,14 +71,7 @@ export default function WithSubnavigation() {
                     justify={'flex-end'}
                     direction={'row'}
                     spacing={6}>
-                    <Button
-                        as={'a'}
-                        fontSize={'sm'}
-                        fontWeight={400}
-                        variant={'link'}
-                        href={'#'}>
-                    <SettingsIcon />
-                    </Button>
+                    <ColorModeSwitcher />
                     <Button
                         display={{ base: 'none', md: 'inline-flex' }}
                         fontSize={'sm'}
@@ -105,7 +99,7 @@ const DesktopNav = () => {
     const popoverContentBgColor = useColorModeValue('white', 'gray.800');
   
     return (
-        <Stack direction={'row'} spacing={4}>
+        <Stack direction={'row'} spacing={8}>
             {NAV_ITEMS.map((navItem) => (
             <Box key={navItem.label}>
                 <Popover trigger={'hover'} placement={'bottom-start'}>
@@ -269,7 +263,7 @@ const NAV_ITEMS: Array<NavItem> = [
             {
                 label: 'Twitter',
                 // subLabel: 'Trending Design to inspire you',
-                href: '#',
+                href: 'https://twitter.com/bryantanjw',
             },
             {
                 label: 'Discord',

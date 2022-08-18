@@ -1,13 +1,13 @@
 import type { InferGetStaticPropsType } from 'next';
 import { useRouter } from 'next/router';
-import ProductView from 'components/ProductView';
-import { fetchProductData } from 'lib/api';
-import products from "../api/products.json";
+import MarketView from 'components/MarketView';
+import { fetchMarketData } from 'lib/api';
+import markets from "../api/markets.json";
 
-function getProducts() {
-  const allProducts = products.map((product) => {
+function getMarkets() {
+  const allProducts = markets.map((market) => {
 
-    const { ...props } = product;
+    const { ...props } = market;
     return props
   });
 
@@ -16,11 +16,10 @@ function getProducts() {
 
 // This gets called at build time
 export async function getStaticPaths() {
-  const allProducts = getProducts();
-
+  const allMarkets = getMarkets();
   return {
     // Get the paths to pre-render based on products at build time
-    paths: allProducts.map((product: any) => `/trade/${product.questionId}`),
+    paths: allMarkets.map((market: any) => `/trade/${market.marketId}`),
     fallback: false,
   }
 }
@@ -28,21 +27,20 @@ export async function getStaticPaths() {
 // This also gets called at build time
 export async function getStaticProps({ params }) {
   // params contains the product questionId
-  const product = await fetchProductData(params.slug);
-
-  if (!product) {
-    throw new Error(`Product with question ID '${params!.questionId}' not found`);
+  const market = await fetchMarketData(params.slug);
+  if (!market) {
+    throw new Error(`Market with ID '${params!.marketId}' not found`);
   }
   // Past product data to the page via props
-  return { props: { product } }
+  return { props: { market } }
 }
 
-export default function Slug({ product }: InferGetStaticPropsType<typeof getStaticProps>) {
+export default function Slug({ market }: InferGetStaticPropsType<typeof getStaticProps>) {
   const router = useRouter()
   
   return router.isFallback ? (
     <h1>Loading...</h1>
   ) : (
-    <ProductView p={product} />
+    <MarketView p={market} />
   )
 }
