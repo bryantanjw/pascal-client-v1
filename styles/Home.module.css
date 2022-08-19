@@ -85,11 +85,11 @@
   max-width: 300px;
 }
 
-.card:hover,
+/* .card:hover,
 .card:focus,
 .card:active {
   border-color: #0070f3;
-}
+} */
 
 .card h2 {
   margin: 0.2rem 0 0 0;

@@ -38,8 +38,8 @@ function MarketCard({ market }) {
     const dt = new Date(market.closing_date)
 
     return (
-          <a href={`/trade/${marketId}`} className={styles.card}>
-            <Stack spacing={3}>
+          <a href={`/trade/${marketId}`}>
+            <Stack spacing={3} _hover={{borderColor: useColorModeValue('blue.500', 'blue.200')}} className={styles.card}>
                 {/* Set market's category icon */}
                 <Image filter={iconColor} src={`/${market.category}.png`} alt={market.category} width={25} height={25}/>
                 

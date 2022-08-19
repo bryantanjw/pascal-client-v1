@@ -21,7 +21,6 @@ import {
     CloseIcon,
     ChevronDownIcon,
     ChevronRightIcon,
-    SettingsIcon,
 } from '@chakra-ui/icons';
 
 export default function WithSubnavigation() {

@@ -3,13 +3,12 @@ import {
     Table, Thead, Tbody, Tr, Th, Td,
     ButtonGroup, Button, useDisclosure, Heading
 } from '@chakra-ui/react'
-import Buy from './Buy'
 
-export default function Swap({ id }) {
+export default function Graph({ id }) {
     const { isOpen, onToggle } = useDisclosure()
 
     return (
-        <VStack alignItems={'start'}>
+        <VStack>
         {isOpen ? (
             // <Buy itemID={id} />
             <Heading>text</Heading>
