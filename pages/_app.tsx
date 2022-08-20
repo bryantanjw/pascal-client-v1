@@ -1,6 +1,7 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import { ChakraProvider } from '@chakra-ui/react'
+import { StepsStyleConfig as Steps } from 'chakra-ui-steps';
 import { extendTheme } from '@chakra-ui/react'
 
 const colors = {
@@ -11,7 +12,12 @@ const colors = {
   },
 }
 
-const theme = extendTheme({ colors })
+const theme = extendTheme({ 
+  colors,
+  components: {
+    Steps,
+  },
+})
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (

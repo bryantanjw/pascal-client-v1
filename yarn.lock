@@ -2031,6 +2031,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"chakra-ui-steps@npm:^1.7.4":
+  version: 1.7.4
+  resolution: "chakra-ui-steps@npm:1.7.4"
+  peerDependencies:
+    "@chakra-ui/react": ">=1.6.7"
+    "@emotion/react": ^11
+    "@emotion/styled": ^11
+    framer-motion: ^6
+    react: ">=16"
+  checksum: 96f4f3d3bfea419887caaae891f0802d7014463cfef4a1dd779497be2e3b197f50714a8917bec0e0fc0f6fa8047a4e063bcbd82be5067f4f088594d663277134
+  languageName: node
+  linkType: hard
+
 "chalk@npm:^2.0.0":
   version: 2.4.2
   resolution: "chalk@npm:2.4.2"
@@ -4300,6 +4313,7 @@ __metadata:
     "@types/node": 18.0.0
     "@types/react": 18.0.14
     "@types/react-dom": 18.0.5
+    chakra-ui-steps: ^1.7.4
     eslint: 8.18.0
     eslint-config-next: 12.2.0
     framer-motion: ^6

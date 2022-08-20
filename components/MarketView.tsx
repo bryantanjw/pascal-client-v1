@@ -13,6 +13,7 @@ import Graph from './Graph'
 import { Connection, PublicKey } from "@solana/web3.js"
 import WithSubnavigation from './TopBar'
 import { useRouter } from 'next/router'
+import MarketProgress from './MarketProgress'
 
 const MarketView = ({ p }) => {
     const router = useRouter()
@@ -22,7 +23,7 @@ const MarketView = ({ p }) => {
         <WithSubnavigation />
 
         <Box
-            maxW={{ base: '3xl', lg: '5xl' }}
+            maxW={{ base: '3xl', lg: '6xl' }}
             mx="auto"
             px={{ base: '4', md: '8', lg: '12' }}
             py={{ base: '6', md: '8', lg: '12' }}
@@ -53,6 +54,9 @@ const MarketView = ({ p }) => {
                             <TabPanel>
                                 <Flex>
                                     <Stack>
+                                        
+                                        <MarketProgress />
+
                                         <HStack spacing={10} px={8} py={5}>
                                             <VStack alignItems={'start'} spacing={1}>
                                                 <Text color={'gray.700'} fontWeight={500}>{p.props.liquidity}</Text>
