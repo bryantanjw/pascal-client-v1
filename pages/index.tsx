@@ -3,7 +3,6 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import WithSubnavigation from 'components/TopBar'
-import { Box, Divider } from '@chakra-ui/react'
 import List from 'components/List'
 
 const Home: NextPage = () => {

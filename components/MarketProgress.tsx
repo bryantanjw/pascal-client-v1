@@ -3,8 +3,8 @@ import { Flex, Heading, Button, Text } from "@chakra-ui/react"
 
 const steps = [
   { label: "Market opened", description: "" },
-  { label: "Finalizing", description: "" },
-  { label: "Closed", description: "Pyth" },
+  { label: "Finalizing", description: "Pyth" },
+  { label: "Closed", description: "" },
 ]
 
 export const MarketProgress = () => {
@@ -12,38 +12,12 @@ export const MarketProgress = () => {
     initialStep: 0,
   })
   return (
-    <Flex py={4} flexDir="column" width="100%">
-      <Steps orientation="vertical" colorScheme="blue" activeStep={activeStep}>
+    <Flex minWidth={'lg'} py={4}>
+      <Steps orientation="horizontal" colorScheme="black" activeStep={activeStep+1}>
         {steps.map(({ label, description }) => (
-          <Step label={label} key={label} description={description}>
-          </Step>
+          <Step label={label} key={label} description={description} />
         ))}
       </Steps>
-      {activeStep === steps.length ? (
-        <Flex px={4} py={4} width="100%" flexDirection="column">
-          <Heading fontSize="xl" textAlign="center">
-            Woohoo! All steps completed!
-          </Heading>
-          <Button mx="auto" mt={6} size="sm" onClick={reset}>
-            Reset
-          </Button>
-        </Flex>
-      ) : (
-        <Flex width="100%" justify="flex-end">
-          <Button
-            isDisabled={activeStep === 0}
-            mr={4}
-            onClick={prevStep}
-            size="sm"
-            variant="ghost"
-          >
-            Prev
-          </Button>
-          <Button size="sm" onClick={nextStep}>
-            {activeStep === steps.length - 1 ? "Finish" : "Next"}
-          </Button>
-        </Flex>
-      )}
     </Flex>
   )
 }

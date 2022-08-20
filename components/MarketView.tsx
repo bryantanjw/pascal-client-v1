@@ -1,29 +1,47 @@
-import { useEffect, useState } from 'react'
+import styles from '../styles/Home.module.css'
 import {
-    Box, Button, Divider,
-    Stack, VStack, HStack,
+    Box, Divider,
+    Stack, HStack, SimpleGrid,
     Text,
-    Menu, MenuButton, Tooltip, Heading,
-    Flex, Link, Tab, Tabs, TabList, TabPanels, TabPanel, useColorMode, useColorModeValue,
+    Tooltip, Heading,
+    Flex, Link, 
+    Tab, Tabs, TabList, TabPanels, TabPanel, useColorModeValue,
+    Image,
 } from '@chakra-ui/react'
-import { FaRegChartBar, FaChartLine } from 'react-icons/fa'
+import { FaChartLine } from 'react-icons/fa'
 import { ViewIcon, ArrowBackIcon } from '@chakra-ui/icons'
+import { FaRegChartBar, FaBalanceScale } from "react-icons/fa";
 import { TradeForm } from './TradeForm'
 import Graph from './Graph'
 import { Connection, PublicKey } from "@solana/web3.js"
 import WithSubnavigation from './TopBar'
 import { useRouter } from 'next/router'
 import MarketProgress from './MarketProgress'
+import { Stat } from './Stat'
+import Head from 'next/head';
 
 const MarketView = ({ p }) => {
     const router = useRouter()
 
+    const dividerColor = useColorModeValue('gray.300', '#464A54')
+    const iconColor = useColorModeValue('invert(0%)', 'invert(100%)')
+    const tabListStyle = {
+        fontWeight:' semibold',
+        fontSize: 'lg',
+        px: 0
+    }
+    const stats = [
+        { label: 'Liquidity', value: p.props.liquidity },
+        { label: 'Total Volume', value: p.props.volume },
+        { label: 'Closing Date - UTC', value: new Date(p.props.closing_date).toISOString().split('T')[0] },
+    ]      
+
     return (
-        <div className={`bg-th-bkg-1 text-th-fgd-1 transition-all`}>
+        <div className={styles.container}>
         <WithSubnavigation />
 
         <Box
-            maxW={{ base: '3xl', lg: '6xl' }}
+            maxW={{ base: '3xl', lg: '5xl' }}
             mx="auto"
             px={{ base: '4', md: '8', lg: '12' }}
             py={{ base: '6', md: '8', lg: '12' }}
@@ -31,7 +49,7 @@ const MarketView = ({ p }) => {
             <Stack
                 direction={{ base: 'column', lg: 'row' }}
                 align={{ lg: 'flex-start' }}
-                spacing={{ base: '8', md: '16' }}
+                spacing={5}
             >
                 <Stack spacing={{ base: '8', md: '10' }} flex="2">
                     <Heading fontSize="2xl" fontWeight="extrabold">
@@ -40,54 +58,52 @@ const MarketView = ({ p }) => {
 
                     <Tabs colorScheme={'black'}>
                         <TabList>
-                            <Tab>Graph</Tab>
+                            <Tab sx={tabListStyle}>Graph</Tab>
                         </TabList>
-                    </Tabs>
 
-                    <Graph id={p.props.id} />
+                        <TabPanels>
+                            <TabPanel px={0}>
+                                <Graph id={p.props.id} />
+                            </TabPanel>
+                        </TabPanels>
+                    </Tabs>
 
                     <Tabs colorScheme={'black'}>
                         <TabList>
-                            <Tab>About</Tab>
+                            <Tab sx={tabListStyle} mr={5}>About</Tab>
+                            <Tab sx={tabListStyle}>Research and News</Tab>
                         </TabList>
+
                         <TabPanels>
-                            <TabPanel>
+                            <TabPanel px={0}>
                                 <Flex>
                                     <Stack>
                                         
                                         <MarketProgress />
-
-                                        <HStack spacing={10} px={8} py={5}>
-                                            <VStack alignItems={'start'} spacing={1}>
-                                                <Text color={'gray.700'} fontWeight={500}>{p.props.liquidity}</Text>
-                                                <Text color={'gray.500'}>Liquidity</Text>
-                                            </VStack>
-                                            <VStack alignItems={'start'} spacing={1}>
-                                                <Text color={'gray.700'} fontWeight={500}>{p.props.volume}</Text>
-                                                <Text color={'gray.500'}>Total Volume</Text>
-                                            </VStack>
-                                            <VStack alignItems={'start'} spacing={1}>
-                                                <Text color={'gray.700'} fontWeight={500}>2022-04-30 - 00:00</Text>
-                                                <Text color={'gray.500'}>Closing Date - UTC</Text>
-                                            </VStack>
-                                            <VStack alignItems={'start'} spacing={1}>
-                                                <Text color={'gray.700'} fontWeight={500}>{p.props.closing_date}</Text>
-                                                <Text color={'gray.500'}>Remaining</Text>
-                                            </VStack>
-                                        </HStack>
-
-                                        <Divider />
-
-                                        <HStack cursor={'default'} px={8} pt={4} spacing={8}>
-                                            <HStack spacing={2}>
-                                                <FaChartLine /><Text>{p.props.category}</Text>
+                                        
+                                        <Divider borderColor={dividerColor} />
+                                        <Stack py={4} direction={'column'}>
+                                            <HStack>
+                                                <Image filter={iconColor} alt='Statistics' width={'18px'} src={`/Statistics.png`} />
+                                                <Heading size={'md'}>Statistics</Heading>
                                             </HStack>
-                                            <Tooltip fontWeight={300} p={4} rounded={'md'} label='This market uses Pyth as the final arbitrator.' hasArrow> 
-                                                <HStack spacing={2}>
-                                                        <ViewIcon /><Text>Pyth</Text>
-                                                </HStack>
-                                            </Tooltip>
-                                        </HStack>
+                                            <SimpleGrid columns={{ base: 2, md: 3 }}>
+                                                {stats.map(({ label, value }) => (
+                                                <Stat key={label} label={label} value={value} />
+                                                ))}
+                                            </SimpleGrid>
+                                        </Stack>
+
+                                        <Divider borderColor={dividerColor} />
+                                        <Stack py={4} direction={'column'}>
+                                            <HStack>
+                                            <Image filter={iconColor} alt='Resolution' width={'18px'} src={`/Resolution.png`} />
+                                                <Heading size={'md'}>Market Resolution</Heading>
+                                            </HStack>
+                                            <HStack cursor={'default'} spacing={8}>
+                                               <Text>This market uses Pyth as the final arbitrator.</Text>
+                                            </HStack>
+                                        </Stack>
                                     </Stack>
                                 </Flex>
                             </TabPanel>
@@ -95,9 +111,10 @@ const MarketView = ({ p }) => {
                     </Tabs>
                 </Stack>
 
-                <Flex direction="column" align="center" flex="1">
-                    <TradeForm />
+                <Flex position={'static'} direction="column" align="center" flex="1">
+                    <TradeForm p={p} />
                 </Flex>
+
             </Stack>
         </Box>
         </div>
