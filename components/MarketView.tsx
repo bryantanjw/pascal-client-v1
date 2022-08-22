@@ -3,14 +3,12 @@ import {
     Box, Divider,
     Stack, HStack, SimpleGrid,
     Text,
-    Tooltip, Heading,
+    Heading,
     Flex, Link, 
     Tab, Tabs, TabList, TabPanels, TabPanel, useColorModeValue,
     Image,
 } from '@chakra-ui/react'
-import { FaChartLine } from 'react-icons/fa'
-import { ViewIcon, ArrowBackIcon } from '@chakra-ui/icons'
-import { FaRegChartBar, FaBalanceScale } from "react-icons/fa";
+import { ArrowBackIcon } from '@chakra-ui/icons'
 import { TradeForm } from './TradeForm'
 import Graph from './Graph'
 import { Connection, PublicKey } from "@solana/web3.js"
@@ -18,7 +16,6 @@ import WithSubnavigation from './TopBar'
 import { useRouter } from 'next/router'
 import MarketProgress from './MarketProgress'
 import { Stat } from './Stat'
-import Head from 'next/head';
 
 const MarketView = ({ p }) => {
     const router = useRouter()
@@ -44,6 +41,7 @@ const MarketView = ({ p }) => {
         <div className={styles.container}>
         <WithSubnavigation />
         <Box
+            overflow={'hidden'}
             maxW={{ base: '3xl', lg: '5xl' }}
             mx="auto"
             px={{ base: '1', md: '8', lg: '12' }}

@@ -1,4 +1,4 @@
-import { Box, Heading, Stack, Text, useBreakpointValue, useColorModeValue } from '@chakra-ui/react'
+import { Box, Heading, Stack, Text, useBreakpointValue } from '@chakra-ui/react'
 import * as React from 'react'
 
 interface Props {

@@ -6,7 +6,8 @@ import {
   NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
   Stack,
   Text,
-  useColorModeValue as mode,
+  useColorModeValue,
+  CircularProgress,
 } from '@chakra-ui/react'
 import { ArrowBackIcon } from '@chakra-ui/icons'
 import Confetti from 'react-dom-confetti'
@@ -24,7 +25,7 @@ const TradeFormItem = (props: TradeFormItemProps) => {
   
   return (
     <Flex justify="space-between" fontSize="sm">
-      <Text fontWeight="medium" color={mode('gray.600', 'gray.400')}>
+      <Text fontWeight="medium" color={useColorModeValue('gray.600', 'gray.400')}>
         {label}
       </Text>
       {value ? <Text fontWeight="medium">{value}</Text> : children}
@@ -32,12 +33,14 @@ const TradeFormItem = (props: TradeFormItemProps) => {
   )
 }
 
+
 export const TradeForm = ({ p }) => {
   const steps = [{ label: "" }, { label: "" }]
   const { nextStep, prevStep, reset, activeStep } = useSteps({
     initialStep: 0,
   })
   const [numberInput, setNumberInput] = useState<any>(1)
+  const [isLoading, setIsLoading] = useState<Boolean | undefined>(false)
  
   const confettiConfig = {
     angle: 90,
@@ -51,11 +54,18 @@ export const TradeForm = ({ p }) => {
     height: "10px",
     perspective: "500px",
     colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"]
-  };
+  }
+  
+  const placeOrder = async () => {
+    setIsLoading(true);
+    nextStep();
+    setTimeout(() => setIsLoading(false), 500);
+  }
   
   return (
-    <Stack spacing="8" borderWidth="1px" rounded="lg" padding="8" width={'xs'}>
-      <Steps colorScheme={'blue'} activeStep={activeStep}>
+    <>
+    <Stack overflow={'visible'} spacing="8" borderWidth="1px" rounded="lg" padding="6" width={{'base': 's', 'md': 'xs'}}>
+      <Steps width={'50%'} orientation='horizontal' colorScheme={'blue'} activeStep={activeStep}>
         {steps.map(({ label }, index) => (
           <Step width={'50%'} label={label} key={index} />            
         ))}
@@ -65,9 +75,9 @@ export const TradeForm = ({ p }) => {
           <Stack spacing={8}>
             <Heading size={'md'}>Will {p.props.ticker} close above #value on {new Date(p.props.closing_date).toISOString().split('T')[0]}</Heading>
             
-            <ButtonGroup onClick={nextStep} justifyContent={'center'} size="lg" fontSize="md" spacing='3'>
-              <Button colorScheme='pink'>Yes, it will</Button>
-              <Button colorScheme='teal'>No, it won&apos;t</Button>
+            <ButtonGroup onClick={nextStep} justifyContent={'center'} size="lg" spacing='3'>
+              <Button p={7} width={'full'} colorScheme='pink'>Yes, it will</Button>
+              <Button p={7} width={'full'} colorScheme='teal'>No, it won&apos;t</Button>
             </ButtonGroup>
           </Stack>
         )
@@ -99,7 +109,12 @@ export const TradeForm = ({ p }) => {
 
             <ButtonGroup colorScheme={'blue'} justifyContent={'center'} size="lg" fontSize="md" spacing='3'>
               <Button variant={'outline'} onClick={prevStep}><ArrowBackIcon /></Button>
-              <Button onClick={nextStep} width={'80%'}>Place order</Button>
+              <Button onClick={placeOrder} width={'80%'}>
+              {isLoading ? (
+                  <CircularProgress isIndeterminate size="24px" color="purple.500" />
+                  ) : (
+                      'Place order'
+              )}</Button>
             </ButtonGroup>
           </Stack>
         )
@@ -116,5 +131,7 @@ export const TradeForm = ({ p }) => {
       </Stack>
       )}
     </Stack>
+    <Confetti active={!isLoading} config={confettiConfig} />
+    </>
   )
 }
