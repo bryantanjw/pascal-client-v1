@@ -1,7 +1,7 @@
 [
     {
         "marketId": 1,
-        "ticker": "SPY",
+        "ticker": "$SPY",
         "title": "S&P500 daily close price",
         "recurrence": "Daily",
         "category": "Financials",
@@ -16,7 +16,7 @@
     },
     {
         "marketId": 2,
-        "ticker": "SPY",
+        "ticker": "$SPY",
         "title": "S&P500 weekly close price",
         "recurrence": "Weekly",
         "category": "Financials",
@@ -31,7 +31,7 @@
     },
     {
         "marketId": 3,
-        "ticker": "TSLA",
+        "ticker": "$TSLA",
         "title": "TSLA daily close price",
         "recurrence": "Daily",
         "category": "Financials",

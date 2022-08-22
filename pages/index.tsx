@@ -4,6 +4,8 @@ import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import WithSubnavigation from 'components/TopBar'
 import List from 'components/List'
+import Footer from 'components/Footer'
+import { Box, Stack, Heading, Text } from '@chakra-ui/react'
 
 const Home: NextPage = () => {
   return (
@@ -15,30 +17,44 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Trade directly on the outcome of events.
-        </h1>
+      <Box maxW={{ base: '3xl', lg: '5xl' }}
+        mx="auto"
+        py={{ base: '6', md: '8', lg: '12' }}
+      >
+        <Stack spacing={{ base: 8, md: 10 }}>
 
-        <p className={styles.description}>
-          A commodity derivative powered by automated market makers.
-        </p>
+          <Heading
+              lineHeight={1.1}
+              fontWeight={600}
+              fontSize={{ base: '3xl', sm: '4xl', lg: '6xl' }}>
+              <Text
+                as={'span'}
+                position={'relative'}
+                _after={{
+                  content: "''",
+                  width: 'full',
+                  height: '30%',
+                  position: 'absolute',
+                  bottom: 1,
+                  left: 0,
+                  bg: 'blue.400',
+                  zIndex: -1,
+                }}>
+                Trade directly
+              </Text>
+              <br />
+              <Text as={'span'} color={'blue.400'}>
+                on the outcome of events.
+              </Text>
+            </Heading>
+            <Text color={'gray.500'} fontSize={{ base: 'xl', md: '2xl' }}>
+              A commodity derivative powered by automated market makers.
+            </Text>
 
-        <List /> 
-      </main>
+          <List />
 
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
+        </Stack>
+      </Box>
     </div>
   )
 }

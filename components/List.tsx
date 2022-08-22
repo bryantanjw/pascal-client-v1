@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Stack, HStack, useColorMode, useColorModeValue, Image,
+    Stack, HStack, SimpleGrid, useColorModeValue, Image,
 } from '@chakra-ui/react';
 import styles from '../styles/Home.module.css'
 
@@ -39,7 +39,7 @@ function MarketCard({ market }) {
 
     return (
           <a href={`/trade/${marketId}`}>
-            <Stack spacing={3} _hover={{borderColor: useColorModeValue('blue.500', 'blue.200')}} className={styles.card}>
+            <Stack spacing={3} _hover={{borderColor: useColorModeValue('blue.500', 'blue.200')}} p={5} className={styles.card}>
                 {/* Set market's category icon */}
                 <Image filter={iconColor} src={`/${market.category}.png`} alt={market.category} width={25} height={25}/>
                 
@@ -71,13 +71,13 @@ const List = () => {
     }, [60]);
 
     return (
-        <div className={styles.grid}>
+        <SimpleGrid columns={{ base: 1, md: 3 }} spacing={7}>
             {markets.map((market: any) => (
                 <Stack key={market.marketId}>
                     <MarketCard market={market} />
                 </Stack>
             ))}
-        </div>
+        </SimpleGrid>
     );
 };
   

@@ -43,12 +43,11 @@ const MarketView = ({ p }) => {
     return (
         <div className={styles.container}>
         <WithSubnavigation />
-
         <Box
             maxW={{ base: '3xl', lg: '5xl' }}
             mx="auto"
-            px={{ base: '4', md: '8', lg: '12' }}
-            py={{ base: '6', md: '8', lg: '12' }}
+            px={{ base: '1', md: '8', lg: '12' }}
+            py={{ base: '6', md: '8', lg: '14' }}
         >
             <Stack
                 direction={{ base: 'column', lg: 'row' }}

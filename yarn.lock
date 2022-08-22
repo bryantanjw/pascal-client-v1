@@ -2422,6 +2422,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dom-confetti@npm:0.2.2":
+  version: 0.2.2
+  resolution: "dom-confetti@npm:0.2.2"
+  checksum: 6b14f4432fa758b038d63cfb7c8d56577d4ce99b11b7a7c74d261e5fb2fb4e2495c6b6787ba78c778cfad2627730612234424f675c524d903ad8d7485319af22
+  languageName: node
+  linkType: hard
+
 "dom-helpers@npm:^3.4.0":
   version: 3.4.0
   resolution: "dom-helpers@npm:3.4.0"
@@ -4320,6 +4327,7 @@ __metadata:
     next: 12.2.0
     react: 18.2.0
     react-dom: 18.2.0
+    react-dom-confetti: ^0.2.0
     react-icons: ^4.4.0
     recharts: ^2.1.12
     typescript: 4.7.4
@@ -4462,6 +4470,17 @@ __metadata:
   peerDependencies:
     react: ^15.3.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
   checksum: 7db6110027a51458b1a46109d2b63dd822825f483c71afef7c0c0a671f3b1aa155049dbd8651c9d536ffac83601f8823b7c3f8916b4f4ee5c3cb7647a85cce4e
+  languageName: node
+  linkType: hard
+
+"react-dom-confetti@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "react-dom-confetti@npm:0.2.0"
+  dependencies:
+    dom-confetti: 0.2.2
+  peerDependencies:
+    react: "*"
+  checksum: 57ea07edad246545116dea341577dfeddbd77c8ebf2e81175319fe6b988fb4ed693a044c20b5ab5bcdf6e68fc0bf1d70338630155e67885cc59ca0b9933fb59c
   languageName: node
   linkType: hard
 
