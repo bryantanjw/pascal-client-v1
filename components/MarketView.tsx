@@ -80,14 +80,14 @@ const MarketView = ({ p }) => {
 
                         <TabPanels>
                             <TabPanel px={0}>
-                                <Flex>
+                                <Flex flexDirection={'column'}>
                                     <Stack>
                                         
                                         <MarketProgress />
                                         
                                         <Divider borderColor={dividerColor} />
                                         <Stack py={2} direction={'column'}>
-                                            <HStack>
+                                            <HStack spacing={3}>
                                                 <Image filter={iconColor} alt='Statistics' width={'18px'} src={`/Statistics.png`} />
                                                 <Heading sx={sectionHeadingStyle}>Statistics</Heading>
                                             </HStack>
@@ -100,7 +100,7 @@ const MarketView = ({ p }) => {
 
                                         <Divider borderColor={dividerColor} />
                                         <Stack py={2} direction={'column'}>
-                                            <HStack>
+                                            <HStack spacing={3}>
                                                 <Image filter={iconColor} alt='Resolution' width={'18px'} src={`/Resolution.png`} />
                                                 <Heading sx={sectionHeadingStyle}>Market Resolution</Heading>
                                             </HStack>

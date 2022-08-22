@@ -75,11 +75,7 @@ export default function WithSubnavigation() {
                         display={{ base: 'none', md: 'inline-flex' }}
                         fontSize={'sm'}
                         fontWeight={600}
-                        color={'white'}
-                        bg={'#0070f3'}
-                        _hover={{
-                            bg: '#4995EC',
-                        }}>
+                        colorScheme={'blue'}>
                         Connect Wallet
                     </Button>
                 </Stack>

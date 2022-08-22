@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import {
   Button, ButtonGroup,
   Flex,
   Heading,
+  NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
   Stack,
   Text,
   useColorModeValue as mode,
@@ -30,14 +32,14 @@ const TradeFormItem = (props: TradeFormItemProps) => {
 
 export const TradeForm = ({ p }) => {
   const steps = [{ label: "" }, { label: "" }]
-
   const { nextStep, prevStep, reset, activeStep } = useSteps({
     initialStep: 0,
   })
+  const [numberInput, setNumberInput] = useState(1)
  
   return (
     <Stack spacing="8" borderWidth="1px" rounded="lg" padding="8" width={'xs'}>
-      <Steps colorScheme={'green'} activeStep={activeStep}>
+      <Steps colorScheme={'blue'} activeStep={activeStep}>
         {steps.map(({ label }, index) => (
           <Step width={'50%'} label={label} key={index}>
             {activeStep === steps.length - 1 ? (
@@ -50,7 +52,12 @@ export const TradeForm = ({ p }) => {
                     2. Calculation of order price
                   */}
                   <TradeFormItem label="Price per contract" value={`${p.props.probability[0].yes}`} />
-                  <TradeFormItem label="No. of contracts" value={'2'} />
+                  <TradeFormItem label="No. of contracts">
+                    <NumberInput onChange={setNumberInput} size={'sm'} width={'35%'} defaultValue={1} min={1} max={100}>
+                      <NumberInputField fontSize={'sm'} textAlign={'end'} />
+                      <NumberInputStepper><NumberIncrementStepper/><NumberDecrementStepper /></NumberInputStepper>
+                    </NumberInput>
+                  </TradeFormItem>
                   <TradeFormItem label="Fees">
                     1%
                   </TradeFormItem>
@@ -59,12 +66,12 @@ export const TradeForm = ({ p }) => {
                       Total
                     </Text>
                     <Text fontSize="xl" fontWeight="extrabold">
-                      1.384 SOL
+                      {numberInput * p.props.probability[0].yes}
                     </Text>
                   </Flex>
                 </Stack>
 
-                <ButtonGroup colorScheme={'gray'} justifyContent={'center'} size="lg" fontSize="md" spacing='3'>
+                <ButtonGroup colorScheme={'blue'} justifyContent={'center'} size="lg" fontSize="md" spacing='3'>
                   <Button variant={'outline'} onClick={prevStep}><ArrowBackIcon /></Button>
                   <Button onClick={nextStep} width={'80%'}>Place order</Button>
                 </ButtonGroup>
