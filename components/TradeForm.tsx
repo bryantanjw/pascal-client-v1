@@ -71,6 +71,7 @@ export const TradeForm = ({ p }) => {
         ))}
       </Steps>
       {
+        // TODO: set dynamic value of underlying
         activeStep === 0 && (
           <Stack spacing={8}>
             <Heading size={'md'}>Will {p.props.ticker} close above #value on {new Date(p.props.closing_date).toISOString().split('T')[0]}</Heading>

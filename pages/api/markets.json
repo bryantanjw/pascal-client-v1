@@ -12,7 +12,8 @@
         "liquidity": 0.00,
         "volume": 0.00,
         "closing_date": "2022-06-10T09:30:00-0400",
-        "symbol": "Equity.US.SPY/USD"
+        "symbol": "Equity.US.SPY/USD",
+        "current_value": "412.09"
     },
     {
         "marketId": 2,
@@ -27,7 +28,8 @@
         "liquidity": 0.00,
         "volume": 0.00,
         "closing_date": "2022-05-31T09:30:00-0400",
-        "symbol": "Equity.US.SPY/USD"
+        "symbol": "Equity.US.SPY/USD",
+        "current_value": "420.69"
     },
     {
         "marketId": 3,
@@ -42,7 +44,8 @@
         "liquidity": 0.00,
         "volume": 0.00,
         "closing_date": "2022-05-31T09:30:00-0400",
-        "symbol": "Equity.US.TSLA/USD"
+        "symbol": "Equity.US.TSLA/USD",
+        "current_value": "870.99"
     },
     {
         "marketId": 4,
@@ -57,6 +60,7 @@
         "liquidity": 0.00,
         "volume": 0.00,
         "closing_date": "2022-05-31T09:30:00-0400",
-        "symbol": ""
+        "symbol": "",
+        "current_value": "0.4%"
     }
 ]

@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Stack, HStack, SimpleGrid, useColorModeValue, Image,
+    Flex, Stack, HStack, SimpleGrid, useColorModeValue, Image, Text, Divider,
 } from '@chakra-ui/react';
 import styles from '../styles/Home.module.css'
+import { SolanaLogo } from './solanaLogoMark';
 
 function MarketCard({ market }) {
-    const { title, closing_date, liquidity, marketId } = market;
     const [timerString, setTimerString] = useState('');
 
     const iconColor = useColorModeValue('invert(0%)', 'invert(100%)')
+
+    const statStyle = {
+        align: 'center',
+        direction: 'row',
+        filter: 'invert(50%)'
+    }
 
     // Get duration until market closing date
     useEffect(() => {
@@ -38,7 +44,7 @@ function MarketCard({ market }) {
     const dt = new Date(market.closing_date)
 
     return (
-          <a href={`/trade/${marketId}`}>
+          <a href={`/trade/${market.marketId}`}>
             <Stack spacing={3} _hover={{borderColor: useColorModeValue('blue.500', 'blue.200')}} p={5} className={styles.card}>
                 {/* Set market's category icon */}
                 <Image filter={iconColor} src={`/${market.category}.png`} alt={market.category} width={25} height={25}/>
@@ -47,12 +53,27 @@ function MarketCard({ market }) {
                     <h2>{market.title}</h2>
                     <h3>on {dt.toLocaleString('default', { month: 'long' })} {dt.getDate()}</h3>
                 </Stack>
-                    <p>Find in-depth information about Next.js features and API.</p>
-                    
-                <HStack opacity={"70%"} mt={4}>
-                    <Image filter={iconColor} src={'/recurrence.png'} width={17} height={17} alt="recurrence" />
-                    <h4>{market.recurrence}</h4>
-                </HStack>
+                
+                <Flex fontWeight={'semibold'} justify={'space-between'}>
+                    <Text>&gt; {market.current_value}</Text>
+                    <Stack direction={'row'} spacing={3}>
+                        <Text color={'pink.500'}>Yes {market.probability[0].yes} ⓒ</Text>
+                        <Text color={'teal.500'}>No {market.probability[0].no} ⓒ</Text>
+                    </Stack>
+                </Flex>
+
+                <hr />
+
+                <Stack pt={2} spacing={4} direction={'row'}>                
+                    <HStack sx={statStyle}>
+                        <Image filter={iconColor} src={'/droplet.png'} width={17} height={17} alt="recurrence" />
+                        <h4>{market.liquidity}</h4>
+                    </HStack>
+                    <HStack sx={statStyle}>
+                        <Image filter={iconColor} src={'/recurrence.png'} width={17} height={17} alt="recurrence" />
+                        <h4>{market.recurrence}</h4>
+                    </HStack>
+                </Stack>
             </Stack>
           </a>
     );
