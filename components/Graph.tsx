@@ -4,7 +4,7 @@ import {
     ButtonGroup, Button, useDisclosure, Heading
 } from '@chakra-ui/react'
 
-export default function Graph({ id }) {
+export default function Graph({ p }) {
     const { isOpen, onToggle } = useDisclosure()
 
     return (
@@ -26,21 +26,21 @@ export default function Graph({ id }) {
                         <Td>
                             <HStack mb={2} justifyContent={'space-between'}>
                                 <Text>Yes</Text>
-                                <Text>69.2%</Text>
+                                <Text>{p.props.probability[0].yes * 100}%</Text>
                             </HStack>
-                            <Progress value={69.2} size={'sm'} rounded={'xl'} colorScheme={'pink'}/>
+                            <Progress value={p.props.probability[0].yes * 100} size={'sm'} rounded={'xl'} colorScheme={'pink'}/>
                         </Td>
-                        <Td isNumeric>2.4</Td>
+                        <Td isNumeric>{p.props.probability[0].yes}</Td>
                     </Tr>
                     <Tr>
                         <Td>
                             <HStack mb={2} justifyContent={'space-between'}>
                                 <Text>No</Text>
-                                <Text>30.8%</Text>
+                                <Text>{p.props.probability[0].no * 100}%</Text>
                             </HStack>
-                            <Progress value={30.8} size={'sm'} rounded={'xl'} colorScheme={'teal'} />
+                            <Progress value={p.props.probability[0].no * 100} size={'sm'} rounded={'xl'} colorScheme={'teal'} />
                         </Td>
-                        <Td isNumeric>0.2</Td>
+                        <Td isNumeric>{p.props.probability[0].no}</Td>
                     </Tr>
                 </Tbody>
             </Table>

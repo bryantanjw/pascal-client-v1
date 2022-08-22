@@ -30,6 +30,10 @@ const MarketView = ({ p }) => {
         fontSize: 'lg',
         px: 0
     }
+    const sectionHeadingStyle = {
+        fontSize: 'lg',
+        fontWeight: 'bold'
+    }
     const stats = [
         { label: 'Liquidity', value: p.props.liquidity },
         { label: 'Total Volume', value: p.props.volume },
@@ -63,14 +67,14 @@ const MarketView = ({ p }) => {
 
                         <TabPanels>
                             <TabPanel px={0}>
-                                <Graph id={p.props.id} />
+                                <Graph p={p} />
                             </TabPanel>
                         </TabPanels>
                     </Tabs>
 
                     <Tabs colorScheme={'black'}>
                         <TabList>
-                            <Tab sx={tabListStyle} mr={5}>About</Tab>
+                            <Tab sx={tabListStyle} mr={7}>About</Tab>
                             <Tab sx={tabListStyle}>Research and News</Tab>
                         </TabList>
 
@@ -82,10 +86,10 @@ const MarketView = ({ p }) => {
                                         <MarketProgress />
                                         
                                         <Divider borderColor={dividerColor} />
-                                        <Stack py={4} direction={'column'}>
+                                        <Stack py={2} direction={'column'}>
                                             <HStack>
                                                 <Image filter={iconColor} alt='Statistics' width={'18px'} src={`/Statistics.png`} />
-                                                <Heading size={'md'}>Statistics</Heading>
+                                                <Heading sx={sectionHeadingStyle}>Statistics</Heading>
                                             </HStack>
                                             <SimpleGrid columns={{ base: 2, md: 3 }}>
                                                 {stats.map(({ label, value }) => (
@@ -95,10 +99,10 @@ const MarketView = ({ p }) => {
                                         </Stack>
 
                                         <Divider borderColor={dividerColor} />
-                                        <Stack py={4} direction={'column'}>
+                                        <Stack py={2} direction={'column'}>
                                             <HStack>
-                                            <Image filter={iconColor} alt='Resolution' width={'18px'} src={`/Resolution.png`} />
-                                                <Heading size={'md'}>Market Resolution</Heading>
+                                                <Image filter={iconColor} alt='Resolution' width={'18px'} src={`/Resolution.png`} />
+                                                <Heading sx={sectionHeadingStyle}>Market Resolution</Heading>
                                             </HStack>
                                             <HStack cursor={'default'} spacing={8}>
                                                <Text>This market uses Pyth as the final arbitrator.</Text>

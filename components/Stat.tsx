@@ -9,17 +9,16 @@ export const Stat = (props: Props) => {
   const { label, value, ...boxProps } = props
   return (
     <Box
-      py={2}
+      py={1}
       bg="bg-surface"
       borderRadius="lg"
-      boxShadow={useColorModeValue('sm', 'sm-dark')}
       {...boxProps}
     >
       <Stack>
         <Text fontSize="sm" color="muted">
           {label}
         </Text>
-        <Heading size={useBreakpointValue({ base: 'sm', md: 'md' })}>{value}</Heading>
+        <Heading fontWeight={'semibold'} size={useBreakpointValue({ base: 'sm', md: 'sm' })}>{value}</Heading>
       </Stack>
     </Box>
   )

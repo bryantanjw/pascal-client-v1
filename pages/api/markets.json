@@ -5,7 +5,10 @@
         "title": "S&P500 daily close price",
         "recurrence": "Daily",
         "category": "Financials",
-        "price": 1.00,
+        "probability": [{
+            "yes": 0.5,
+            "no": 0.5
+        }],
         "liquidity": 0.00,
         "volume": 0.00,
         "closing_date": "2022-06-10T09:30:00-0400",
@@ -17,7 +20,10 @@
         "title": "S&P500 weekly close price",
         "recurrence": "Weekly",
         "category": "Financials",
-        "price": 1.00,
+        "probability": [{
+            "yes": 0.5,
+            "no": 0.5
+        }],
         "liquidity": 0.00,
         "volume": 0.00,
         "closing_date": "2022-05-31T09:30:00-0400",
@@ -29,7 +35,10 @@
         "title": "TSLA daily close price",
         "recurrence": "Daily",
         "category": "Financials",
-        "price": 1.00,
+        "probability": [{
+            "yes": 0.5,
+            "no": 0.5
+        }],
         "liquidity": 0.00,
         "volume": 0.00,
         "closing_date": "2022-05-31T09:30:00-0400",
@@ -41,7 +50,10 @@
         "title": "Inflation",
         "recurrence": "Monthly",
         "category": "Economics",
-        "price": 1.00,
+        "probability": [{
+            "yes": 0.5,
+            "no": 0.5
+        }],
         "liquidity": 0.00,
         "volume": 0.00,
         "closing_date": "2022-05-31T09:30:00-0400",
