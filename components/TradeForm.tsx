@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import {
   Button, ButtonGroup,
-  Flex,
+  Flex, Box,
   Heading,
   NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
   Stack,
@@ -13,6 +13,7 @@ import { ArrowBackIcon } from '@chakra-ui/icons'
 import Confetti from 'react-dom-confetti'
 import { Step, Steps, useSteps } from "chakra-ui-steps"
 import * as React from 'react'
+
 
 type TradeFormItemProps = {
   label: string
@@ -64,10 +65,11 @@ export const TradeForm = ({ p }) => {
   
   return (
     <>
+    {/* TODO: refine progress bar design */}
     <Stack overflow={'visible'} spacing="8" borderWidth="1px" rounded="lg" padding="6" width={{'base': 's', 'md': 'xs'}}>
-      <Steps width={'50%'} orientation='horizontal' colorScheme={'blue'} activeStep={activeStep}>
+      <Steps width={'45%'} orientation='horizontal' colorScheme={'gray'} activeStep={activeStep}>
         {steps.map(({ label }, index) => (
-          <Step width={'50%'} label={label} key={index} />            
+          <Step label={label} key={index} />            
         ))}
       </Steps>
       {
@@ -108,7 +110,7 @@ export const TradeForm = ({ p }) => {
               </Flex>
             </Stack>
 
-            <ButtonGroup colorScheme={'blue'} justifyContent={'center'} size="lg" fontSize="md" spacing='3'>
+            <ButtonGroup colorScheme={'purple'} justifyContent={'center'} size="lg" fontSize="md" spacing='3'>
               <Button variant={'outline'} onClick={prevStep}><ArrowBackIcon /></Button>
               <Button onClick={placeOrder} width={'80%'}>
               {isLoading ? (
@@ -126,7 +128,7 @@ export const TradeForm = ({ p }) => {
         <Heading size={'md'}>
           Woohoo! Your order has been placed!
         </Heading>
-        <ButtonGroup justifyContent={'center'} colorScheme={'blue'} size="lg" fontSize="md" spacing='3'>
+        <ButtonGroup justifyContent={'center'} colorScheme={'purple'} size="lg" fontSize="md" spacing='3'>
           <Button onClick={reset} width={'full'}>Done</Button>
         </ButtonGroup>
       </Stack>

@@ -14,6 +14,7 @@ import {
     useColorModeValue,
     useBreakpointValue,
     useDisclosure,
+    background,
 } from '@chakra-ui/react';
 import { ColorModeSwitcher } from './ColorModeSwitcher';
 import {
@@ -22,6 +23,10 @@ import {
     ChevronDownIcon,
     ChevronRightIcon,
 } from '@chakra-ui/icons';
+import {
+    WalletMultiButton
+} from '@solana/wallet-adapter-react-ui';
+import styles from '../styles/Home.module.css'
 
 export default function WithSubnavigation() {
     const { isOpen, onToggle } = useDisclosure();
@@ -71,13 +76,14 @@ export default function WithSubnavigation() {
                     direction={'row'}
                     spacing={6}>
                     <ColorModeSwitcher />
-                    <Button
+                    <WalletMultiButton className={useColorModeValue(styles.wallet_adapter_button_trigger_light_mode, styles.wallet_adapter_button_trigger_dark_mode)} />
+                    {/* <Button
                         display={{ base: 'none', md: 'inline-flex' }}
                         fontSize={'sm'}
                         fontWeight={600}
-                        colorScheme={'blue'}>
+                        colorScheme={'purple'}>
                         Connect Wallet
-                    </Button>
+                    </Button> */}
                 </Stack>
             </Flex>
   

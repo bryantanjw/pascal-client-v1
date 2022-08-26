@@ -1,6 +1,5 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import WithSubnavigation from 'components/TopBar'
 import List from 'components/List'
@@ -8,6 +7,7 @@ import Footer from 'components/Footer'
 import { Box, Stack, Heading, Text } from '@chakra-ui/react'
 
 const Home: NextPage = () => {
+  
   return (
     <div className={styles.container}>
       <WithSubnavigation />
@@ -19,7 +19,7 @@ const Home: NextPage = () => {
 
       <Box maxW={{ base: '3xl', lg: '5xl' }}
         mx="auto"
-        py={{ base: '6', md: '8', lg: '12' }}
+        py={{ base: '10', md: '10', lg: '12' }}
       >
         <Stack spacing={{ base: 8, md: 10 }}>
 
@@ -37,13 +37,13 @@ const Home: NextPage = () => {
                   position: 'absolute',
                   bottom: 1,
                   left: 0,
-                  bg: 'blue.400',
+                  bg: 'purple.400',
                   zIndex: -1,
                 }}>
                 Trade directly
               </Text>
               <br />
-              <Text as={'span'} color={'blue.400'}>
+              <Text as={'span'} color={'purple.400'}>
                 on the outcome of events.
               </Text>
             </Heading>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Flex, Stack, HStack, SimpleGrid, useColorModeValue, Image, Text, Divider,
+    Flex, Stack, HStack, SimpleGrid, useColorModeValue, Image, Text, Heading,
 } from '@chakra-ui/react';
 import styles from '../styles/Home.module.css'
 import { SolanaLogo } from './solanaLogoMark';
@@ -45,12 +45,12 @@ function MarketCard({ market }) {
 
     return (
           <a href={`/trade/${market.marketId}`}>
-            <Stack spacing={3} _hover={{borderColor: useColorModeValue('blue.500', 'blue.200')}} p={5} className={styles.card}>
+            <Stack spacing={4} _hover={{borderColor: useColorModeValue('blue.500', 'blue.200')}} p={5} className={styles.card}>
                 {/* Set market's category icon */}
                 <Image filter={iconColor} src={`/${market.category}.png`} alt={market.category} width={25} height={25}/>
                 
-                <Stack spacing={0}>
-                    <h2>{market.title}</h2>
+                <Stack spacing={1}>
+                    <Heading size={'md'}>{market.title}</Heading>
                     <h3>on {dt.toLocaleString('default', { month: 'long' })} {dt.getDate()}</h3>
                 </Stack>
                 
@@ -66,7 +66,7 @@ function MarketCard({ market }) {
 
                 <Stack pt={2} spacing={4} direction={'row'}>                
                     <HStack sx={statStyle}>
-                        <Image filter={iconColor} src={'/droplet.png'} width={17} height={17} alt="recurrence" />
+                        <Image filter={iconColor} src={'/liquidity.png'} width={17} height={17} alt="recurrence" />
                         <h4>{market.liquidity}</h4>
                     </HStack>
                     <HStack sx={statStyle}>

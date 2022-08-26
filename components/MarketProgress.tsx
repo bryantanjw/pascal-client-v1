@@ -13,7 +13,7 @@ export const MarketProgress = () => {
   })
   return (
     <Flex minWidth={'lg'} py={4}>
-      <Steps orientation="horizontal" colorScheme="blue" activeStep={activeStep+1}>
+      <Steps orientation="horizontal" colorScheme="gray" activeStep={activeStep+1}>
         {steps.map(({ label, description }) => (
           <Step label={label} key={label} description={description} />
         ))}

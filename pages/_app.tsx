@@ -3,6 +3,7 @@ import type { AppProps } from 'next/app'
 import { ChakraProvider } from '@chakra-ui/react'
 import { StepsStyleConfig as Steps } from 'chakra-ui-steps';
 import { extendTheme } from '@chakra-ui/react'
+import WalletContextProvider from 'components/WalletContextProvider';
 
 const colors = {
   brand: {
@@ -22,7 +23,9 @@ const theme = extendTheme({
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider theme={theme}>
-      <Component {...pageProps} />
+      <WalletContextProvider>
+        <Component {...pageProps} />
+      </WalletContextProvider>
     </ChakraProvider>
   )
 }
