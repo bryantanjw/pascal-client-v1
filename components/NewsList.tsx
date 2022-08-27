@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import {
   Box,
   Heading,
-  Link,
   Image,
   Text,
   Stack,
@@ -12,6 +11,7 @@ import {
   HStack,
 } from '@chakra-ui/react';
 import { fetchNewsData } from 'lib/api'
+import Link from 'next/link'
 
 interface NewsListItemProp {
     publication: string,
@@ -24,34 +24,34 @@ interface NewsListItemProp {
 const NewsListItem = (props: NewsListItemProp) => {
     const { publication, title, imageUrl, datePublished, url } = props
 
-    // TODO: 1. Embed links
-
     return (
-        <Link href={url} isExternal>
+        <Link href={url} passHref>
         <Box borderWidth={'1px'} p={5} rounded={'lg'}
             marginTop={{ base: '1', sm: '3' }}
             display="flex"
-            justifyContent="space-between">
-            <Stack
-                display="flex"
-                flex="1"
-                flexDirection="column" marginRight={'25px'}>
-                <HStack spacing={3}>
-                    <Heading fontSize={'md'}>{publication}</Heading>
-                    <Text fontSize={'sm'} fontWeight={'semibold'} color='gray'>{datePublished}</Text>
-                </HStack>
-                <Text fontSize={'md'} marginTop="1">
-                    <Link textDecoration="none" _hover={{ textDecoration: 'none' }}>
-                    {title}
-                    </Link>
-                </Text>
-            </Stack>
+            justifyContent="space-between"
+            transition={'border-color 0.3s linear'}
+            _hover={{ borderColor:'gray.400'}}>
+            <Suspense fallback={<Skeleton />}>
+                <Stack
+                    display="flex"
+                    flex="1"
+                    flexDirection="column" marginRight={'25px'}>
+                    <HStack spacing={3}>
+                        <Heading fontSize={'md'}>{publication}</Heading>
+                        <Text fontSize={'sm'} fontWeight={'semibold'} color='gray'>{datePublished}</Text>
+                    </HStack>
+                    <Text fontSize={'md'} marginTop="1">
+                        {title}
+                    </Text>
+                </Stack>
+            </Suspense>
 
             <Flex>
                 <Image height={'100px'} width={'150px'}
                     borderRadius="md"
                     src={imageUrl}
-                    alt="some good alt text"
+                    alt={title}
                     objectFit="cover"
                     fallback={<Skeleton />}
                 />
@@ -77,7 +77,7 @@ export const NewsList = ({ market }) => {
         <>
         {newsData.map((news, index) => (
             <NewsListItem key={index} 
-                publication={news.provider[0].name}
+                publication={news.provider[0].name.replace('on MSN.com', '')}
                 // Get time elapsed since each news published
                 datePublished={`${Math.round(Math.abs((new Date()).valueOf() - (new Date(news.datePublished)).valueOf()) / 36e5)}hr ago`}
                 imageUrl={news.image.thumbnail.contentUrl} 

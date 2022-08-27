@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
     Box, Divider,
     Stack, HStack, SimpleGrid,
@@ -17,6 +17,7 @@ import MarketProgress from './MarketProgress'
 import { Stat } from './Stat'
 import styles from '../styles/Home.module.css'
 import NewsList from './NewsList';
+import ResearchGraph from './ResearchGraph';
 
 const MarketView = ({ market }) => {
     const router = useRouter()
@@ -110,6 +111,7 @@ const MarketView = ({ market }) => {
                             </TabPanel>
 
                             <TabPanel key={1} px={0}>
+                                <ResearchGraph />
                                 <NewsList market={market} />
                             </TabPanel>
                         </TabPanels>

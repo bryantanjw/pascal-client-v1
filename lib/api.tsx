@@ -19,6 +19,7 @@ export const fetchMarketData = async (slug) => {
 }
 
 export const fetchNewsData = async (search) => {
+    // API documentation: https://rapidapi.com/microsoft-azure-org-microsoft-cognitive-services/api/bing-news-search1
     try {
         const response = await fetch(`https://bing-news-search1.p.rapidapi.com/news/search?q=${search}&count=4&freshness=Day&textFormat=Raw&safeSearch=Off`, {
             method: 'GET',
