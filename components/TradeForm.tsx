@@ -35,7 +35,7 @@ const TradeFormItem = (props: TradeFormItemProps) => {
 }
 
 
-export const TradeForm = ({ p }) => {
+export const TradeForm = ({ market }) => {
   const steps = [{ label: "" }, { label: "" }]
   const { nextStep, prevStep, reset, activeStep } = useSteps({
     initialStep: 0,
@@ -76,7 +76,7 @@ export const TradeForm = ({ p }) => {
         // TODO: set dynamic value of underlying
         activeStep === 0 && (
           <Stack spacing={8}>
-            <Heading size={'md'}>Will {p.props.ticker} close above #value on {new Date(p.props.closing_date).toISOString().split('T')[0]}</Heading>
+            <Heading size={'md'}>Will {market.props.short} close above #value on {new Date(market.props.closing_date).toISOString().split('T')[0]}</Heading>
             
             <ButtonGroup onClick={nextStep} justifyContent={'center'} size="lg" spacing='3'>
               <Button p={7} width={'full'} colorScheme='pink'>Yes, it will</Button>
@@ -90,7 +90,7 @@ export const TradeForm = ({ p }) => {
             <Heading size="md">Order Summary</Heading>
 
             <Stack spacing="4">
-              <TradeFormItem label="Price per contract" value={`${p.props.probability[0].yes}`} />
+              <TradeFormItem label="Price per contract" value={`${market.props.probability[0].yes}`} />
               <TradeFormItem label="No. of contracts">
                 <NumberInput onChange={(e) => setNumberInput(e)} size={'sm'} width={'35%'} defaultValue={numberInput} min={1} max={100}>
                   <NumberInputField fontSize={'sm'} textAlign={'end'} />
@@ -105,7 +105,7 @@ export const TradeForm = ({ p }) => {
                   Total
                 </Text>
                 <Text fontSize="xl" fontWeight="extrabold">
-                  {numberInput * p.props.probability[0].yes} SOL
+                  {numberInput * market.props.probability[0].yes} SOL
                 </Text>
               </Flex>
             </Stack>

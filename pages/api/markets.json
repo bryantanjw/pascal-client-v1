@@ -1,7 +1,7 @@
 [
     {
         "marketId": 1,
-        "ticker": "$SPY",
+        "short": "S&P500",
         "title": "S&P500 daily close price",
         "recurrence": "Daily",
         "category": "Financials",
@@ -12,12 +12,13 @@
         "liquidity": 0.00,
         "volume": 0.00,
         "closing_date": "2022-06-10T09:30:00-0400",
-        "symbol": "Equity.US.SPY/USD",
-        "current_value": "$412.09"
+        "oracle_symbol": "Equity.US.SPY/USD",
+        "current_value": "$412.09",
+        "bing_search": "s%26p500"
     },
     {
         "marketId": 2,
-        "ticker": "$SPY",
+        "short": "S&P500",
         "title": "S&P500 weekly close price",
         "recurrence": "Weekly",
         "category": "Financials",
@@ -28,12 +29,13 @@
         "liquidity": 0.00,
         "volume": 0.00,
         "closing_date": "2022-05-31T09:30:00-0400",
-        "symbol": "Equity.US.SPY/USD",
-        "current_value": "$420.69"
+        "oracle_symbol": "Equity.US.SPY/USD",
+        "current_value": "$420.69",
+        "bing_search": "s%26p500"
     },
     {
         "marketId": 3,
-        "ticker": "$TSLA",
+        "short": "TSLA",
         "title": "TSLA daily close price",
         "recurrence": "Daily",
         "category": "Financials",
@@ -44,12 +46,13 @@
         "liquidity": 0.00,
         "volume": 0.00,
         "closing_date": "2022-05-31T09:30:00-0400",
-        "symbol": "Equity.US.TSLA/USD",
-        "current_value": "$870.99"
+        "oracle_symbol": "Equity.US.TSLA/USD",
+        "current_value": "$870.99",
+        "bing_search": "tesla"
     },
     {
         "marketId": 4,
-        "ticker": "",
+        "short": "",
         "title": "Inflation",
         "recurrence": "Monthly",
         "category": "Economics",
@@ -60,7 +63,42 @@
         "liquidity": 0.00,
         "volume": 0.00,
         "closing_date": "2022-05-31T09:30:00-0400",
-        "symbol": "",
-        "current_value": "0.4%"
+        "oracle_symbol": "",
+        "current_value": "0.4%",
+        "bing_search": "inflation"
+    },
+    {
+        "marketId": 5,
+        "short": "NYC temp",
+        "title": "NYC temp",
+        "recurrence": "Monthly",
+        "category": "Climate",
+        "probability": [{
+            "yes": 0.5,
+            "no": 0.5
+        }],
+        "liquidity": 0.00,
+        "volume": 0.00,
+        "closing_date": "2022-05-31T09:30:00-0400",
+        "oracle_symbol": "",
+        "current_value": "27°C",
+        "bing_search": "nyc temperature"
+    },
+    {
+        "marketId": 6,
+        "short": "SOL",
+        "title": "SOL weekly close price",
+        "recurrence": "Weekly",
+        "category": "Crypto",
+        "probability": [{
+            "yes": 0.5,
+            "no": 0.5
+        }],
+        "liquidity": 0.00,
+        "volume": 0.00,
+        "closing_date": "2022-05-31T09:30:00-0400",
+        "oracle_symbol": "Crypto.SOL/USD",
+        "current_value": "$36",
+        "bing_search": "solana"
     }
 ]

@@ -17,27 +17,27 @@ function MarketCard({ market }) {
     }
 
     // Get duration until market closing date
-    useEffect(() => {
-        const interval = setInterval(() => {
-            const delta = (new Date(market.closing_date)).valueOf() - (new Date()).valueOf();
-            const hours = Math.floor(delta / 3.6e6);
-            const minutes = Math.floor((delta % 3.6e6) / 6e4);
+    // useEffect(() => {
+    //     const interval = setInterval(() => {
+    //         const delta = (new Date(market.closing_date)).valueOf() - (new Date()).valueOf();
+    //         const hours = Math.floor(delta / 3.6e6);
+    //         const minutes = Math.floor((delta % 3.6e6) / 6e4);
         
-            setTimerString(`${hours}h ${minutes}m remaining`);
+    //         setTimerString(`${hours}h ${minutes}m remaining`);
         
-            if (delta < 0) {
-              console.log('Clearing interval...');
-              clearInterval(interval);
-            }
-        }, 1000);
+    //         if (delta < 0) {
+    //           console.log('Clearing interval...');
+    //           clearInterval(interval);
+    //         }
+    //     }, 1000);
 
-        // Anytime the component unmounts clean up the interval
-        return () => {
-            if (interval) {
-                clearInterval(interval);
-            }
-        }
-    }, []);
+    //     // Anytime the component unmounts clean up the interval
+    //     return () => {
+    //         if (interval) {
+    //             clearInterval(interval);
+    //         }
+    //     }
+    // }, []);
 
     // TODO: Update closing date of market
     

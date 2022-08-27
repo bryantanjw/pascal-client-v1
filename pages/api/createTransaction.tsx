@@ -7,7 +7,7 @@ import {
     SystemProgram, LAMPORTS_PER_SOL,
 } from "@solana/web3.js";
 import BigNumber from "bignumber.js";
-import products from "./products.json";
+import markets from "./markets.json";
 
 const sellerAddress = "G3ZEAY19iDMjF7P57dgFUZiC4bpeFvMPKShenugL7E2Y"
 const sellerPublicKey = new PublicKey(sellerAddress);
@@ -15,7 +15,7 @@ const sellerPublicKey = new PublicKey(sellerAddress);
 const createTransaction = async (req, res) => {
     try {
         // Extract the transaction data from the request body
-        const { buyer, orderID, itemID } = req.body;
+        const { buyer, marketId } = req.body;
 
         // If we don't have something we need, stop
         if (!buyer) {
@@ -23,14 +23,14 @@ const createTransaction = async (req, res) => {
                 message: "Missing buyer address",
             });
         }
-        if (!orderID) {
+        if (!marketId) {
             res.status(400).json({
                 message: "Missing order ID",
             });
         }
 
-        // Fetch item price from products.json using itemID
-        const itemPrice = products.find((item) => item.id === itemID).price;
+        // Fetch item price from markets.json using itemID
+        const itemPrice = markets.find((item) => item.marketId === marketId).price;
 
         // Convert price to the correct format
         const bigAmount = new BigNumber(itemPrice);
@@ -60,7 +60,7 @@ const createTransaction = async (req, res) => {
         // Adding more instructions to the transaction
         transferInstruction.keys.push({
             // Use OrderId to find this transaction later
-            pubkey: new PublicKey(orderID), 
+            pubkey: new PublicKey(marketId), 
             isSigner: false,
             isWritable: false,
         });

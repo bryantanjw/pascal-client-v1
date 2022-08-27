@@ -1,4 +1,4 @@
-import styles from '../styles/Home.module.css'
+import React, { useEffect, useState } from 'react';
 import {
     Box, Divider,
     Stack, HStack, SimpleGrid,
@@ -6,18 +6,19 @@ import {
     Heading,
     Flex, Link, 
     Tab, Tabs, TabList, TabPanels, TabPanel, useColorModeValue,
-    Image,
+    Image, Skeleton,
 } from '@chakra-ui/react'
 import { ArrowBackIcon } from '@chakra-ui/icons'
 import { TradeForm } from './TradeForm'
 import Graph from './Graph'
-import { Connection, PublicKey } from "@solana/web3.js"
 import WithSubnavigation from './TopBar'
 import { useRouter } from 'next/router'
 import MarketProgress from './MarketProgress'
 import { Stat } from './Stat'
+import styles from '../styles/Home.module.css'
+import NewsList from './NewsList';
 
-const MarketView = ({ p }) => {
+const MarketView = ({ market }) => {
     const router = useRouter()
 
     const dividerColor = useColorModeValue('gray.300', '#464A54')
@@ -32,10 +33,10 @@ const MarketView = ({ p }) => {
         fontWeight: 'bold'
     }
     const stats = [
-        { label: 'Liquidity', value: p.props.liquidity },
-        { label: 'Total Volume', value: p.props.volume },
-        { label: 'Closing Date - UTC', value: new Date(p.props.closing_date).toISOString().split('T')[0] },
-    ]      
+        { label: 'Liquidity', value: market.props.liquidity },
+        { label: 'Total Volume', value: market.props.volume },
+        { label: 'Closing Date - UTC', value: new Date(market.props.closing_date).toISOString().split('T')[0] },
+    ]
 
     return (
         <div className={styles.container}>
@@ -54,7 +55,7 @@ const MarketView = ({ p }) => {
             >
                 <Stack spacing={{ base: '8', md: '10' }} flex="2">
                     <Heading fontSize="2xl" fontWeight="extrabold">
-                        <Link onClick={() => router.back()}><ArrowBackIcon mr={4}/>{p.props.title}</Link>
+                        <Link onClick={() => router.back()}><ArrowBackIcon mr={4}/>{market.props.title}</Link>
                     </Heading>
 
                     <Tabs colorScheme={'black'}>
@@ -63,8 +64,8 @@ const MarketView = ({ p }) => {
                         </TabList>
 
                         <TabPanels>
-                            <TabPanel px={0}>
-                                <Graph p={p} />
+                            <TabPanel key={0} px={0}>
+                                <Graph market={market} />
                             </TabPanel>
                         </TabPanels>
                     </Tabs>
@@ -76,10 +77,9 @@ const MarketView = ({ p }) => {
                         </TabList>
 
                         <TabPanels>
-                            <TabPanel px={0}>
+                            <TabPanel key={0} px={0}>
                                 <Flex flexDirection={'column'}>
                                     <Stack>
-                                        
                                         <MarketProgress />
                                         
                                         <Divider borderColor={dividerColor} />
@@ -108,12 +108,16 @@ const MarketView = ({ p }) => {
                                     </Stack>
                                 </Flex>
                             </TabPanel>
+
+                            <TabPanel key={1} px={0}>
+                                <NewsList market={market} />
+                            </TabPanel>
                         </TabPanels>
                     </Tabs>
                 </Stack>
 
                 <Flex position={'static'} direction="column" align="center" flex="1">
-                    <TradeForm p={p} />
+                    <TradeForm market={market} />
                 </Flex>
 
             </Stack>

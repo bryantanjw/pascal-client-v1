@@ -41,6 +41,6 @@ export default function Slug({ market }: InferGetStaticPropsType<typeof getStati
   return router.isFallback ? (
     <h1>Loading...</h1>
   ) : (
-    <MarketView p={market} />
+    <MarketView market={market} />
   )
 }

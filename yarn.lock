@@ -1794,7 +1794,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chakra-ui/react@npm:^2.2.1":
+"@chakra-ui/react@npm:^2.2.9":
   version: 2.2.9
   resolution: "@chakra-ui/react@npm:2.2.9"
   dependencies:
@@ -6724,9 +6724,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.202":
-  version: 1.4.231
-  resolution: "electron-to-chromium@npm:1.4.231"
-  checksum: c0a5d0b2423111e08acf2edfcb682bb09039f361a7c1707b4ff3e3c24b022221c9547ae44ad8daf58c7fc96bda89e475bed958774a0e2aefeb324efa03b4131b
+  version: 1.4.232
+  resolution: "electron-to-chromium@npm:1.4.232"
+  checksum: 6b2317fb2a348e7daf0ad840d683ed0283f72c1a03d3786486503c795cd732563d20ec9123a9d3eda937ee451a657b02a2e22777bfd8e8801d0b1780867d5782
   languageName: node
   linkType: hard
 
@@ -10706,7 +10706,7 @@ __metadata:
   resolution: "pascals-markets@workspace:."
   dependencies:
     "@chakra-ui/icons": ^2.0.2
-    "@chakra-ui/react": ^2.2.1
+    "@chakra-ui/react": ^2.2.9
     "@emotion/react": ^11
     "@emotion/styled": ^11
     "@pythnetwork/client": ^2.7.1
