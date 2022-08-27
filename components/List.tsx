@@ -6,7 +6,7 @@ import styles from '../styles/Home.module.css'
 import { SolanaLogo } from './solanaLogoMark';
 
 function MarketCard({ market }) {
-    const [timerString, setTimerString] = useState('');
+    // const [timerString, setTimerString] = useState('');
 
     const iconColor = useColorModeValue('invert(0%)', 'invert(100%)')
 

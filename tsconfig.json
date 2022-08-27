@@ -17,6 +17,6 @@
     "baseUrl": ".",
     "strictNullChecks": true
   },
-  "exclude": ["node_modules", ".next", "out", "public/datafeeds"],
+  "exclude": ["node_modules", ".next", "out", "public/datafeeds", ".yarn"],
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.js"]
 }
