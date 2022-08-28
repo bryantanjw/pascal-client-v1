@@ -9,15 +9,20 @@ import {
     Image, Skeleton,
 } from '@chakra-ui/react'
 import { ArrowBackIcon } from '@chakra-ui/icons'
-import { TradeForm } from './TradeForm'
-import Graph from './Graph'
-import WithSubnavigation from './TopBar'
 import { useRouter } from 'next/router'
+import dynamic from 'next/dynamic'
 import MarketProgress from './MarketProgress'
 import { Stat } from './Stat'
 import styles from '../styles/Home.module.css'
-import NewsList from './NewsList';
-import ResearchGraph from './ResearchGraph';
+import NewsList from './NewsList'
+import { TradeForm } from './TradeForm'
+import Graph from './Graph'
+import WithSubnavigation from './TopBar'
+
+// Dynamically load ResearchGraph component on client side
+const ResearchGraph = dynamic(import('./ResearchGraph'), {
+    ssr: false
+})
 
 const MarketView = ({ market }) => {
     const router = useRouter()
@@ -111,8 +116,10 @@ const MarketView = ({ market }) => {
                             </TabPanel>
 
                             <TabPanel key={1} px={0}>
-                                <ResearchGraph />
-                                <NewsList market={market} />
+                                <Stack marginTop={5}>
+                                    <ResearchGraph />
+                                    <NewsList market={market} />
+                                </Stack>
                             </TabPanel>
                         </TabPanels>
                     </Tabs>

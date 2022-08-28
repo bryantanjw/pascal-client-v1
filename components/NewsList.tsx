@@ -9,14 +9,14 @@ import {
   Skeleton,
   Divider,
   HStack,
+  Link,
 } from '@chakra-ui/react';
 import { fetchNewsData } from 'lib/api'
-import Link from 'next/link'
 
 interface NewsListItemProp {
     publication: string,
     title: string,
-    imageUrl: string
+    imageUrl?: string
     datePublished: string,
     url: string,
 }
@@ -25,38 +25,38 @@ const NewsListItem = (props: NewsListItemProp) => {
     const { publication, title, imageUrl, datePublished, url } = props
 
     return (
-        <Link href={url} passHref>
-        <Box borderWidth={'1px'} p={5} rounded={'lg'}
-            marginTop={{ base: '1', sm: '3' }}
-            display="flex"
-            justifyContent="space-between"
-            transition={'border-color 0.3s linear'}
-            _hover={{ borderColor:'gray.400'}}>
-            <Suspense fallback={<Skeleton />}>
-                <Stack
-                    display="flex"
-                    flex="1"
-                    flexDirection="column" marginRight={'25px'}>
-                    <HStack spacing={3}>
-                        <Heading fontSize={'md'}>{publication}</Heading>
-                        <Text fontSize={'sm'} fontWeight={'semibold'} color='gray'>{datePublished}</Text>
-                    </HStack>
-                    <Text fontSize={'md'} marginTop="1">
-                        {title}
-                    </Text>
-                </Stack>
-            </Suspense>
+        <Link href={url} isExternal>
+            <Box borderWidth={'1px'} p={5} rounded={'lg'}
+                marginTop={1}
+                display="flex"
+                justifyContent="space-between"
+                transition={'border-color 0.3s linear'}
+                _hover={{ borderColor:'gray.400'}}>
+                <Suspense fallback={<Skeleton />}>
+                    <Stack
+                        display="flex"
+                        flex="1"
+                        flexDirection="column" marginRight={'25px'}>
+                        <HStack spacing={3}>
+                            <Heading fontSize={'md'}>{publication}</Heading>
+                            <Text fontSize={'sm'} fontWeight={'semibold'} color='gray'>{datePublished}</Text>
+                        </HStack>
+                        <Text fontSize={'md'} marginTop="1">
+                            {title}
+                        </Text>
+                    </Stack>
+                </Suspense>
 
-            <Flex>
-                <Image height={'100px'} width={'150px'}
-                    borderRadius="md"
-                    src={imageUrl}
-                    alt={title}
-                    objectFit="cover"
-                    fallback={<Skeleton />}
-                />
-            </Flex>
-        </Box>
+                <Flex>
+                    <Image height={'100px'} width={'150px'}
+                        borderRadius="md"
+                        src={imageUrl}
+                        alt={title}
+                        objectFit="cover"
+                        fallback={<Skeleton />}
+                    />
+                </Flex>
+            </Box>
         </Link>
     )
 }
@@ -74,18 +74,20 @@ export const NewsList = ({ market }) => {
     }, [market.props.bing_search])
 
     return (
-        <>
-        {newsData.map((news, index) => (
-            <NewsListItem key={index} 
-                publication={news.provider[0].name.replace('on MSN.com', '')}
-                // Get time elapsed since each news published
-                datePublished={`${Math.round(Math.abs((new Date()).valueOf() - (new Date(news.datePublished)).valueOf()) / 36e5)}hr ago`}
-                imageUrl={news.image.thumbnail.contentUrl} 
-                title={news.name}
-                url={news.url}
-            />
-        ))}
-        </>
+        <Stack paddingTop={16}>
+            <Heading fontSize={'2xl'} paddingBottom={4}>In the news</Heading>
+
+            {newsData.map((news, index) => (
+                <NewsListItem key={index} 
+                    publication={news.provider[0].name.replace('on MSN.com', '')}
+                    // Get time elapsed since each news published
+                    datePublished={`${Math.round(Math.abs((new Date()).valueOf() - (new Date(news.datePublished)).valueOf()) / 36e5)}hr ago`}
+                    imageUrl={news.image?.thumbnail.contentUrl} 
+                    title={news.name}
+                    url={news.url}
+                />
+            ))}
+        </Stack>
     )
 }
 

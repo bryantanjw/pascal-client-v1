@@ -79,6 +79,7 @@ function MarketCard({ market }) {
     );
 };
 
+// TODO: add filter and search
 const List = () => {
     const [markets, setMarkets] = useState([]);
 
