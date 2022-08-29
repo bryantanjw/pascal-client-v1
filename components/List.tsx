@@ -6,7 +6,6 @@ import {
     useColorModeValue, 
     Image, Text, Heading,
     Box,
-    useCheckboxGroup
 } from '@chakra-ui/react'
 import styles from '../styles/Home.module.css'
 import { FilterToggle } from './ToggleButtonGroup'
@@ -54,7 +53,10 @@ function EventCard({ event }) {
 
     return (
           <a href={`/events/${event.eventId}`}>
-            <Stack spacing={4} _hover={{borderColor: useColorModeValue('blue.500', 'blue.200')}} p={5} className={styles.card}>
+            <Stack spacing={4} p={5} 
+                borderColor={useColorModeValue('#eaeaea', '#696969')} borderWidth={1}
+                _hover={{borderColor: useColorModeValue('gray.400', 'white')}}
+                className={styles.card}>
                 {/* Set event's category icon */}
                 <Image filter={iconColor} src={`/${event.category}.svg`} alt={event.category} width={25} height={25}/>
                 

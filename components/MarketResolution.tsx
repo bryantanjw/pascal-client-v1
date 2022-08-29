@@ -23,7 +23,7 @@ const MarketResolution = ({ market }) => {
 
     return (
         <Stack spacing={3} direction={'column'}>
-            <Box borderColor={mode('pink.50', 'pink.800')} bg={mode('pink.50', 'pink.800')} mt={3} 
+            <Box borderColor={mode('pink.100', 'pink.900')} bg={mode('pink.50', 'pink.800')} mt={3} 
                 borderWidth={1} rounded={'md'} p={4}
                 >
                 {/* Custom highlight texts */}
@@ -41,7 +41,7 @@ const MarketResolution = ({ market }) => {
                 })}
             </Box>
 
-            <Box borderColor={mode('teal.50', 'teal.800')} bg={mode('teal.50', 'teal.800')} 
+            <Box borderColor={mode('teal.100', 'teal.900')} bg={mode('teal.50', 'teal.800')} 
             borderWidth={1} rounded={'md'} p={4}
             >
             <Highlight query={'the market resolves to No'} styles={{ textColor: mode('teal', 'teal.100'), fontWeight: 'bold' }}>

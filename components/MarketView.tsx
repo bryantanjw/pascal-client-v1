@@ -25,7 +25,7 @@ const ResearchGraph = dynamic(import('./ResearchGraph'), {
     ssr: false
 })
 
-const EventView = ({ market }) => {
+const MarketView = ({ market }) => {
     const router = useRouter()
 
     const dividerColor = mode('gray.300', '#464A54')
@@ -87,7 +87,7 @@ const EventView = ({ market }) => {
                             <TabPanel key={0} px={0}>
                                 <Flex flexDirection={'column'}>
                                     <Stack>
-                                        <MarketProgress />
+                                        <MarketProgress market={market} />
                                         
                                         <Divider borderColor={dividerColor} />
 
@@ -139,4 +139,4 @@ const EventView = ({ market }) => {
     )
 }
 
-export default EventView
+export default MarketView

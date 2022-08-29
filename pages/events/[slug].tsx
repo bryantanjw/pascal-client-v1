@@ -1,6 +1,6 @@
 import type { InferGetStaticPropsType } from 'next';
 import { useRouter } from 'next/router';
-import EventView from 'components/EventView';
+import MarketView from 'components/MarketView';
 import { fetchEventData } from 'lib/api';
 import events from "../api/events.json";
 
@@ -41,6 +41,6 @@ export default function Slug({ event }: InferGetStaticPropsType<typeof getStatic
   return router.isFallback ? (
     <h1>Loading...</h1>
   ) : (
-    <EventView market={event} />
+    <MarketView market={event} />
   )
 }

@@ -1,16 +1,18 @@
 import { Step, Steps, useSteps } from "chakra-ui-steps"
 import { Flex, Heading, Button, Text } from "@chakra-ui/react"
 
-const steps = [
-  { label: "Event opened", description: "" },
-  { label: "Finalizing", description: "Pyth" },
-  { label: "Closed", description: "" },
-]
 
-export const MarketProgress = () => {
+export const MarketProgress = ({ market }) => {
+  const steps = [
+    { label: "Market opened", description: market.props.closing_date },
+    { label: "Finalizing", description: "" },
+    { label: "Closed", description: "" },
+  ]
+
   const { nextStep, prevStep, reset, activeStep } = useSteps({
     initialStep: 0,
   })
+
   return (
     <Flex minWidth={'lg'} py={4}>
       <Steps orientation="horizontal" colorScheme="gray" activeStep={activeStep+1}>
