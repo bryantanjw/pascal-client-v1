@@ -10,7 +10,6 @@ import {
 } from '@chakra-ui/react'
 import styles from '../styles/Home.module.css'
 import { FilterToggle } from './ToggleButtonGroup'
-import { FaPlaystation, FaApple, FaPlaneDeparture } from 'react-icons/fa'
 
 const categories = ['Financials', 'Economics', 'Crypto', 'Climate']
 
@@ -57,7 +56,7 @@ function EventCard({ event }) {
           <a href={`/events/${event.eventId}`}>
             <Stack spacing={4} _hover={{borderColor: useColorModeValue('blue.500', 'blue.200')}} p={5} className={styles.card}>
                 {/* Set event's category icon */}
-                <Image filter={iconColor} src={`/${event.category}.png`} alt={event.category} width={25} height={25}/>
+                <Image filter={iconColor} src={`/${event.category}.svg`} alt={event.category} width={25} height={25}/>
                 
                 <Stack spacing={1}>
                     <Heading size={'md'}>{event.title}</Heading>
@@ -92,9 +91,9 @@ function EventCard({ event }) {
 // TODO: add filter and search
 const List = () => {
     const [events, setEvents] = useState([]);
-    const { value, getCheckboxProps } = useCheckboxGroup({
-        defaultValue: ['2'],
-      })    
+    
+    // FilterToggle state management is be ignored for the time being
+    // const { value, getCheckboxProps } = useCheckboxGroup()
 
     useEffect(() => {
         fetch(`/api/fetchEvents`)
@@ -108,26 +107,15 @@ const List = () => {
     return (
         <Box>
             <HStack py={3}>
-                <FilterToggle
-                    {...getCheckboxProps({ value: 'Financials' })}
-                    iconUrl="./Financials.png"
-                    title="Financials"
-                />
-                <FilterToggle
-                    {...getCheckboxProps({ value: 'Economics' })}
-                    iconUrl="./Economics.png"
-                    title="Economics"
-                />
-                <FilterToggle
-                    {...getCheckboxProps({ value: 'Crypto' })}
-                    iconUrl="./Crypto.png"
-                    title="Crypto"
-                />
-                <FilterToggle
-                    {...getCheckboxProps({ value: 'Cimate' })}
-                    iconUrl="./Climate.png"
-                    title="Climate"
-                />
+                {categories.map((category, index) => (
+                    <Stack key={index}>
+                        <FilterToggle
+                            // {...getCheckboxProps({ value: {category} })}
+                            iconUrl={`./${category}.svg`}
+                            title={category}
+                        />
+                    </Stack>
+                ))}
             </HStack>
 
             <SimpleGrid columns={{ base: 1, md: 3 }} spacing={7}>
