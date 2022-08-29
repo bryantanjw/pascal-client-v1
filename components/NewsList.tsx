@@ -10,7 +10,9 @@ import {
   Divider,
   HStack,
   Link,
-} from '@chakra-ui/react';
+  Tooltip,
+} from '@chakra-ui/react'
+import { InfoOutlineIcon } from '@chakra-ui/icons'
 import { fetchNewsData } from 'lib/api'
 
 interface NewsListItemProp {
@@ -61,6 +63,7 @@ const NewsListItem = (props: NewsListItemProp) => {
     )
 }
 
+// TODO: add loading skeleton when fetching news data
 export const NewsList = ({ market }) => {
     const [newsData, setNewsData] = useState<any[]>([])
     
@@ -75,7 +78,15 @@ export const NewsList = ({ market }) => {
 
     return (
         <Stack paddingTop={16}>
-            <Heading fontSize={'2xl'} paddingBottom={4}>In the news</Heading>
+            <Flex justify={'space-between'}>
+                <Heading fontSize={'2xl'} paddingBottom={2}>In the news</Heading>
+                <Tooltip label='This news feed is served by Bing News.' 
+                    fontSize='sm' padding={3}
+                    hasArrow arrowSize={15} placement='left'
+                    >
+                    <InfoOutlineIcon px={2} w={9} h={9} />
+                </Tooltip>
+            </Flex>
 
             {newsData.map((news, index) => (
                 <NewsListItem key={index} 

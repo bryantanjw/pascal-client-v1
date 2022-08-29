@@ -24,7 +24,7 @@ const ResearchGraph = dynamic(import('./ResearchGraph'), {
     ssr: false
 })
 
-const MarketView = ({ market }) => {
+const EventView = ({ market }) => {
     const router = useRouter()
 
     const dividerColor = useColorModeValue('gray.300', '#464A54')
@@ -117,7 +117,7 @@ const MarketView = ({ market }) => {
 
                             <TabPanel key={1} px={0}>
                                 <Stack marginTop={5}>
-                                    <ResearchGraph />
+                                    <ResearchGraph market={market} />
                                     <NewsList market={market} />
                                 </Stack>
                             </TabPanel>
@@ -135,4 +135,4 @@ const MarketView = ({ market }) => {
     )
 }
 
-export default MarketView
+export default EventView

@@ -1,4 +1,3 @@
-// TODO: Start price/value graph for each market
 //  useSWR for real time and fast data fetching (client-side rendering)
 //  https://swr.vercel.app/
 import React from 'react'
@@ -64,10 +63,12 @@ const CustomLegend = ({ active, payload, label }) => {
   return null
 }
 
-const ResearchGraph = () => {
+const ResearchGraph = ({ market }) => {
+
   return (
-    <Stack>
-      <Heading fontSize={'xl'} color={useColorModeValue('purple.500', 'purple.300')}>Value</Heading>
+    <Stack spacing={5}>
+      {/* TODO: add change in price */}
+      <Heading fontSize={'2xl'} color={useColorModeValue('purple.500', 'purple.300')}>{market.props.current_value}</Heading>
 
       <AreaChart width={586} height={250} data={data} 
         margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
@@ -82,7 +83,7 @@ const ResearchGraph = () => {
         <XAxis dataKey="timestamp" 
           tickCount={5} tickLine={false} axisLine={false} 
           fontSize={'11px'} padding={{ right: 50 }}  />
-        <YAxis  type={'number'} domain={[dataMin => (Math.abs(dataMin / 1.2)), dataMax => (dataMax * 1.2)]}
+        <YAxis  type={'number'} domain={[dataMin => (dataMin), dataMax => (dataMax)]}
           orientation='right' tickCount={6} width={50} tickLine={false} 
           axisLine={false} fontSize={'11px'} />
 

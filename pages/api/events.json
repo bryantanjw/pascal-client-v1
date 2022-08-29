@@ -1,6 +1,6 @@
 [
     {
-        "marketId": 1,
+        "eventId": 1,
         "short": "S&P500",
         "title": "S&P500 daily close price",
         "recurrence": "Daily",
@@ -17,7 +17,7 @@
         "bing_search": "s%26p500"
     },
     {
-        "marketId": 2,
+        "eventId": 2,
         "short": "S&P500",
         "title": "S&P500 weekly close price",
         "recurrence": "Weekly",
@@ -34,7 +34,7 @@
         "bing_search": "s%26p500"
     },
     {
-        "marketId": 3,
+        "eventId": 3,
         "short": "TSLA",
         "title": "TSLA daily close price",
         "recurrence": "Daily",
@@ -51,7 +51,7 @@
         "bing_search": "tesla"
     },
     {
-        "marketId": 4,
+        "eventId": 4,
         "short": "",
         "title": "Inflation",
         "recurrence": "Monthly",
@@ -68,7 +68,7 @@
         "bing_search": "inflation"
     },
     {
-        "marketId": 5,
+        "eventId": 5,
         "short": "NYC temp",
         "title": "NYC temp",
         "recurrence": "Monthly",
@@ -85,7 +85,7 @@
         "bing_search": "nyc temperature"
     },
     {
-        "marketId": 6,
+        "eventId": 6,
         "short": "SOL",
         "title": "SOL weekly close price",
         "recurrence": "Weekly",
@@ -100,5 +100,22 @@
         "oracle_symbol": "Crypto.SOL/USD",
         "current_value": "$36",
         "bing_search": "solana"
+    },
+    {
+        "eventId": 7,
+        "short": "DeGods' floor price",
+        "title": "DeGods weekly close floor price",
+        "recurrence": "Weekly",
+        "category": "Crypto",
+        "probability": [{
+            "yes": 0.5,
+            "no": 0.5
+        }],
+        "liquidity": 0.00,
+        "volume": 0.00,
+        "closing_date": "2022-05-31T09:30:00-0400",
+        "oracle_symbol": "",
+        "current_value": "400 SOL",
+        "bing_search": "degods"
     }
 ]

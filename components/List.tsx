@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Flex, Stack, HStack, SimpleGrid, useColorModeValue, Image, Text, Heading,
+    Flex, Stack, HStack, SimpleGrid, useColorModeValue, Image, Text, Heading, Box, Badge,
 } from '@chakra-ui/react';
 import styles from '../styles/Home.module.css'
-import { SolanaLogo } from './solanaLogoMark';
+import { SolanaLogo } from './solanaLogoMark'
+import { HiBriefcase, HiCursorClick } from 'react-icons/hi'
+import { ButtonRadioGroup } from './ToggleButtonGroup';
 
-function MarketCard({ market }) {
+// TODO: add createevent button/modal for admin
+function EventCard({ event }) {
     // const [timerString, setTimerString] = useState('');
 
     const iconColor = useColorModeValue('invert(0%)', 'invert(100%)')
@@ -16,10 +19,10 @@ function MarketCard({ market }) {
         filter: 'invert(50%)'
     }
 
-    // Get duration until market closing date
+    // Get duration until event closing date
     // useEffect(() => {
     //     const interval = setInterval(() => {
-    //         const delta = (new Date(market.closing_date)).valueOf() - (new Date()).valueOf();
+    //         const delta = (new Date(event.closing_date)).valueOf() - (new Date()).valueOf();
     //         const hours = Math.floor(delta / 3.6e6);
     //         const minutes = Math.floor((delta % 3.6e6) / 6e4);
         
@@ -39,26 +42,26 @@ function MarketCard({ market }) {
     //     }
     // }, []);
 
-    // TODO: Update closing date of market
+    // TODO: Update closing date of event
     
-    const dt = new Date(market.closing_date)
+    const dt = new Date(event.closing_date)
 
     return (
-          <a href={`/trade/${market.marketId}`}>
+          <a href={`/events/${event.eventId}`}>
             <Stack spacing={4} _hover={{borderColor: useColorModeValue('blue.500', 'blue.200')}} p={5} className={styles.card}>
-                {/* Set market's category icon */}
-                <Image filter={iconColor} src={`/${market.category}.png`} alt={market.category} width={25} height={25}/>
+                {/* Set event's category icon */}
+                <Image filter={iconColor} src={`/${event.category}.png`} alt={event.category} width={25} height={25}/>
                 
                 <Stack spacing={1}>
-                    <Heading size={'md'}>{market.title}</Heading>
+                    <Heading size={'md'}>{event.title}</Heading>
                     <h3>on {dt.toLocaleString('default', { month: 'long' })} {dt.getDate()}</h3>
                 </Stack>
                 
                 <Flex fontWeight={'semibold'} justify={'space-between'}>
-                    <Text>&gt; {market.current_value}</Text>
+                    <Text>&gt; {event.current_value}</Text>
                     <Stack direction={'row'} spacing={3}>
-                        <Text color={'pink.500'}>Yes {market.probability[0].yes} ⓒ</Text>
-                        <Text color={'teal.500'}>No {market.probability[0].no} ⓒ</Text>
+                        <Text color={'pink.500'}>Yes {event.probability[0].yes} ⓒ</Text>
+                        <Text color={'teal.500'}>No {event.probability[0].no} ⓒ</Text>
                     </Stack>
                 </Flex>
 
@@ -67,11 +70,11 @@ function MarketCard({ market }) {
                 <Stack pt={2} spacing={4} direction={'row'}>                
                     <HStack sx={statStyle}>
                         <Image filter={iconColor} src={'/liquidity.png'} width={17} height={17} alt="recurrence" />
-                        <h4>{market.liquidity}</h4>
+                        <h4>{event.liquidity}</h4>
                     </HStack>
                     <HStack sx={statStyle}>
                         <Image filter={iconColor} src={'/recurrence.png'} width={17} height={17} alt="recurrence" />
-                        <h4>{market.recurrence}</h4>
+                        <h4>{event.recurrence}</h4>
                     </HStack>
                 </Stack>
             </Stack>
@@ -81,25 +84,45 @@ function MarketCard({ market }) {
 
 // TODO: add filter and search
 const List = () => {
-    const [markets, setMarkets] = useState([]);
+    const [events, setEvents] = useState([]);
 
     useEffect(() => {
-        fetch(`/api/fetchMarkets`)
+        fetch(`/api/fetchEvents`)
         .then(response => response.json())
         .then(data => {
-            setMarkets(data);
-            console.log("Markets", data);
+            setEvents(data);
+            console.log("events", data);
         });
     }, [60]);
 
     return (
-        <SimpleGrid columns={{ base: 1, md: 3 }} spacing={7}>
-            {markets.map((market: any) => (
-                <Stack key={market.marketId}>
-                    <MarketCard market={market} />
-                </Stack>
-            ))}
-        </SimpleGrid>
+        <Box>
+             <Box mb={4}>
+                <ButtonRadioGroup
+                    defaultValue="analytics"
+                    options={[
+                    {
+                        label: 'Economics',
+                        icon: <HiBriefcase />,
+                        value: 'analytics',
+                    },
+                    {
+                        label: 'Crypto',
+                        icon: <HiCursorClick />,
+                        value: 'intranet',
+                    },
+                    ]}
+                />
+            </Box>
+
+            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={7}>
+                {events.map((event: any) => (
+                    <Stack key={event.eventId}>
+                        <EventCard event={event} />
+                    </Stack>
+                ))}
+            </SimpleGrid>
+      </Box>
     );
 };
   

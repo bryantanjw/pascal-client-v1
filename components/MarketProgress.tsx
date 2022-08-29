@@ -2,7 +2,7 @@ import { Step, Steps, useSteps } from "chakra-ui-steps"
 import { Flex, Heading, Button, Text } from "@chakra-ui/react"
 
 const steps = [
-  { label: "Market opened", description: "" },
+  { label: "Event opened", description: "" },
   { label: "Finalizing", description: "Pyth" },
   { label: "Closed", description: "" },
 ]
