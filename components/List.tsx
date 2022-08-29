@@ -1,11 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 import {
-    Flex, Stack, HStack, SimpleGrid, useColorModeValue, Image, Text, Heading, Box, Badge,
-} from '@chakra-ui/react';
+    Flex, 
+    Stack, HStack, 
+    SimpleGrid, 
+    useColorModeValue, 
+    Image, Text, Heading,
+    Box,
+    useCheckboxGroup
+} from '@chakra-ui/react'
 import styles from '../styles/Home.module.css'
-import { SolanaLogo } from './solanaLogoMark'
-import { HiBriefcase, HiCursorClick } from 'react-icons/hi'
-import { ButtonRadioGroup } from './ToggleButtonGroup';
+import { FilterToggle } from './ToggleButtonGroup'
+import { FaPlaystation, FaApple, FaPlaneDeparture } from 'react-icons/fa'
+
+const categories = ['Financials', 'Economics', 'Crypto', 'Climate']
 
 // TODO: add createevent button/modal for admin
 function EventCard({ event }) {
@@ -85,6 +92,9 @@ function EventCard({ event }) {
 // TODO: add filter and search
 const List = () => {
     const [events, setEvents] = useState([]);
+    const { value, getCheckboxProps } = useCheckboxGroup({
+        defaultValue: ['2'],
+      })    
 
     useEffect(() => {
         fetch(`/api/fetchEvents`)
@@ -97,23 +107,28 @@ const List = () => {
 
     return (
         <Box>
-             <Box mb={4}>
-                <ButtonRadioGroup
-                    defaultValue="analytics"
-                    options={[
-                    {
-                        label: 'Economics',
-                        icon: <HiBriefcase />,
-                        value: 'analytics',
-                    },
-                    {
-                        label: 'Crypto',
-                        icon: <HiCursorClick />,
-                        value: 'intranet',
-                    },
-                    ]}
+            <HStack py={3}>
+                <FilterToggle
+                    {...getCheckboxProps({ value: 'Financials' })}
+                    iconUrl="./Financials.png"
+                    title="Financials"
                 />
-            </Box>
+                <FilterToggle
+                    {...getCheckboxProps({ value: 'Economics' })}
+                    iconUrl="./Economics.png"
+                    title="Economics"
+                />
+                <FilterToggle
+                    {...getCheckboxProps({ value: 'Crypto' })}
+                    iconUrl="./Crypto.png"
+                    title="Crypto"
+                />
+                <FilterToggle
+                    {...getCheckboxProps({ value: 'Cimate' })}
+                    iconUrl="./Climate.png"
+                    title="Climate"
+                />
+            </HStack>
 
             <SimpleGrid columns={{ base: 1, md: 3 }} spacing={7}>
                 {events.map((event: any) => (
