@@ -5,8 +5,8 @@ import {
     Text,
     Heading,
     Flex, Link, 
-    Tab, Tabs, TabList, TabPanels, TabPanel, useColorModeValue,
-    Image, Skeleton,
+    Tab, Tabs, TabList, TabPanels, TabPanel, useColorModeValue as mode,
+    Image, Skeleton, VStack, Highlight,
 } from '@chakra-ui/react'
 import { ArrowBackIcon } from '@chakra-ui/icons'
 import { useRouter } from 'next/router'
@@ -18,6 +18,7 @@ import NewsList from './NewsList'
 import { TradeForm } from './TradeForm'
 import Graph from './Graph'
 import WithSubnavigation from './TopBar'
+import MarketResolution from './MarketResolution';
 
 // Dynamically load ResearchGraph component on client side
 const ResearchGraph = dynamic(import('./ResearchGraph'), {
@@ -27,8 +28,8 @@ const ResearchGraph = dynamic(import('./ResearchGraph'), {
 const EventView = ({ market }) => {
     const router = useRouter()
 
-    const dividerColor = useColorModeValue('gray.300', '#464A54')
-    const iconColor = useColorModeValue('invert(0%)', 'invert(100%)')
+    const dividerColor = mode('gray.300', '#464A54')
+    const iconColor = mode('invert(0%)', 'invert(100%)')
     const tabListStyle = {
         fontWeight:' semibold',
         fontSize: 'lg',
@@ -89,12 +90,14 @@ const EventView = ({ market }) => {
                                         <MarketProgress />
                                         
                                         <Divider borderColor={dividerColor} />
+
+                                        {/* Statistics */}
                                         <Stack py={2} direction={'column'}>
                                             <HStack spacing={3}>
                                                 <Image filter={iconColor} alt='Statistics' width={'18px'} src={`/Statistics.png`} />
                                                 <Heading sx={sectionHeadingStyle}>Statistics</Heading>
                                             </HStack>
-                                            <SimpleGrid columns={{ base: 2, md: 3 }}>
+                                            <SimpleGrid columns={{ base: 3, md: 3 }}>
                                                 {stats.map(({ label, value }) => (
                                                 <Stat key={label} label={label} value={value} />
                                                 ))}
@@ -102,14 +105,15 @@ const EventView = ({ market }) => {
                                         </Stack>
 
                                         <Divider borderColor={dividerColor} />
+
+                                        {/* Market Resolution */}
                                         <Stack py={2} direction={'column'}>
                                             <HStack spacing={3}>
                                                 <Image filter={iconColor} alt='Resolution' width={'18px'} src={`/Resolution.png`} />
                                                 <Heading sx={sectionHeadingStyle}>Market Resolution</Heading>
                                             </HStack>
-                                            <HStack cursor={'default'} spacing={8}>
-                                               <Text>This market uses Pyth as the final arbitrator.</Text>
-                                            </HStack>
+                                            
+                                            <MarketResolution market={market} />
                                         </Stack>
                                     </Stack>
                                 </Flex>

@@ -64,7 +64,7 @@ function EventCard({ event }) {
                 </Stack>
                 
                 <Flex fontWeight={'semibold'} justify={'space-between'}>
-                    <Text>&gt; {event.current_value}</Text>
+                    <Text>&gt; {event.target_value}</Text>
                     <Stack direction={'row'} spacing={3}>
                         <Text color={'pink.500'}>Yes {event.probability[0].yes} ⓒ</Text>
                         <Text color={'teal.500'}>No {event.probability[0].no} ⓒ</Text>
@@ -106,7 +106,7 @@ const List = () => {
 
     return (
         <Box>
-            <HStack py={3}>
+            <HStack py={5}>
                 {categories.map((category, index) => (
                     <Stack key={index}>
                         <FilterToggle
@@ -118,7 +118,7 @@ const List = () => {
                 ))}
             </HStack>
 
-            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={7}>
+            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={5}>
                 {events.map((event: any) => (
                     <Stack key={event.eventId}>
                         <EventCard event={event} />

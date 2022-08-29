@@ -68,7 +68,7 @@ const ResearchGraph = ({ market }) => {
   return (
     <Stack spacing={5}>
       {/* TODO: add change in price */}
-      <Heading fontSize={'2xl'} color={useColorModeValue('purple.500', 'purple.300')}>{market.props.current_value}</Heading>
+      <Heading fontSize={'2xl'} color={useColorModeValue('purple.500', 'purple.300')}>{market.props.target_value}</Heading>
 
       <AreaChart width={586} height={250} data={data} 
         margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>

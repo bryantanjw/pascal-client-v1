@@ -15,10 +15,10 @@ export const Stat = (props: Props) => {
       {...boxProps}
     >
       <Stack>
-        <Text fontSize="sm" color="muted">
+        <Text fontSize="md" color="muted">
           {label}
         </Text>
-        <Heading fontWeight={'semibold'} size={useBreakpointValue({ base: 'sm', md: 'sm' })}>{value}</Heading>
+        <Heading fontWeight={'semibold'} size={useBreakpointValue({ base: 'sm', md: 'md' })}>{value}</Heading>
       </Stack>
     </Box>
   )

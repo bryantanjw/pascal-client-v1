@@ -23,17 +23,18 @@ interface NewsListItemProp {
     url: string,
 }
 
+// TODO: fallback Skeleton is not working
 const NewsListItem = (props: NewsListItemProp) => {
     const { publication, title, imageUrl, datePublished, url } = props
 
     return (
-        <Link href={url} isExternal>
+        <Link href={url} isExternal _hover={{ textDecoration: 'none' }}>
             <Box borderWidth={'1px'} p={5} rounded={'lg'}
                 marginTop={1}
                 display="flex"
                 justifyContent="space-between"
                 transition={'border-color 0.3s linear'}
-                _hover={{ borderColor:'gray.400'}}>
+                _hover={{ borderColor:'gray.400' }}>
                 <Suspense fallback={<Skeleton />}>
                     <Stack
                         display="flex"

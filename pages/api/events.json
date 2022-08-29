@@ -13,8 +13,11 @@
         "volume": 0.00,
         "closing_date": "2022-06-10T09:30:00-0400",
         "oracle_symbol": "Equity.US.SPY/USD",
-        "current_value": "$412.09",
-        "bing_search": "s%26p500"
+        "target_value": "$412.09",
+        "bing_search": "s%26p500",
+        "resolution_source": "Pyth",
+        "resolution_url": "https://pyth.network/",
+        "resolution_comment": "If the end-of-day S&P 500 index value"
     },
     {
         "eventId": 2,
@@ -30,8 +33,10 @@
         "volume": 0.00,
         "closing_date": "2022-05-31T09:30:00-0400",
         "oracle_symbol": "Equity.US.SPY/USD",
-        "current_value": "$420.69",
-        "bing_search": "s%26p500"
+        "target_value": "$420.69",
+        "bing_search": "s%26p500",
+        "resolution_source": "Pyth",
+        "resolution_comment": "If the end-of-day S&P 500 index value"
     },
     {
         "eventId": 3,
@@ -47,8 +52,11 @@
         "volume": 0.00,
         "closing_date": "2022-05-31T09:30:00-0400",
         "oracle_symbol": "Equity.US.TSLA/USD",
-        "current_value": "$870.99",
-        "bing_search": "tesla"
+        "target_value": "$870.99",
+        "bing_search": "tesla",
+        "resolution_source": "Pyth",
+        "resolution_url": "https://pyth.network/",
+        "resolution_comment": "If the end-of-day TSLA value"
     },
     {
         "eventId": 4,
@@ -64,13 +72,16 @@
         "volume": 0.00,
         "closing_date": "2022-05-31T09:30:00-0400",
         "oracle_symbol": "",
-        "current_value": "0.4%",
-        "bing_search": "inflation"
+        "target_value": "0.4%",
+        "bing_search": "inflation",
+        "resolution_source": "Switchboard",
+        "resolution_url": "https://switchboard.xyz/",
+        "resolution_comment": "If the Consumer Price Index (CPI) as reported by the BLS's monthly single-digit Consumer Price Index Summary Report increases by more than"
     },
     {
         "eventId": 5,
         "short": "NYC temp",
-        "title": "NYC temp",
+        "title": "NYC high temp",
         "recurrence": "Monthly",
         "category": "Climate",
         "probability": [{
@@ -81,8 +92,11 @@
         "volume": 0.00,
         "closing_date": "2022-05-31T09:30:00-0400",
         "oracle_symbol": "",
-        "current_value": "27°C",
-        "bing_search": "nyc temperature"
+        "target_value": "27°C",
+        "bing_search": "nyc temperature",
+        "resolution_source": "Switchboard",
+        "resolution_url": "https://switchboard.xyz/",
+        "resolution_comment": "If the highest temperature recorded in Central Park, New York"
     },
     {
         "eventId": 6,
@@ -98,8 +112,11 @@
         "volume": 0.00,
         "closing_date": "2022-05-31T09:30:00-0400",
         "oracle_symbol": "Crypto.SOL/USD",
-        "current_value": "$36",
-        "bing_search": "solana"
+        "target_value": "$36",
+        "bing_search": "solana",
+        "resolution_source": "Pyth",
+        "resolution_url": "https://pyth.network/",
+        "resolution_comment":"If the end-of-day SOL value for"
     },
     {
         "eventId": 7,
@@ -115,7 +132,10 @@
         "volume": 0.00,
         "closing_date": "2022-05-31T09:30:00-0400",
         "oracle_symbol": "",
-        "current_value": "400 SOL",
-        "bing_search": "degods"
+        "target_value": "400 SOL",
+        "bing_search": "degods",
+        "resolution_source": "MagicEden",
+        "resolution_url": "https://magiceden.io/",
+        "resolution_comment": "If the end-of-day DeGods NFT floor price"
     }
 ]
