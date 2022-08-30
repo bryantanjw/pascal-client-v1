@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import {
   Button, ButtonGroup,
-  Flex, Box,
+  Flex,
   Heading,
   NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
   Stack,
@@ -13,7 +13,6 @@ import { ArrowBackIcon } from '@chakra-ui/icons'
 import Confetti from 'react-dom-confetti'
 import { Step, Steps, useSteps } from "chakra-ui-steps"
 import * as React from 'react'
-
 
 type TradeFormItemProps = {
   label: string
@@ -34,7 +33,6 @@ const TradeFormItem = (props: TradeFormItemProps) => {
   )
 }
 
-
 export const TradeForm = ({ market }) => {
   const steps = [{ label: "" }, { label: "" }]
   const { nextStep, prevStep, reset, activeStep } = useSteps({
@@ -43,6 +41,7 @@ export const TradeForm = ({ market }) => {
   const [numberInput, setNumberInput] = useState<any>(1)
   const [isLoading, setIsLoading] = useState<Boolean | undefined>(false)
  
+  // Styling config
   const confettiConfig = {
     angle: 90,
     spread: 360,
@@ -56,12 +55,33 @@ export const TradeForm = ({ market }) => {
     perspective: "500px",
     colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"]
   }
+  const headerTextStyle = {
+    textColor: useColorModeValue('gray.500', 'gray.300'),
+    fontWeight: 'bold',
+    fontSize: 'sm',
+  }
+  const colorSchemeYes = {
+    textColor: useColorModeValue('#D53F8C', '#FBB6CE'),
+    fontSize: '5xl',
+    fontWeight: 'semibold'
+  }
+  const colorSchemeNo = {
+    textColor: useColorModeValue('#2C7C7C', '#81E6D9'),
+    fontSize: '5xl',
+    fontWeight: 'semibold'
+  }
   
+  // TODO: state management for place order (below is temporary)
   const placeOrder = async () => {
     setIsLoading(true);
     nextStep();
     setTimeout(() => setIsLoading(false), 500);
   }
+
+  const dt = new Date(market.props.closing_date)
+  const day = dt.getDate().toString()
+  const month = dt.toLocaleString('default', { month: 'long' })
+  const year = dt.getFullYear().toString()
   
   return (
     <>
@@ -75,13 +95,29 @@ export const TradeForm = ({ market }) => {
       {
         // TODO: set dynamic value of underlying
         activeStep === 0 && (
-          <Stack spacing={8}>
-            <Heading size={'md'}>Will {market.props.short} close above #value on {new Date(market.props.closing_date).toISOString().split('T')[0]}</Heading>
-            
-            <ButtonGroup onClick={nextStep} justifyContent={'center'} size="lg" spacing='3'>
-              <Button p={7} width={'full'} colorScheme='pink'>Yes, it will</Button>
-              <Button p={7} width={'full'} colorScheme='teal'>No, it won&apos;t</Button>
-            </ButtonGroup>
+          <Stack spacing={6}>
+
+            <Flex direction={'column'}>
+              <Text sx={headerTextStyle}>
+                Market says
+              </Text>
+              {(market.props.probability[0].yes >= market.props.probability[0].yes)
+                ? <Heading sx={colorSchemeYes}>Yes {market.props.probability[0].yes * 100}%</Heading>
+                : <Heading sx={colorSchemeNo}>No {market.props.probability[0].no * 100}%</Heading>
+              }
+            </Flex>
+
+            <Stack spacing={8}>
+              <Heading width={'90%'} fontSize={'2xl'} fontWeight={'semibold'}>
+                Will {market.props.short} close above {market.props.target_value} on {month} {day}, {year}
+              </Heading>
+              
+              <ButtonGroup onClick={nextStep} justifyContent={'center'} size="lg" spacing='3'>
+                <Button p={7} width={'full'} colorScheme='pink'>Yes, it will</Button>
+                <Button p={7} width={'full'} colorScheme='teal'>No, it won&apos;t</Button>
+              </ButtonGroup>
+            </Stack>
+
           </Stack>
         )
         
@@ -110,11 +146,16 @@ export const TradeForm = ({ market }) => {
               </Flex>
             </Stack>
 
-            <ButtonGroup colorScheme={'purple'} justifyContent={'center'} size="lg" fontSize="md" spacing='3'>
-              <Button variant={'outline'} onClick={prevStep}><ArrowBackIcon /></Button>
-              <Button onClick={placeOrder} width={'80%'}>
+            <ButtonGroup justifyContent={'center'} size="lg" fontSize="md" spacing='3'>
+              <Button borderColor={'#353535'} variant={'outline'} onClick={prevStep}><ArrowBackIcon color={'#353535'} /></Button>
+              <Button textColor={'white'} bg={'#353535'} width={'80%'}
+                _hover={{
+                  bg: 'black'
+                }}
+                onClick={placeOrder}
+              >
               {isLoading ? (
-                  <CircularProgress isIndeterminate size="24px" color="purple.500" />
+                  <CircularProgress isIndeterminate size="24px" color="white.500" />
                   ) : (
                       'Place order'
               )}</Button>

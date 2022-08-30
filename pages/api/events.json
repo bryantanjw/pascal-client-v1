@@ -42,7 +42,7 @@
     },
     {
         "eventId": 3,
-        "short": "TSLA",
+        "short": "TSLA stock value",
         "title": "TSLA daily close price",
         "recurrence": "Daily",
         "category": "Financials",
