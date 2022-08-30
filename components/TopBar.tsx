@@ -74,7 +74,12 @@ export default function WithSubnavigation() {
                     direction={'row'}
                     spacing={6}>
                     <ColorModeSwitcher />
-                    <WalletMultiButton className={useColorModeValue(styles.wallet_adapter_button_trigger_light_mode, styles.wallet_adapter_button_trigger_dark_mode)} />
+                    <WalletMultiButton 
+                        className={useColorModeValue(
+                            styles.wallet_adapter_button_trigger_light_mode, 
+                            styles.wallet_adapter_button_trigger_dark_mode
+                        )} 
+                    />
                     {/* <Button
                         display={{ base: 'none', md: 'inline-flex' }}
                         fontSize={'sm'}

@@ -6,13 +6,16 @@ import {
     useColorModeValue, 
     Image, Text, Heading,
     Box,
+    useCheckboxGroup
 } from '@chakra-ui/react'
 import styles from '../styles/Home.module.css'
-import { FilterToggle } from './ToggleButtonGroup'
+import { FilterToggle } from './FilterToggle'
+import { MotionValue } from 'framer-motion'
 
 const categories = ['Financials', 'Economics', 'Crypto', 'Climate']
 
-// TODO: add createevent button/modal for admin
+// TODO: 1. add createevent button/modal for admin
+// 2. dynamic closing date of event
 function EventCard({ event }) {
     // const [timerString, setTimerString] = useState('');
 
@@ -23,37 +26,12 @@ function EventCard({ event }) {
         direction: 'row',
         filter: 'invert(50%)'
     }
-
-    // Get duration until event closing date
-    // useEffect(() => {
-    //     const interval = setInterval(() => {
-    //         const delta = (new Date(event.closing_date)).valueOf() - (new Date()).valueOf();
-    //         const hours = Math.floor(delta / 3.6e6);
-    //         const minutes = Math.floor((delta % 3.6e6) / 6e4);
-        
-    //         setTimerString(`${hours}h ${minutes}m remaining`);
-        
-    //         if (delta < 0) {
-    //           console.log('Clearing interval...');
-    //           clearInterval(interval);
-    //         }
-    //     }, 1000);
-
-    //     // Anytime the component unmounts clean up the interval
-    //     return () => {
-    //         if (interval) {
-    //             clearInterval(interval);
-    //         }
-    //     }
-    // }, []);
-
-    // TODO: Update closing date of event
     
     const dt = new Date(event.closing_date)
 
     return (
           <a href={`/events/${event.eventId}`}>
-            <Stack spacing={4} p={5} 
+            <Stack spacing={4} p={5}
                 borderColor={useColorModeValue('#eaeaea', '#696969')} borderWidth={1}
                 _hover={{borderColor: useColorModeValue('gray.400', 'white')}}
                 className={styles.card}>
@@ -95,8 +73,8 @@ const List = () => {
     const [events, setEvents] = useState([]);
     
     // FilterToggle state management is be ignored for the time being
-    // const { value, getCheckboxProps } = useCheckboxGroup()
-
+    const { value, getCheckboxProps } = useCheckboxGroup({ defaultValue: [] })
+    console.log('Selection', value)
     useEffect(() => {
         fetch(`/api/fetchEvents`)
         .then(response => response.json())
@@ -106,13 +84,15 @@ const List = () => {
         });
     }, [60]);
 
+    const filteredEvents = events.filter(({ category }) => value.includes(category))
+
     return (
         <Box>
             <HStack py={5}>
                 {categories.map((category, index) => (
                     <Stack key={index}>
                         <FilterToggle
-                            // {...getCheckboxProps({ value: {category} })}
+                            {...getCheckboxProps({ value: category })}
                             iconUrl={`./${category}.svg`}
                             title={category}
                         />
@@ -121,11 +101,18 @@ const List = () => {
             </HStack>
 
             <SimpleGrid columns={{ base: 1, md: 3 }} spacing={5}>
-                {events.map((event: any) => (
-                    <Stack key={event.eventId}>
-                        <EventCard event={event} />
-                    </Stack>
-                ))}
+                {filteredEvents.length != 0 ?
+                    (filteredEvents.map((event: any) => (
+                        <Stack key={event.eventId}>
+                            <EventCard event={event} />
+                        </Stack>
+                    )))
+                    : (events.map((event: any) => (
+                        <Stack key={event.eventId}>
+                            <EventCard event={event} />
+                        </Stack>
+                    )))
+                }
             </SimpleGrid>
       </Box>
     );
