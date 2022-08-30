@@ -10,7 +10,6 @@ import {
 } from '@chakra-ui/react'
 import styles from '../styles/Home.module.css'
 import { FilterToggle } from './FilterToggle'
-import { MotionValue } from 'framer-motion'
 
 const categories = ['Financials', 'Economics', 'Crypto', 'Climate']
 
