@@ -23,7 +23,8 @@ interface NewsListItemProp {
     url: string,
 }
 
-// TODO: fallback Skeleton is not working
+// TODO: 1. fallback Skeleton is not working
+// 2. Implement other news source as API calls from Rapid is limited
 const NewsListItem = (props: NewsListItemProp) => {
     const { publication, title, imageUrl, datePublished, url } = props
 
@@ -70,11 +71,12 @@ export const NewsList = ({ market }) => {
     
     useEffect(() => {
         // Fetch news data from Bing Search API
-        fetchNewsData(market.props.bing_search)
-        .then(data => {
-            setNewsData(data.value)
-            console.log("News Data", data.value)
-        })
+        // Uncomment block below when production ready
+        // fetchNewsData(market.props.bing_search)
+        // .then(data => {
+        //     setNewsData(data.value)
+        //     console.log("News Data", data.value)
+        // })
     }, [market.props.bing_search])
 
     return (

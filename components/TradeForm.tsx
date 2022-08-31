@@ -93,7 +93,6 @@ export const TradeForm = ({ market }) => {
         ))}
       </Steps>
       {
-        // TODO: set dynamic value of underlying
         activeStep === 0 && (
           <Stack spacing={6}>
 

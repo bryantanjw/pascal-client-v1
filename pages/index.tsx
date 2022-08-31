@@ -3,7 +3,6 @@ import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import WithSubnavigation from 'components/TopBar'
 import List from 'components/List'
-import Footer from 'components/Footer'
 import { Box, Stack, Heading, Text } from '@chakra-ui/react'
 
 const Home: NextPage = () => {

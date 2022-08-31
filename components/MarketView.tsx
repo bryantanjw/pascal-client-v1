@@ -18,7 +18,9 @@ import NewsList from './NewsList'
 import { TradeForm } from './TradeForm'
 import Graph from './Graph'
 import WithSubnavigation from './TopBar'
-import MarketResolution from './MarketResolution';
+import MarketResolution from './MarketResolution'
+import { useWallet } from '@solana/wallet-adapter-react'
+import TokenSwapForm from './TokenSwap';
 
 // Dynamically load ResearchGraph component on client side
 const ResearchGraph = dynamic(import('./ResearchGraph'), {
@@ -28,6 +30,10 @@ const ResearchGraph = dynamic(import('./ResearchGraph'), {
 const MarketView = ({ market }) => {
     const router = useRouter()
 
+    const { publicKey } = useWallet()
+    const isOwner = ( publicKey ? publicKey.toString() === process.env.NEXT_PUBLIC_OWNER_PUBLIC_KEY : false )
+
+    // Style config
     const dividerColor = mode('gray.300', '#464A54')
     const iconColor = mode('invert(0%)', 'invert(100%)')
     const tabListStyle = {
@@ -60,7 +66,7 @@ const MarketView = ({ market }) => {
                 align={{ lg: 'flex-start' }}
                 spacing={5}
             >
-                <Stack spacing={{ base: '8', md: '10' }} flex="2">
+                <Stack spacing={{ base: '8', md: '10' }} minW={'sm'} flex="2">
                     <Heading fontSize="2xl" fontWeight="extrabold">
                         <Link onClick={() => router.back()}><ArrowBackIcon mr={4}/>{market.props.title}</Link>
                     </Heading>
@@ -131,6 +137,9 @@ const MarketView = ({ market }) => {
 
                 <Flex position={'static'} direction="column" align="center" flex="1">
                     <TradeForm market={market} />
+                    {isOwner && (
+                    <TokenSwapForm />
+                )}
                 </Flex>
 
             </Stack>

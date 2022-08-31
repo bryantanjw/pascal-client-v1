@@ -13,13 +13,11 @@ import { FilterToggle } from './FilterToggle'
 
 const categories = ['Financials', 'Economics', 'Crypto', 'Climate']
 
-// TODO: 1. add createevent button/modal for admin
+// TODO: 1. add createEvent button/modal for admin
 // 2. dynamic closing date of event
 function EventCard({ event }) {
-    // const [timerString, setTimerString] = useState('');
-
+    // Style config
     const iconColor = useColorModeValue('invert(0%)', 'invert(100%)')
-
     const statStyle = {
         align: 'center',
         direction: 'row',
