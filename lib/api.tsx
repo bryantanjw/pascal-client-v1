@@ -19,15 +19,10 @@ export const fetchEventData = async (slug) => {
 }
 
 export const fetchNewsData = async (search) => {
-    // API documentation: https://rapidapi.com/microsoft-azure-org-microsoft-cognitive-services/api/bing-news-search1
+    // API documentation: https://newsapi.org/
     try {
-        const response = await fetch(`https://bing-news-search1.p.rapidapi.com/news/search?q=${search}&count=4&freshness=Day&textFormat=Raw&safeSearch=Off`, {
+        const response = await fetch(`https://newsapi.org/v2/everything?q=${search}&sortBy=popularity&language=en&pageSize=4&apiKey=1e4b99671d69404a88ce79cb92988e09`, {
             method: 'GET',
-            headers: {
-                'X-BingApis-SDK': 'true',
-                'X-RapidAPI-Key': '1553c27563msheb6fe212a68fa57p1ed6b5jsn460d11bee52a',
-                'X-RapidAPI-Host': 'bing-news-search1.p.rapidapi.com'
-            }
         })
         console.log(response)
         const newsData = await response.json()

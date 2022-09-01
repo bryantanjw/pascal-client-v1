@@ -36,11 +36,24 @@ const NewsListItem = (props: NewsListItemProp) => {
                 justifyContent="space-between"
                 transition={'border-color 0.3s linear'}
                 _hover={{ borderColor:'gray.400' }}>
+                
+                <Flex>
+                    <Image height={'100px'} width={'150px'}
+                        borderRadius="md"
+                        src={imageUrl}
+                        alt={title}
+                        objectFit="cover"
+                        fallback={<Skeleton />}
+                    />
+                </Flex>
+                
                 <Suspense fallback={<Skeleton />}>
                     <Stack
                         display="flex"
                         flex="1"
-                        flexDirection="column" marginRight={'25px'}>
+                        flexDirection="column"
+                        px={2}
+                        ml={4}>
                         <HStack spacing={3}>
                             <Heading fontSize={'md'}>{publication}</Heading>
                             <Text fontSize={'sm'} fontWeight={'semibold'} color='gray'>{datePublished}</Text>
@@ -51,15 +64,6 @@ const NewsListItem = (props: NewsListItemProp) => {
                     </Stack>
                 </Suspense>
 
-                <Flex>
-                    <Image height={'100px'} width={'150px'}
-                        borderRadius="md"
-                        src={imageUrl}
-                        alt={title}
-                        objectFit="cover"
-                        fallback={<Skeleton />}
-                    />
-                </Flex>
             </Box>
         </Link>
     )
@@ -70,20 +74,34 @@ export const NewsList = ({ market }) => {
     const [newsData, setNewsData] = useState<any[]>([])
     
     useEffect(() => {
-        // Fetch news data from Bing Search API
-        // Uncomment block below when production ready
-        // fetchNewsData(market.props.bing_search)
-        // .then(data => {
-        //     setNewsData(data.value)
-        //     console.log("News Data", data.value)
-        // })
-    }, [market.props.bing_search])
+        // Fetch news data from GNews API
+        fetchNewsData(market.props.search_term)
+        .then(data => {
+            setNewsData(data.articles)
+            console.log("News Data", data.articles)
+        })
+    }, [market.props.search_term])
+
+    function timeElapsed(time) {
+        const now = new Date()
+        const publishedTime = new Date(time)
+        const timeDiff = (now.getTime() - publishedTime.getTime()) / (60*60) // minutes
+        console.log("timeDiff", timeDiff)
+
+        if (timeDiff >= 60 && timeDiff <= 1440) {
+            return `${Math.floor(timeDiff / 1000)} hours`
+        } else if (timeDiff >= 1440) {
+            return `${Math.floor(timeDiff / (1000 * 24))} days`
+        }
+
+        return `${Math.floor(timeDiff)} minutes`
+    }
 
     return (
         <Stack paddingTop={16}>
             <Flex justify={'space-between'}>
                 <Heading fontSize={'2xl'} paddingBottom={2}>In the news</Heading>
-                <Tooltip label='This news feed is served by Bing News.' 
+                <Tooltip label='This news feed is served by Google News.' 
                     fontSize='sm' padding={3}
                     hasArrow arrowSize={15} placement='left'
                     >
@@ -91,16 +109,19 @@ export const NewsList = ({ market }) => {
                 </Tooltip>
             </Flex>
 
-            {newsData.map((news, index) => (
-                <NewsListItem key={index} 
-                    publication={news.provider[0].name.replace('on MSN.com', '')}
-                    // Get time elapsed since each news published
-                    datePublished={`${Math.round(Math.abs((new Date()).valueOf() - (new Date(news.datePublished)).valueOf()) / 36e5)}hr ago`}
-                    imageUrl={news.image?.thumbnail.contentUrl} 
-                    title={news.name}
-                    url={news.url}
-                />
-            ))}
+            {newsData.length > 0 
+                ? (newsData.map((news, index) => (
+                    <NewsListItem key={index} 
+                        publication={news.source.name}
+                        // Get time elapsed since each news published
+                        datePublished={`${timeElapsed(news.publishedAt)} ago`}
+                        imageUrl={news?.urlToImage} 
+                        title={news.title}
+                        url={news.url}
+                    />
+                ))) 
+                : (<Text fontSize={'md'}>No news article found 😕</Text>)
+            }
         </Stack>
     )
 }
