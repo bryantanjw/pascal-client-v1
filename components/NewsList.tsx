@@ -10,9 +10,13 @@ import {
   HStack,
   Link,
   Tooltip,
+  Button,
+  ButtonGroup,
 } from '@chakra-ui/react'
 import { InfoOutlineIcon } from '@chakra-ui/icons'
-import { fetchNewsData } from 'lib/api'
+import useSWR from 'swr'
+
+const fetcher = (url) => fetch(url).then((res) => res.json());
 
 interface NewsListItemProp {
     publication: string,
@@ -70,32 +74,46 @@ const NewsListItem = (props: NewsListItemProp) => {
     )
 }
 
-// TODO: add loading skeleton when fetching news data
-export const NewsList = ({ market }) => {
-    const [newsData, setNewsData] = useState<any[]>([])
-    
-    useEffect(() => {
-        // Fetch news data from GNews API
-        fetchNewsData(market.props.search_term, market.props.market_opened_date)
-        .then(data => {
-            setNewsData(data.articles)
-            console.log("News Data", data.articles)
-        })
-    }, [market.props.search_term, market.props.market_opened_date])
+function timeElapsed(time) {
+    const now = new Date()
+    const publishedTime = new Date(time)
+    const timeDiff = (now.getTime() - publishedTime.getTime()) / (1000 * 60) // minutes
 
-    function timeElapsed(time) {
-        const now = new Date()
-        const publishedTime = new Date(time)
-        const timeDiff = (now.getTime() - publishedTime.getTime()) / (1000 * 60) // minutes
-
-        if (timeDiff >= 60 && timeDiff < 1440) {
-            return `${Math.floor(timeDiff / 60)} hours`
-        } else if (timeDiff >= 1440) {
-            return `${Math.floor(timeDiff / (60 * 24))} days`
-        }
-
-        return `${Math.floor(timeDiff)} minutes`
+    if (timeDiff >= 60 && timeDiff < 1440) {
+        return `${Math.floor(timeDiff / 60)} hours`
+    } else if (timeDiff >= 1440) {
+        return `${Math.floor(timeDiff / (60 * 24))} days`
     }
+
+    return `${Math.floor(timeDiff)} minutes`
+}
+
+export const Page = ({ search, index }) => {
+    const { data, error } = useSWR(
+        `https://newsapi.org/v2/everything?q=${search}&sortBy=popularity&page=${index}&language=en&pageSize=4&apiKey=${process.env.NEXT_PUBLIC_NEWS_API_KEY}`,
+        fetcher
+    )
+    console.log("Is news data ready?", !!data)
+    if (error) return "An error has occured loading the news feed"
+    if (!data) return <Suspense fallback={<SkeletonText width={'full'}/>} />
+    console.log(data)
+    if (data) return ( 
+        data.articles.map((news, index) => (
+            <NewsListItem key={index} 
+                publication={news.source.name}
+                // Get time elapsed since each news published
+                datePublished={`${timeElapsed(news.publishedAt)} ago`}
+                imageUrl={news?.urlToImage} 
+                title={news.title}
+                url={news.url}
+            />
+        ))
+    )
+}
+
+// TODO: add loading skeleton when fetching news data
+export const NewsList = ({ market }) => {    
+    const [pageIndex, setPageIndex] = useState(1)
 
     return (
         <Stack paddingTop={16}>
@@ -109,19 +127,14 @@ export const NewsList = ({ market }) => {
                 </Tooltip>
             </Flex>
 
-            {newsData.length > 0 
-                ? (newsData.map((news, index) => (
-                    <NewsListItem key={index} 
-                        publication={news.source.name}
-                        // Get time elapsed since each news published
-                        datePublished={`${timeElapsed(news.publishedAt)} ago`}
-                        imageUrl={news?.urlToImage} 
-                        title={news.title}
-                        url={news.url}
-                    />
-                ))) 
-                : (<Text fontSize={'md'}>No news article found 😕</Text>)
-            }
+            <Page index={pageIndex} search={market.props.search_term} />
+            <div style={{ display: 'none' }}><Page index={pageIndex + 1} search={market.props.search_term}/></div>
+            <ButtonGroup justifyContent={'end'} flexDirection={'row'} py={3}>
+                {pageIndex == 1 
+                    ? <Button onClick={() => setPageIndex(pageIndex + 1)}>Next</Button>
+                    : <Button onClick={() => setPageIndex(pageIndex - 1)}>Prev</Button>
+                }
+            </ButtonGroup>
         </Stack>
     )
 }
