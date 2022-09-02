@@ -2,11 +2,10 @@ import React from 'react';
 import {
     Box, Divider,
     Stack, HStack, SimpleGrid,
-    Text,
     Heading,
     Flex, Link, 
     Tab, Tabs, TabList, TabPanels, TabPanel, useColorModeValue as mode,
-    Image, Skeleton, VStack, Highlight,
+    Image
 } from '@chakra-ui/react'
 import { ArrowBackIcon } from '@chakra-ui/icons'
 import { useRouter } from 'next/router'

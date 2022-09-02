@@ -18,10 +18,10 @@ export const fetchEventData = async (slug) => {
     }
 }
 
-export const fetchNewsData = async (search) => {
+export const fetchNewsData = async (search, date) => {
     // API documentation: https://newsapi.org/
     try {
-        const response = await fetch(`https://newsapi.org/v2/everything?q=${search}&sortBy=popularity&language=en&pageSize=4&apiKey=1e4b99671d69404a88ce79cb92988e09`, {
+        const response = await fetch(`https://newsapi.org/v2/everything?q=${search}&sortBy=publishedAt&language=en&pageSize=4&apiKey=${process.env.NEXT_PUBLIC_NEWS_API_KEY}`, {
             method: 'GET',
         })
         console.log(response)

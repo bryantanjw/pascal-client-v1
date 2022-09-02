@@ -6,8 +6,7 @@ import {
   Text,
   Stack,
   Flex,
-  Skeleton,
-  Divider,
+  Skeleton, SkeletonText,
   HStack,
   Link,
   Tooltip,
@@ -23,8 +22,7 @@ interface NewsListItemProp {
     url: string,
 }
 
-// TODO: 1. fallback Skeleton is not working
-// 2. Implement other news source as API calls from Rapid is limited
+// TODO: change client-side to server-side and add caching
 const NewsListItem = (props: NewsListItemProp) => {
     const { publication, title, imageUrl, datePublished, url } = props
 
@@ -37,32 +35,35 @@ const NewsListItem = (props: NewsListItemProp) => {
                 transition={'border-color 0.3s linear'}
                 _hover={{ borderColor:'gray.400' }}>
                 
-                <Flex>
-                    <Image height={'100px'} width={'150px'}
-                        borderRadius="md"
-                        src={imageUrl}
-                        alt={title}
-                        objectFit="cover"
-                        fallback={<Skeleton />}
-                    />
-                </Flex>
+                    <Flex>
+                        <Image height={'100px'} width={'150px'}
+                            borderRadius="md"
+                            src={imageUrl}
+                            alt={title}
+                            objectFit="cover"
+                            fallback={<Skeleton width={'150px'} height={'100px'} />}
+                        />
+                    </Flex>
                 
-                <Suspense fallback={<Skeleton />}>
                     <Stack
                         display="flex"
                         flex="1"
                         flexDirection="column"
                         px={2}
                         ml={4}>
-                        <HStack spacing={3}>
-                            <Heading fontSize={'md'}>{publication}</Heading>
-                            <Text fontSize={'sm'} fontWeight={'semibold'} color='gray'>{datePublished}</Text>
-                        </HStack>
-                        <Text fontSize={'md'} marginTop="1">
-                            {title}
-                        </Text>
+                        <Suspense fallback={<SkeletonText width={'full'}/>}>
+                            <HStack spacing={3}>
+                                <Heading fontSize={'md'}>{publication}</Heading>
+                                <Text fontSize={'sm'} fontWeight={'semibold'} color='gray'>{datePublished}</Text>
+                            </HStack>
+                        </Suspense>
+
+                        <Suspense fallback={<SkeletonText width={'full'} />}>
+                            <Text fontSize={'md'} marginTop="1">
+                                {title}
+                            </Text>
+                        </Suspense>
                     </Stack>
-                </Suspense>
 
             </Box>
         </Link>
@@ -75,23 +76,22 @@ export const NewsList = ({ market }) => {
     
     useEffect(() => {
         // Fetch news data from GNews API
-        fetchNewsData(market.props.search_term)
+        fetchNewsData(market.props.search_term, market.props.market_opened_date)
         .then(data => {
             setNewsData(data.articles)
             console.log("News Data", data.articles)
         })
-    }, [market.props.search_term])
+    }, [market.props.search_term, market.props.market_opened_date])
 
     function timeElapsed(time) {
         const now = new Date()
         const publishedTime = new Date(time)
-        const timeDiff = (now.getTime() - publishedTime.getTime()) / (60*60) // minutes
-        console.log("timeDiff", timeDiff)
+        const timeDiff = (now.getTime() - publishedTime.getTime()) / (1000 * 60) // minutes
 
-        if (timeDiff >= 60 && timeDiff <= 1440) {
-            return `${Math.floor(timeDiff / 1000)} hours`
+        if (timeDiff >= 60 && timeDiff < 1440) {
+            return `${Math.floor(timeDiff / 60)} hours`
         } else if (timeDiff >= 1440) {
-            return `${Math.floor(timeDiff / (1000 * 24))} days`
+            return `${Math.floor(timeDiff / (60 * 24))} days`
         }
 
         return `${Math.floor(timeDiff)} minutes`
