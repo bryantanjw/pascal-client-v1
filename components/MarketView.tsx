@@ -12,7 +12,6 @@ import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
 import MarketProgress from './MarketProgress'
 import { Stat } from './Stat'
-import styles from '../styles/Home.module.css'
 import NewsList from './NewsList'
 import { TradeForm } from './TradeForm'
 import Graph from './Graph'
@@ -20,6 +19,7 @@ import WithSubnavigation from './TopBar'
 import MarketResolution from './MarketResolution'
 import { useWallet } from '@solana/wallet-adapter-react'
 import TokenSwapForm from './TokenSwap';
+import styles from '../styles/Home.module.css'
 
 // Dynamically load ResearchGraph component on client side
 const ResearchGraph = dynamic(import('./ResearchGraph'), {
@@ -82,7 +82,7 @@ const MarketView = ({ market }) => {
                         </TabPanels>
                     </Tabs>
 
-                    <Tabs colorScheme={'black'}>
+                    <Tabs isLazy colorScheme={'black'}> {/* isLazy defers rendering until tab is selected */}
                         <TabList>
                             <Tab sx={tabListStyle} mr={7}>About</Tab>
                             <Tab sx={tabListStyle}>Research and News</Tab>

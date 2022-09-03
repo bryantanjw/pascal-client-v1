@@ -19,7 +19,7 @@ export async function getStaticPaths() {
   const allEvents= getEvents();
   return {
     // Get the paths to pre-render based on products at build time
-    paths: allEvents.map((event: any) => `/events/${event.eventId}`),
+    paths: allEvents.map((event: any) => `/trade/${event.eventId}`),
     fallback: false,
   }
 }

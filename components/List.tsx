@@ -27,7 +27,7 @@ function EventCard({ event }) {
     const dt = new Date(event.closing_date)
 
     return (
-          <a href={`/events/${event.eventId}`}>
+          <a href={`/trade/${event.eventId}`}>
             <Stack spacing={4} p={5}
                 borderColor={useColorModeValue('#eaeaea', '#696969')} borderWidth={1}
                 _hover={{borderColor: useColorModeValue('gray.400', 'white')}}

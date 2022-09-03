@@ -12,11 +12,19 @@ import {
   Tooltip,
   Button,
   ButtonGroup,
+  useColorModeValue as mode,
 } from '@chakra-ui/react'
 import { InfoOutlineIcon } from '@chakra-ui/icons'
 import useSWR from 'swr'
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
+
+// Style config
+const paginationStyle = {
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    py: 2,
+}
 
 interface NewsListItemProp {
     publication: string,
@@ -111,7 +119,7 @@ export const Page = ({ search, index }) => {
     )
 }
 
-// TODO: add loading skeleton when fetching news data
+// TODO: add page numbers for pagination buttons
 export const NewsList = ({ market }) => {    
     const [pageIndex, setPageIndex] = useState(1)
 
@@ -129,12 +137,30 @@ export const NewsList = ({ market }) => {
 
             <Page index={pageIndex} search={market.props.search_term} />
             <div style={{ display: 'none' }}><Page index={pageIndex + 1} search={market.props.search_term}/></div>
-            <ButtonGroup justifyContent={'end'} flexDirection={'row'} py={3}>
-                {pageIndex == 1 
-                    ? <Button onClick={() => setPageIndex(pageIndex + 1)}>Next</Button>
-                    : <Button onClick={() => setPageIndex(pageIndex - 1)}>Prev</Button>
-                }
-            </ButtonGroup>
+
+            {pageIndex == 1 ?
+                (
+                    <Flex sx={paginationStyle}>
+                        <Text color={mode('gray.600', 'gray.400')} fontSize="sm">
+                            Showing 1 to 4 of 8 results
+                        </Text>
+                        <Button onClick={() => setPageIndex(pageIndex + 1)} fontSize={'sm'} fontWeight={'normal'}>
+                            Next
+                        </Button>
+                    </Flex>
+                )
+                : 
+                (
+                    <Flex sx={paginationStyle}>
+                        <Text color={mode('gray.600', 'gray.400')} fontSize="sm">
+                            Showing 5 to 8 of 8 results
+                        </Text>
+                        <Button onClick={() => setPageIndex(pageIndex - 1)} fontSize={'sm'} fontWeight={'normal'}>
+                            Prev
+                        </Button>
+                    </Flex>
+                )
+            }
         </Stack>
     )
 }
