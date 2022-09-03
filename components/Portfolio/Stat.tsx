@@ -5,6 +5,7 @@ import {
     Badge,
     Text,
     HStack,
+    Stack,
     Heading,
 } from '@chakra-ui/react'
 import * as React from 'react'
@@ -39,6 +40,7 @@ export const Indicator = (props: IndicatorProps) => {
             colorScheme={types[type].colorScheme}
             rounded="base"
             px="1"
+            width={{ 'sm': '80%', 'md':'auto'}}
         >
             <Box
                 aria-hidden
@@ -50,7 +52,7 @@ export const Indicator = (props: IndicatorProps) => {
             <Box srOnly>
                 Value is {type} by {value}
             </Box>
-            <Text fontSize="sm" color="white" marginStart="1">
+            <Text fontSize={{ "sm": "xs", "md": "sm" }} color="white" marginStart="1">
                 {value}
             </Text>
         </Badge>
@@ -91,25 +93,25 @@ export function StatCard(props: StatCardProps) {
             borderRadius={"md"}
             color={mode('gray.800', 'white')}
         >
-            <Text fontWeight="sm" fontSize="sm">
+            <Text fontWeight="sm" fontSize={{ "sm": "xs", "md": "sm" }}>
                 {label}
             </Text>
 
-            <HStack spacing="4" mt="2">
-                <Heading as="h4" fontSize="2xl" lineHeight="1" letterSpacing="tight">
+            <Stack spacing="4" mt="2" direction={{ 'sm': 'column', 'md': 'row'}}>
+                <Heading as="h4" fontSize={{ "sm": "lg", "md": "2xl" }} lineHeight="1" letterSpacing="tight">
                     {value}
                 </Heading>
                 <Indicator type={isNegative ? 'down' : 'up'} value={changeText} />
-            </HStack>
+            </Stack>
         </Box>
     )
 }  
 
 export const Stats = () => {
   return (
-    <Box as="section" bg={mode('gray.50', 'gray.800')} mb="10">
-      <Box maxW="3xl">
-        <SimpleGrid columns={{ base: 1, md: 3 }} spacing="6">
+    <Box as="section" mb="10">
+      <Box maxW={{ 'sm': '2xl', 'md': '2xl'}}>
+        <SimpleGrid columns={3} spacing="6">
           {data.map((stat, idx) => (
             <StatCard key={idx} data={stat} />
           ))}

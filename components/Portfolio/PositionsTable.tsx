@@ -2,17 +2,56 @@ import {
     FormControl, FormLabel,
     HStack,
     Input, InputGroup, InputLeftElement,
-    Select,
     Stack,
     Table, Thead, Tr, Th, Tbody, Td,
     useColorModeValue as mode,
     Box,
     Img,
     Badge,
+    VStack,
 } from '@chakra-ui/react'
-import * as React from 'react'
+import {
+    Select as CustomSelect,
+    ChakraStylesConfig,
+    chakraComponents,
+} from "chakra-react-select"
+import React, { useState } from 'react'
 import { BsSearch } from 'react-icons/bs'
 import data from "../../pages/api/users.json"
+
+const customSelectMenuItem = {
+    Option: ({ children, ...props }) => (
+        <chakraComponents.Option {...props}>
+            <Badge my={1} colorScheme={props.data.colorScheme}>
+                {children}
+            </Badge>
+        </chakraComponents.Option>
+    ),
+  };
+  
+
+const statusOptions = [
+    {
+        label: 'ALL STATUS',
+        value: 'all-status',
+        colorScheme: 'white'
+    },
+    {
+        label: 'ACTIVE',
+        value: 'active',
+        colorScheme: 'green',
+    },
+    {
+        label: 'RESOLVING',
+        value: 'resolving',
+        colorScheme: 'orange'
+    },
+    {
+        label: 'CLOSED',
+        value: 'closed',
+        colorScheme: 'gray'
+    }
+]
 
 interface MarketPositionProps {
     data: {
@@ -42,14 +81,14 @@ export const Position = (props: MarketPositionProps) => {
     )
 }
 
-
-const badgeEnum: Record<string, string> = {
+export const badgeEnum: Record<string, string> = {
+    "all status": 'none',
     active: 'green',
     resolving: 'orange',
     closed: 'gray',
-  }
+}
   
-  export const columns = [
+export const columns = [
     {
         Header: 'Market',
         accessor: 'user',
@@ -118,25 +157,34 @@ export const TableContent = () => {
 }
 
 export const TableActions = () => {
+
     return (
-      <Stack spacing="4" direction={{ base: 'column', md: 'row' }} justify="space-between">
+      <Stack spacing="4">
         <HStack>
-            <FormControl minW={{ md: '280px' }} id="search">
-                <InputGroup size="sm">
-                <FormLabel srOnly>Filter by market</FormLabel>
-                <InputLeftElement pointerEvents="none" color="gray.400">
-                    <BsSearch />
-                </InputLeftElement>
-                <Input rounded="base" type="search" placeholder="Filter by market" />
+            <FormControl w={'300px'} id="search">
+                <InputGroup size="sm" variant={'filled'}>
+                    <FormLabel srOnly>Filter by market</FormLabel>
+                    <InputLeftElement pointerEvents="none" color="gray.400">
+                        <BsSearch />
+                    </InputLeftElement>
+                    <Input rounded="base" type="search" placeholder="Filter by market" />
                 </InputGroup>
             </FormControl>
-            
-            <Select w={{ base: '200px', md: '160px' }} rounded="base" size="sm" bg={mode('gray.100', 'gray.700')}>
-                <option>All status</option>
-                <option>Active</option>
-                <option>Resolution</option>
-                <option>Closed</option>
-            </Select>
+
+            <FormControl minW={'230px'} w={'auto'}>
+                <CustomSelect
+                    variant="outline"
+                    isMulti
+                    useBasicStyles
+                    size='sm'
+                    name="status"
+                    options={statusOptions}
+                    placeholder="Status"
+                    closeMenuOnSelect={false}
+                    components={customSelectMenuItem}
+                />
+            </FormControl>
+
         </HStack>
       </Stack>
     )

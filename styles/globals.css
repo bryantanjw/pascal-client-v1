@@ -14,3 +14,7 @@ a {
 * {
   box-sizing: border-box;
 }
+
+/* *:focus {
+  box-shadow: none !important;
+} */
