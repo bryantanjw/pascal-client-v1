@@ -78,38 +78,38 @@ const data: StatCardProps['data'][] = [
 ]
   
 export function StatCard(props: StatCardProps) {
-    const { label, value, change } = props.data
-  
-    const isNegative = change < 0
-    const changeText = `${change * 100}%`
-  
-    return (
-        <Box
-            px="6"
-            py="4"
-            bg={mode('white', 'gray.700')}
-            boxShadow={'md'}
-            borderWidth={1}
-            borderRadius={"md"}
-            color={mode('gray.800', 'white')}
-        >
-            <Text fontWeight="sm" fontSize={{ "sm": "xs", "md": "sm" }}>
-                {label}
-            </Text>
+  const { label, value, change } = props.data
 
-            <Stack spacing="4" mt="2" direction={{ 'sm': 'column', 'md': 'row'}}>
-                <Heading as="h4" fontSize={{ "sm": "lg", "md": "2xl" }} lineHeight="1" letterSpacing="tight">
-                    {value}
-                </Heading>
-                <Indicator type={isNegative ? 'down' : 'up'} value={changeText} />
-            </Stack>
-        </Box>
-    )
+  const isNegative = change < 0
+  const changeText = `${change * 100}%`
+
+  return (
+    <Box
+        px="6"
+        py="4"
+        bg={mode('white', 'gray.700')}
+        boxShadow={'md'}
+        borderWidth={1}
+        borderRadius={"md"}
+        color={mode('gray.800', 'white')}
+    >
+        <Text fontWeight="sm" fontSize={{ "sm": "xs", "md": "sm" }}>
+            {label}
+        </Text>
+
+        <Stack spacing="4" mt="2" direction={{ 'sm': 'column', 'md': 'row'}}>
+            <Heading as="h4" fontSize={{ "sm": "lg", "md": "2xl" }} lineHeight="1" letterSpacing="tight">
+                {value}
+            </Heading>
+            <Indicator type={isNegative ? 'down' : 'up'} value={changeText} />
+        </Stack>
+    </Box>
+  )
 }  
 
 export const Stats = () => {
   return (
-    <Box as="section" mb="10">
+    <Box as="section">
       <Box maxW={{ 'sm': '2xl', 'md': '2xl'}}>
         <SimpleGrid columns={3} spacing="6">
           {data.map((stat, idx) => (

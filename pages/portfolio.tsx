@@ -1,11 +1,13 @@
 import { 
     Box, 
-    Heading, 
+    Heading,
+    Tabs, TabList, TabPanels, Tab, TabPanel,
 } from "@chakra-ui/react"
 import WithSubnavigation from "components/TopBar"
 import { Stats } from "components/Portfolio/Stat"
 import { PositionsTable } from "../components/Portfolio/PositionsTable"
 import styles from '../styles/Home.module.css'
+import { ReturnsGraph } from "components/Portfolio/ReturnsGraph"
 
 function Portfolio({ data }) {
 
@@ -23,7 +25,19 @@ function Portfolio({ data }) {
                     </Heading>
                     
                     <Stats />
-                    <PositionsTable />
+
+                    <Tabs py={10} variant={'enclosed'} colorScheme={'black'}>
+                        <TabList>
+                            <Tab>Returns</Tab>
+                            <Tab>Activity</Tab>
+                        </TabList>
+                        <TabPanels>
+                            <TabPanel px={0}>
+                                <ReturnsGraph />
+                                <PositionsTable />
+                            </TabPanel>
+                        </TabPanels>
+                    </Tabs>
                 </Box>
             </Box>
             </Box>

@@ -8,17 +8,17 @@ import {
     Box,
     Img,
     Badge,
-    VStack,
 } from '@chakra-ui/react'
 import {
     Select as CustomSelect,
-    ChakraStylesConfig,
     chakraComponents,
 } from "chakra-react-select"
 import React, { useState } from 'react'
 import { BsSearch } from 'react-icons/bs'
 import data from "../../pages/api/users.json"
 
+// Custom style config for CustomSelect
+// Documentation: https://github.com/csandman/chakra-react-select
 const customSelectMenuItem = {
     Option: ({ children, ...props }) => (
         <chakraComponents.Option {...props}>
@@ -31,11 +31,6 @@ const customSelectMenuItem = {
   
 
 const statusOptions = [
-    {
-        label: 'ALL STATUS',
-        value: 'all-status',
-        colorScheme: 'white'
-    },
     {
         label: 'ACTIVE',
         value: 'active',
@@ -82,7 +77,6 @@ export const Position = (props: MarketPositionProps) => {
 }
 
 export const badgeEnum: Record<string, string> = {
-    "all status": 'none',
     active: 'green',
     resolving: 'orange',
     closed: 'gray',
@@ -159,7 +153,7 @@ export const TableContent = () => {
 export const TableActions = () => {
 
     return (
-      <Stack spacing="4">
+      <Stack spacing="4" mt={8}>
         <HStack>
             <FormControl w={'300px'} id="search">
                 <InputGroup size="sm" variant={'filled'}>
@@ -171,7 +165,7 @@ export const TableActions = () => {
                 </InputGroup>
             </FormControl>
 
-            <FormControl minW={'230px'} w={'auto'}>
+            <FormControl minW={'150px'} w={'auto'}>
                 <CustomSelect
                     variant="outline"
                     isMulti
