@@ -2,6 +2,7 @@ import type { InferGetStaticPropsType } from 'next';
 import { useRouter } from 'next/router';
 import MarketView from 'components/MarketView';
 import { fetchEventData } from 'lib/api';
+import { baseURL } from 'config';
 import events from "../api/events.json";
 
 function getEvents() {
@@ -27,7 +28,12 @@ export async function getStaticPaths() {
 // This also gets called at build time
 export async function getStaticProps({ params }) {
   // params contains the eventId
-  const event = await fetchEventData(params.slug);
+  const res = await fetch(`${baseURL}/api/fetchEventData/${params.slug}`, {
+    method: "POST",
+    body: params.slug
+  })
+  const event = res.json()
+  
   if (!event) {
     throw new Error(`Event with ID '${params!.eventId}' not found`);
   }
