@@ -1,6 +1,6 @@
 [
     {
-        "eventId": 1,
+        "eventId": "1",
         "short": "S&P500",
         "title": "S&P500 daily close price",
         "recurrence": "Daily",
@@ -21,7 +21,7 @@
         "resolution_comment": "If the end-of-day S&P 500 index value"
     },
     {
-        "eventId": 2,
+        "eventId": "2",
         "short": "S&P500",
         "title": "S&P500 weekly close price",
         "recurrence": "Weekly",
@@ -41,7 +41,7 @@
         "resolution_comment": "If the end-of-day S&P 500 index value"
     },
     {
-        "eventId": 3,
+        "eventId": "3",
         "short": "TSLA stock value",
         "title": "TSLA daily close price",
         "recurrence": "Daily",
@@ -62,7 +62,7 @@
         "resolution_comment": "If the end-of-day TSLA value"
     },
     {
-        "eventId": 4,
+        "eventId": "4",
         "short": "",
         "title": "Inflation",
         "recurrence": "Monthly",
@@ -83,7 +83,7 @@
         "resolution_comment": "If the Consumer Price Index (CPI) as reported by the BLS's monthly single-digit Consumer Price Index Summary Report increases by more than"
     },
     {
-        "eventId": 5,
+        "eventId": "5",
         "short": "NYC temp",
         "title": "NYC high temp",
         "recurrence": "Monthly",
@@ -104,7 +104,7 @@
         "resolution_comment": "If the highest temperature recorded in Central Park, New York"
     },
     {
-        "eventId": 6,
+        "eventId": "6",
         "short": "SOL",
         "title": "SOL weekly close price",
         "recurrence": "Weekly",
@@ -125,7 +125,7 @@
         "resolution_comment":"If the end-of-day SOL value for"
     },
     {
-        "eventId": 7,
+        "eventId": "7",
         "short": "DeGods' floor price",
         "title": "DeGods NFT weekly close floor price",
         "recurrence": "Weekly",

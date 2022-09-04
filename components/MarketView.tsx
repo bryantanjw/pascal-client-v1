@@ -44,9 +44,9 @@ const MarketView = ({ market }) => {
         fontWeight: 'bold'
     }
     const stats = [
-        { label: 'Liquidity', value: market.props.liquidity },
-        { label: 'Total Volume', value: market.props.volume },
-        { label: 'Closing Date - UTC', value: new Date(market.props.closing_date).toISOString().split('T')[0] },
+        { label: 'Liquidity', value: market.liquidity },
+        { label: 'Total Volume', value: market.volume },
+        { label: 'Closing Date - UTC', value: new Date(market.closing_date).toISOString().split('T')[0] },
     ]
 
     return (
@@ -66,7 +66,7 @@ const MarketView = ({ market }) => {
             >
                 <Stack spacing={{ base: '8', md: '10' }} minW={'sm'} flex="2">
                     <Heading fontSize="2xl" fontWeight="extrabold">
-                        <Link onClick={() => router.back()}><ArrowBackIcon mr={4}/>{market.props.title}</Link>
+                        <Link onClick={() => router.back()}><ArrowBackIcon mr={4}/>{market.title}</Link>
                     </Heading>
 
                     <Tabs colorScheme={'black'}>

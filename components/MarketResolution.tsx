@@ -9,16 +9,16 @@ import {
 } from '@chakra-ui/react'
 
 const MarketResolution = ({ market }) => {
-    const dt = new Date(market.props.closing_date)
+    const dt = new Date(market.closing_date)
     const day = dt.getDate().toString()
     const month = dt.toLocaleString('default', { month: 'long' })
     const year = dt.getFullYear().toString()
 
     const chunks = useHighlight({
-        text: `${market.props.resolution_comment} is above ${market.props.target_value} 
+        text: `${market.resolution_comment} is above ${market.target_value} 
             on ${month} ${day}, ${year}, 
             then the market resolves to Yes.`,
-        query: ['then the market resolves to Yes', market.props.target_value, day, month, year]
+        query: ['then the market resolves to Yes', market.target_value, day, month, year]
     })
 
     return (
@@ -51,8 +51,8 @@ const MarketResolution = ({ market }) => {
             
             <Text fontSize={'sm'} textColor={mode('gray.600', 'gray.300')} py={1}>
                 This market uses&nbsp;
-                <Link href={market.props.resolution_url} isExternal textDecoration={'underline'}> 
-                    {market.props.resolution_source} 
+                <Link href={market.resolution_url} isExternal textDecoration={'underline'}> 
+                    {market.resolution_source} 
                 </Link> 
                 &nbsp;as the final arbitrator.
             </Text>

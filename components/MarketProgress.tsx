@@ -10,10 +10,10 @@ function addDays(date, days) {
 }
 
 export const MarketProgress = ({ market }) => {
-  const dt = new Date(market.props.closing_date)
+  const dt = new Date(market.closing_date)
   const market_opened_time = dt.toUTCString()
 
-  const recurrence = market.props.recurrence
+  const recurrence = market.recurrence
   const renderFinalizingTime = () => {
     if (recurrence == "Daily") {
         return addDays(dt, 1).toUTCString()

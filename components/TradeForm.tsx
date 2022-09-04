@@ -78,7 +78,7 @@ export const TradeForm = ({ market }) => {
     setTimeout(() => setIsLoading(false), 500);
   }
 
-  const dt = new Date(market.props.closing_date)
+  const dt = new Date(market.closing_date)
   const day = dt.getDate().toString()
   const month = dt.toLocaleString('default', { month: 'long' })
   const year = dt.getFullYear().toString()
@@ -100,15 +100,15 @@ export const TradeForm = ({ market }) => {
               <Text sx={headerTextStyle}>
                 Market says
               </Text>
-              {(market.props.probability[0].yes >= market.props.probability[0].yes)
-                ? <Heading sx={colorSchemeYes}>Yes {market.props.probability[0].yes * 100}%</Heading>
-                : <Heading sx={colorSchemeNo}>No {market.props.probability[0].no * 100}%</Heading>
+              {(market.probability[0].yes >= market.probability[0].yes)
+                ? <Heading sx={colorSchemeYes}>Yes {market.probability[0].yes * 100}%</Heading>
+                : <Heading sx={colorSchemeNo}>No {market.probability[0].no * 100}%</Heading>
               }
             </Flex>
 
             <Stack spacing={8}>
               <Heading width={'90%'} fontSize={'2xl'} fontWeight={'semibold'}>
-                Will {market.props.short} close above {market.props.target_value} on {month} {day}, {year}
+                Will {market.short} close above {market.target_value} on {month} {day}, {year}
               </Heading>
               
               <ButtonGroup onClick={nextStep} justifyContent={'center'} size="lg" spacing='3'>
@@ -125,7 +125,7 @@ export const TradeForm = ({ market }) => {
             <Heading size="md">Order Summary</Heading>
 
             <Stack spacing="4">
-              <TradeFormItem label="Price per contract" value={`${market.props.probability[0].yes}`} />
+              <TradeFormItem label="Price per contract" value={`${market.probability[0].yes}`} />
               <TradeFormItem label="No. of contracts">
                 <NumberInput onChange={(e) => setNumberInput(e)} size={'sm'} width={'35%'} defaultValue={numberInput} min={1} max={100}>
                   <NumberInputField fontSize={'sm'} textAlign={'end'} />
@@ -140,7 +140,7 @@ export const TradeForm = ({ market }) => {
                   Total
                 </Text>
                 <Text fontSize="xl" fontWeight="extrabold">
-                  {numberInput * market.props.probability[0].yes} SOL
+                  {numberInput * market.probability[0].yes} SOL
                 </Text>
               </Flex>
             </Stack>

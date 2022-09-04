@@ -16,7 +16,7 @@ function getEvents() {
 }
 
 // This gets called at build time
-export async function getStaticPaths() {
+export const getStaticPaths = async () => {
   const allEvents= getEvents();
   return {
     // Get the paths to pre-render based on products at build time
@@ -25,27 +25,20 @@ export async function getStaticPaths() {
   }
 }
 
-// This also gets called at build time
-export async function getStaticProps({ params }) {
-  const response = await fetch(`${baseURL}/api/fetchEventData`, {
-      method: "POST",
-      headers: {
-          "Content-Type": "application/json",
-      },
-      body: JSON.stringify(params),
-  });
-  console.log(response)
-  const event = await response.json()
-  
-  return { props: { event } }
+// should not call an internal API route inside getStaticProps
+export const getStaticProps = async ({ params: { slug } }) => {
+  const event = events.filter((item) => item.eventId === slug)[0]
+  console.log("Event", event)
+  const { ...props } = event
+  return { props: { props } }
 }
 
-export default function Slug({ event }: InferGetStaticPropsType<typeof getStaticProps>) {
+export default function Slug({ props }: InferGetStaticPropsType<typeof getStaticProps>) {
   const router = useRouter()
   
   return router.isFallback ? (
     <h1>Loading...</h1>
   ) : (
-    <MarketView market={event} />
+    <MarketView market={props} />
   )
 }

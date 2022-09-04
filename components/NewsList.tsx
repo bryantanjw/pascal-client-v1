@@ -135,8 +135,8 @@ export const NewsList = ({ market }) => {
                 </Tooltip>
             </Flex>
 
-            <Page index={pageIndex} search={market.props.search_term} />
-            <div style={{ display: 'none' }}><Page index={pageIndex + 1} search={market.props.search_term}/></div>
+            <Page index={pageIndex} search={market.search_term} />
+            <div style={{ display: 'none' }}><Page index={pageIndex + 1} search={market.search_term}/></div>
 
             {pageIndex == 1 ?
                 (

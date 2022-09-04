@@ -26,21 +26,21 @@ export default function Graph({ market }) {
                         <Td>
                             <HStack mb={2} justifyContent={'space-between'}>
                                 <Text>Yes</Text>
-                                <Text>{market.props.probability[0].yes * 100}%</Text>
+                                <Text>{market.probability[0].yes * 100}%</Text>
                             </HStack>
-                            <Progress value={market.props.probability[0].yes * 100} size={'sm'} rounded={'xl'} colorScheme={'pink'}/>
+                            <Progress value={market.probability[0].yes * 100} size={'sm'} rounded={'xl'} colorScheme={'pink'}/>
                         </Td>
-                        <Td isNumeric>{market.props.probability[0].yes}</Td>
+                        <Td isNumeric>{market.probability[0].yes}</Td>
                     </Tr>
                     <Tr>
                         <Td>
                             <HStack mb={2} justifyContent={'space-between'}>
                                 <Text>No</Text>
-                                <Text>{market.props.probability[0].no * 100}%</Text>
+                                <Text>{market.probability[0].no * 100}%</Text>
                             </HStack>
-                            <Progress value={market.props.probability[0].no * 100} size={'sm'} rounded={'xl'} colorScheme={'teal'} />
+                            <Progress value={market.probability[0].no * 100} size={'sm'} rounded={'xl'} colorScheme={'teal'} />
                         </Td>
-                        <Td isNumeric>{market.props.probability[0].no}</Td>
+                        <Td isNumeric>{market.probability[0].no}</Td>
                     </Tr>
                 </Tbody>
             </Table>
