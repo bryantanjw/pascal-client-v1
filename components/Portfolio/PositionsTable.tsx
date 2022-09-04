@@ -8,7 +8,6 @@ import {
     Box,
     Img,
     Badge,
-    Button,
 } from '@chakra-ui/react'
 import {
     Select as CustomSelect,
@@ -22,13 +21,14 @@ import data from "../../pages/api/users.json"
 // Documentation: https://github.com/csandman/chakra-react-select
 const customSelectMenuItem = {
     Option: ({ children, ...props }) => (
+        // @ts-ignore
         <chakraComponents.Option {...props}>
             <Badge my={1} colorScheme={props.data.colorScheme}>
                 {children}
             </Badge>
         </chakraComponents.Option>
     ),
-  };
+};
   
 
 const statusOptions = [
