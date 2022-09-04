@@ -26,7 +26,7 @@ export async function getStaticPaths() {
 
 // This also gets called at build time
 export async function getStaticProps({ params }) {
-  // params contains the product questionId
+  // params contains the eventId
   const event = await fetchEventData(params.slug);
   if (!event) {
     throw new Error(`Event with ID '${params!.eventId}' not found`);
