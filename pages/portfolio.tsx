@@ -8,6 +8,7 @@ import { Stats } from "components/Portfolio/Stat"
 import { PositionsTable } from "../components/Portfolio/PositionsTable"
 import styles from '../styles/Home.module.css'
 import { ReturnsGraph } from "components/Portfolio/ReturnsGraph"
+import ActivityTable from "components/Portfolio/ActivityTable"
 
 function Portfolio({ data }) {
 
@@ -32,9 +33,13 @@ function Portfolio({ data }) {
                             <Tab>Activity</Tab>
                         </TabList>
                         <TabPanels>
-                            <TabPanel px={0}>
+                            <TabPanel key={1} px={0}>
                                 <ReturnsGraph />
                                 <PositionsTable />
+                            </TabPanel>
+
+                            <TabPanel key={2} px={0}>
+                                <ActivityTable />
                             </TabPanel>
                         </TabPanels>
                     </Tabs>

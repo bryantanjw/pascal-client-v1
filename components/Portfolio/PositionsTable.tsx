@@ -8,12 +8,13 @@ import {
     Box,
     Img,
     Badge,
+    Button,
 } from '@chakra-ui/react'
 import {
     Select as CustomSelect,
     chakraComponents,
 } from "chakra-react-select"
-import React, { useState } from 'react'
+import React from 'react'
 import { BsSearch } from 'react-icons/bs'
 import data from "../../pages/api/users.json"
 
@@ -69,7 +70,7 @@ export const Position = (props: MarketPositionProps) => {
             </Box>
             <Box>
                 <Box fontSize="sm" fontWeight="medium">
-                {name}
+                    {name}
                 </Box>
             </Box>
         </Stack>
@@ -117,7 +118,7 @@ export const columns = [
     },
 ]  
 
-export const TableContent = () => {
+export const TableContent = ({ columns, data }) => {
     return (
         <Box my={4} rounded={'lg'} borderWidth="1px">
             <Table fontSize="sm">
@@ -188,7 +189,7 @@ export const PositionsTable = () => {
     return (
         <>
             <TableActions />
-            <TableContent />
+            <TableContent columns={columns} data={data} />
         </>
     )
 }

@@ -8,7 +8,7 @@
         "image":
           "Financials.svg",
         "name": "S&P500 daily close",
-        "email": "codyfisher@example.com"
+        "action": "Deposit"
       }
     },
     {
@@ -20,7 +20,7 @@
         "image":
           "Financials.svg",
         "name": "TSLA weekly close",
-        "email": "jane@example.com"
+        "action": "Deposit"
       }
     },
     {
@@ -32,7 +32,7 @@
         "image":
           "Crypto.svg",
         "name": "DeGods NFT floor price",
-        "email": "jenyzx@exmaple.com"
+        "action": "Withdraw"
       }
     },
     {
@@ -44,7 +44,7 @@
         "image":
           "Economics.svg",
         "name": "Inflation",
-        "email": "melyb@example.com"
+        "action": "Deposit"
       }
     }
   ]

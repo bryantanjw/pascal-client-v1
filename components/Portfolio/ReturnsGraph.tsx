@@ -38,6 +38,22 @@ export const options = {
       display: false,
     },
   },
+  scales: {
+    x: {
+      grid: {
+        display: false,
+      }
+    },
+    y: {
+      grid: {
+        color: 'rgb(226,232,240,0.4)',
+        drawBorder: false,
+      },
+      ticks: {
+        maxTicksLimit: 5
+      },
+    },
+  }
 };
 
 const labels = ['Oct 17', 'Oct 24', 'Oct 31', 'Nov 07', 'Nov 14', 'Nov 21', 'Nov 28'];
