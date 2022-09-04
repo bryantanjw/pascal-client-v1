@@ -79,7 +79,7 @@ const List = () => {
             setEvents(data);
             console.log("events", data);
         });
-    }, [60]);
+    }, []);
 
     const filteredEvents = events.filter(({ category }) => value.includes(category))
 
