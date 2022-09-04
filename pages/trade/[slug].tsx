@@ -27,17 +27,16 @@ export async function getStaticPaths() {
 
 // This also gets called at build time
 export async function getStaticProps({ params }) {
-  // params contains the eventId
-  const res = await fetch(`${baseURL}/api/fetchEventData/${params.slug}`, {
-    method: "POST",
-    body: params.slug
-  })
-  const event = res.json()
+  const response = await fetch(`${baseURL}/api/fetchEventData`, {
+      method: "POST",
+      headers: {
+          "Content-Type": "application/json",
+      },
+      body: JSON.stringify(params),
+  });
+  console.log(response)
+  const event = await response.json()
   
-  if (!event) {
-    throw new Error(`Event with ID '${params!.eventId}' not found`);
-  }
-  // Past product data to the page via props
   return { props: { event } }
 }
 
