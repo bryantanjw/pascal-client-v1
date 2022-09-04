@@ -13,4 +13,4 @@ yarn dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-Demo with mock UI is live on [pascal.fi](www.pascal.fi)
+Frontend with mock data is live on [pascal.fi](www.pascal.fi)
