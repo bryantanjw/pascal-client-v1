@@ -2,7 +2,7 @@ import { baseURL } from '../config'
 
 export const fetchEventData = async (slug) => {
     try {
-        const response = await fetch(`${process.env.VERCEL_URL}/api/fetchEventData`, {
+        const response = await fetch(`https://${process.env.VERCEL_URL}/api/fetchEventData`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
