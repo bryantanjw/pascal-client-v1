@@ -1,8 +1,6 @@
 import type { InferGetStaticPropsType } from 'next';
 import { useRouter } from 'next/router';
 import MarketView from 'components/MarketView';
-import { fetchEventData } from 'lib/api';
-import { baseURL } from 'config';
 import events from "../api/events.json";
 
 function getEvents() {
