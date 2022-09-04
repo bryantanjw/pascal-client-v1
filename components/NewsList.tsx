@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Suspense } from 'react';
+import React, { useState, Suspense } from 'react';
 import {
   Box,
   Heading,
@@ -97,26 +97,31 @@ function timeElapsed(time) {
 }
 
 export const Page = ({ search, index }) => {
-    const { data, error } = useSWR(
-        `https://newsapi.org/v2/everything?q=${search}&sortBy=popularity&page=${index}&language=en&pageSize=4&apiKey=${process.env.NEXT_PUBLIC_NEWS_API_KEY}`,
-        fetcher
-    )
-    console.log("Is news data ready?", !!data)
-    if (error) return "An error has occured loading the news feed"
-    if (!data) return <Suspense fallback={<SkeletonText width={'full'}/>} />
-    console.log(data)
-    if (data) return ( 
-        data.articles.map((news, index) => (
-            <NewsListItem key={index} 
-                publication={news.source.name}
-                // Get time elapsed since each news published
-                datePublished={`${timeElapsed(news.publishedAt)} ago`}
-                imageUrl={news?.urlToImage} 
-                title={news.title}
-                url={news.url}
-            />
-        ))
-    )
+    try{
+        const { data, error } = useSWR(
+            `https://newsapi.org/v2/everything?q=${search}&sortBy=popularity&page=${index}&language=en&pageSize=4&apiKey=${process.env.NEXT_PUBLIC_NEWS_API_KEY}`,
+            fetcher
+        )
+        console.log("Is news data ready?", !!data)
+        if (error) return "An error has occured loading the news feed"
+        if (!data) return <Suspense fallback={<SkeletonText width={'full'}/>} />
+        console.log(data)
+        if (data) return ( 
+            data.articles.map((news, index) => (
+                <NewsListItem key={index} 
+                    publication={news.source.name}
+                    // Get time elapsed since each news published
+                    datePublished={`${timeElapsed(news.publishedAt)} ago`}
+                    imageUrl={news?.urlToImage} 
+                    title={news.title}
+                    url={news.url}
+                />
+            ))
+        )
+    } catch (err) {
+        console.log(err)
+        return (<Text>News section is not currently available in production</Text>)
+    }
 }
 
 // TODO: add page numbers for pagination buttons
