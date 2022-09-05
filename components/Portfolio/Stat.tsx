@@ -85,7 +85,7 @@ export function StatCard(props: StatCardProps) {
 
   return (
     <Box
-        px="6"
+        px={{ 'base': 3, 'md': 6 }}
         py="4"
         bg={mode('white', 'gray.700')}
         boxShadow={'md'}
@@ -93,12 +93,12 @@ export function StatCard(props: StatCardProps) {
         borderRadius={"md"}
         color={mode('gray.800', 'white')}
     >
-        <Text fontWeight="sm" fontSize={{ "sm": "xs", "md": "sm" }}>
+        <Text fontWeight="sm" fontSize={{ "base": "xs", "md": "sm" }}>
             {label}
         </Text>
 
-        <Stack spacing="4" mt="2" direction={{ 'sm': 'column', 'md': 'row'}}>
-            <Heading as="h4" fontSize={{ "sm": "lg", "md": "2xl" }} lineHeight="1" letterSpacing="tight">
+        <Stack spacing="4" mt="2" direction={{ 'base': 'column', 'md': 'row'}}>
+            <Heading as="h4" fontSize={{ "base": "lg", "md": "2xl" }} lineHeight="1" letterSpacing="tight">
                 {value}
             </Heading>
             <Indicator type={isNegative ? 'down' : 'up'} value={changeText} />
@@ -110,8 +110,8 @@ export function StatCard(props: StatCardProps) {
 export const Stats = () => {
   return (
     <Box as="section">
-      <Box maxW={{ 'sm': '2xl', 'md': '2xl'}}>
-        <SimpleGrid columns={3} spacing="6">
+      <Box width={{ 'base': '100%', 'md': '2xl'}}>
+        <SimpleGrid columns={3} spacing={{ 'base': 3, 'md': 6 }}>
           {data.map((stat, idx) => (
             <StatCard key={idx} data={stat} />
           ))}

@@ -40,7 +40,8 @@ const NewsListItem = (props: NewsListItemProp) => {
 
     return (
         <Link href={url} isExternal _hover={{ textDecoration: 'none' }}>
-            <Box borderWidth={'1px'} p={5} rounded={'lg'}
+            <Box borderWidth={'1px'} p={{ 'base': 4, 'md': 5 }} rounded={'lg'}
+                width={{ 'base': '85%', 'md': 'full' }}
                 marginTop={1}
                 display="flex"
                 justifyContent="space-between"
@@ -48,7 +49,7 @@ const NewsListItem = (props: NewsListItemProp) => {
                 _hover={{ borderColor:'gray.400' }}>
                 
                     <Flex>
-                        <Image height={'100px'} width={'150px'}
+                        <Image height={{ 'sm': '60px', 'md': '100px',}} width={{ 'base': '120px', 'md':'150px' }}
                             borderRadius="md"
                             src={imageUrl}
                             alt={title}
@@ -64,10 +65,10 @@ const NewsListItem = (props: NewsListItemProp) => {
                         px={2}
                         ml={4}>
                         <Suspense fallback={<SkeletonText width={'full'}/>}>
-                            <HStack spacing={3}>
+                            <Stack spacing={{ 'base': 1, 'md': '3' }} direction={{ 'base': 'column', 'md': 'row' }}>
                                 <Heading fontSize={'md'}>{publication}</Heading>
                                 <Text fontSize={'sm'} fontWeight={'semibold'} color='gray'>{datePublished}</Text>
-                            </HStack>
+                            </Stack>
                         </Suspense>
 
                         <Suspense fallback={<SkeletonText width={'full'} />}>
@@ -140,22 +141,22 @@ export const NewsList = ({ market }) => {
 
             {pageIndex == 1 ?
                 (
-                    <Flex sx={paginationStyle}>
-                        <Text color={mode('gray.600', 'gray.400')} fontSize="sm">
+                    <Flex sx={paginationStyle} width={{ 'base': '85%', 'md': 'full' }}>
+                        <Text color={mode('gray.600', 'gray.400')} fontSize={{ 'base': 'xs', 'md': 'sm'}}>
                             Showing 1 to 4 of 8 results
                         </Text>
-                        <Button onClick={() => setPageIndex(pageIndex + 1)} fontSize={'sm'} fontWeight={'normal'}>
+                        <Button onClick={() => setPageIndex(pageIndex + 1)} size={{ 'base': 'sm', 'md': 'md' }} fontSize={'sm'} fontWeight={'normal'}>
                             Next
                         </Button>
                     </Flex>
                 )
                 : 
                 (
-                    <Flex sx={paginationStyle}>
-                        <Text color={mode('gray.600', 'gray.400')} fontSize="sm">
+                    <Flex sx={paginationStyle} width={{ 'base': '85%', 'md': 'full' }}>
+                        <Text color={mode('gray.600', 'gray.400')} fontSize={{ 'base': 'xs', 'md': 'sm'}}>
                             Showing 5 to 8 of 8 results
                         </Text>
-                        <Button onClick={() => setPageIndex(pageIndex - 1)} fontSize={'sm'} fontWeight={'normal'}>
+                        <Button onClick={() => setPageIndex(pageIndex - 1)} size={{ 'base': 'sm', 'md': 'md' }}  fontSize={'sm'} fontWeight={'normal'}>
                             Prev
                         </Button>
                     </Flex>

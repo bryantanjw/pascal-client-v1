@@ -120,7 +120,7 @@ export const columns = [
 
 export const TableContent = ({ columns, data }) => {
     return (
-        <Box my={4} rounded={'lg'} borderWidth="1px">
+        <Box my={4} rounded={'lg'} borderWidth="1px" overflowX={'auto'}>
             <Table fontSize="sm">
                 <Thead bg={mode('gray.50', 'gray.800')}>
                     <Tr>
@@ -166,7 +166,7 @@ export const TableActions = () => {
                 </InputGroup>
             </FormControl>
 
-            <FormControl minW={'150px'} w={'auto'}>
+            <FormControl minW={{ 'base': '100px', 'md':'150px' }} w={'auto'}>
                 <CustomSelect
                     variant="outline"
                     isMulti

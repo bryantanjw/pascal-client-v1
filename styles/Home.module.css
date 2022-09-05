@@ -153,6 +153,7 @@
     background-size: 22px;
     color: invert(25%);
     background-color: transparent;
+    border: none;
     font-size: 0;
     background-repeat: no-repeat;
     background-position-x: center;
@@ -170,6 +171,7 @@
     background-size: 22px;
     filter: invert(90%);
     background-color: transparent;
+    border: none;
     font-size: 0;
     background-repeat: no-repeat;
     background-position-x: center;

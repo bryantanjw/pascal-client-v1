@@ -5,15 +5,9 @@ import {
 } from '@chakra-ui/react'
 
 export default function Graph({ market }) {
-    const { isOpen, onToggle } = useDisclosure()
 
     return (
-        <VStack>
-        {isOpen ? (
-            // <Buy itemID={id} />
-            <Heading>text</Heading>
-            ) : (
-            <>
+        <VStack width={{ 'base': '85%', 'md': 'full' }}>
             <Table variant='simple'>
                 <Thead>
                     <Tr>
@@ -44,8 +38,6 @@ export default function Graph({ market }) {
                     </Tr>
                 </Tbody>
             </Table>
-            </>
-        )}
         </VStack>
     )
 }

@@ -25,7 +25,7 @@ const Home: NextPage = () => {
           <Heading
               lineHeight={1.1}
               fontWeight={600}
-              fontSize={{ base: '3xl', sm: '4xl', lg: '6xl' }}>
+              fontSize={{ base: '4xl', sm: '4xl', lg: '6xl' }}>
               <Text
                 as={'span'}
                 position={'relative'}

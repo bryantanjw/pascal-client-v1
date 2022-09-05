@@ -101,7 +101,7 @@ const MarketView = ({ market }) => {
                                                 <Image filter={iconColor} alt='Statistics' width={'18px'} src={`/Statistics.png`} />
                                                 <Heading sx={sectionHeadingStyle}>Statistics</Heading>
                                             </HStack>
-                                            <SimpleGrid columns={{ base: 3, md: 3 }}>
+                                            <SimpleGrid columns={{ base: 2, md: 3 }}>
                                                 {stats.map(({ label, value }) => (
                                                 <Stat key={label} label={label} value={value} />
                                                 ))}

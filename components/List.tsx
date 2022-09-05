@@ -87,7 +87,7 @@ const List = () => {
         <Box>
             <HStack py={5}>
                 {categories.map((category, index) => (
-                    <Stack key={index}>
+                    <Stack key={index} >
                         <FilterToggle
                             {...getCheckboxProps({ value: category })}
                             iconUrl={`./${category}.svg`}

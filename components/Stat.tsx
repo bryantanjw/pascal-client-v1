@@ -34,6 +34,7 @@ export const Stat = (props: Props) => {
   return (
     <Box
       py={2}
+      mb={{ 'base': 1, 'md': 0}}
       bg="bg-surface"
       borderRadius="lg"
       {...boxProps}
