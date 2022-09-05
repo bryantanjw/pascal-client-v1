@@ -11,8 +11,17 @@ const Home: NextPage = () => {
     <div className={styles.container}>
       <WithSubnavigation />
       <Head>
-        <title>Pascal&apos;s Markets</title>
+        <title>Pascal Finance</title>
         <meta name="description" content="Trade directly on the outcome of events" />
+        <meta property="og:title" content="Pascal Finance" />
+        <meta
+          property="og:description"
+          content="Trade directly on the outcome of events"
+        />
+        <meta
+          property="og:image"
+          content="/Preview.png"
+        />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
