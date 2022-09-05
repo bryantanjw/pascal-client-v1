@@ -87,7 +87,7 @@ export const TradeForm = ({ market }) => {
     <>
     {/* TODO: refine progress bar design */}
     <Stack overflow={'visible'} spacing="8" borderWidth="1px" rounded="lg" padding="6" width={{'base': 's', 'md': 'xs'}}>
-      <Steps width={'45%'} orientation='horizontal' colorScheme={'gray'} activeStep={activeStep}>
+      <Steps width={'45%'} orientation={'horizontal'} colorScheme={'gray'} activeStep={activeStep}>
         {steps.map(({ label }, index) => (
           <Step label={label} key={index} />            
         ))}

@@ -22,7 +22,7 @@ const MarketResolution = ({ market }) => {
     })
 
     return (
-        <Stack spacing={3} direction={'column'} width={{ 'base': '85%', 'md': 'full' }}>
+        <Stack spacing={3} direction={'column'} width={{ 'base': '80%', 'md': 'full' }}>
             <Box borderColor={mode('pink.200', 'pink.900')} bg={mode('pink.100', 'pink.800')} mt={3} 
                 borderWidth={1} rounded={'md'} p={4}
                 >

@@ -18,6 +18,7 @@ import Graph from './Graph'
 import WithSubnavigation from './TopBar'
 import MarketResolution from './MarketResolution'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { TokenSwapForm } from './TokenSwap';
 import styles from '../styles/Home.module.css'
 
 // Dynamically load ResearchGraph component on client side
@@ -65,9 +66,14 @@ const MarketView = ({ market }) => {
                 spacing={5}
             >
                 <Stack spacing={{ base: '8', md: '10' }} minW={'sm'} flex="2">
-                    <Heading fontSize="2xl" fontWeight="extrabold">
-                        <Link onClick={() => router.back()}><ArrowBackIcon mr={4}/>{market.title}</Link>
-                    </Heading>
+                    <Link onClick={() => router.back()}>
+                        <Stack align={'center'} direction={'row'} width={{ 'base': '85%', 'md': 'full' }}>
+                            <ArrowBackIcon mr={4}/>
+                            <Heading fontSize={{ 'base': 'xl', 'md': '2xl' }} fontWeight="extrabold">
+                                {market.title}
+                            </Heading>
+                        </Stack>
+                    </Link>
 
                     <Tabs colorScheme={'black'}>
                         <TabList>
@@ -135,9 +141,9 @@ const MarketView = ({ market }) => {
 
                 <Flex position={'static'} direction="column" align="center" flex="1">
                     <TradeForm market={market} />
-                    {/* {isOwner && (
+                    {isOwner && (
                     <TokenSwapForm />
-                )} */}
+                    )}
                 </Flex>
 
             </Stack>

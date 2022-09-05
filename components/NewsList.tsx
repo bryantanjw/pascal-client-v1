@@ -41,7 +41,8 @@ const NewsListItem = (props: NewsListItemProp) => {
     return (
         <Link href={url} isExternal _hover={{ textDecoration: 'none' }}>
             <Box borderWidth={'1px'} p={{ 'base': 4, 'md': 5 }} rounded={'lg'}
-                width={{ 'base': '85%', 'md': 'full' }}
+                width={{ 'base': '80%', 'md': 'full' }}
+                height={{ 'base': '150px', 'md': 'full' }}
                 marginTop={1}
                 display="flex"
                 justifyContent="space-between"
@@ -49,12 +50,12 @@ const NewsListItem = (props: NewsListItemProp) => {
                 _hover={{ borderColor:'gray.400' }}>
                 
                     <Flex>
-                        <Image height={{ 'sm': '60px', 'md': '100px',}} width={{ 'base': '120px', 'md':'150px' }}
+                        <Image width={{ 'base': '110px', 'md':'150px' }} height={{ 'base': 'fit', 'md': '100px' }}
                             borderRadius="md"
                             src={imageUrl}
                             alt={title}
                             objectFit="cover"
-                            fallback={<Skeleton width={'150px'} height={'100px'} />}
+                            fallback={<Skeleton width={{ 'base': '110px', 'md':'150px' }} height={{ 'base': 'fit', 'md': '100px' }} />}
                         />
                     </Flex>
                 
@@ -64,15 +65,15 @@ const NewsListItem = (props: NewsListItemProp) => {
                         flexDirection="column"
                         px={2}
                         ml={4}>
-                        <Suspense fallback={<SkeletonText width={'full'}/>}>
+                        <Suspense fallback={<SkeletonText width={{ 'base': '80%', 'md': 'full' }}/>}>
                             <Stack spacing={{ 'base': 1, 'md': '3' }} direction={{ 'base': 'column', 'md': 'row' }}>
-                                <Heading fontSize={'md'}>{publication}</Heading>
-                                <Text fontSize={'sm'} fontWeight={'semibold'} color='gray'>{datePublished}</Text>
+                                <Heading fontSize={{ 'base': 'sm', 'md': 'md' }}>{publication}</Heading>
+                                <Text fontSize={{ 'base': 'xs', 'md': 'sm' }} fontWeight={'semibold'} color='gray'>{datePublished}</Text>
                             </Stack>
                         </Suspense>
 
-                        <Suspense fallback={<SkeletonText width={'full'} />}>
-                            <Text fontSize={'md'} marginTop="1">
+                        <Suspense fallback={<SkeletonText width={{ 'base': '80%', 'md': 'full' }} />}>
+                            <Text fontSize={{ 'base': 'sm', 'md': 'md' }} marginTop="1" overflow={'hidden'} textOverflow={'ellipsis'}>
                                 {title}
                             </Text>
                         </Suspense>
@@ -141,7 +142,7 @@ export const NewsList = ({ market }) => {
 
             {pageIndex == 1 ?
                 (
-                    <Flex sx={paginationStyle} width={{ 'base': '85%', 'md': 'full' }}>
+                    <Flex sx={paginationStyle} width={{ 'base': '80%', 'md': 'full' }}>
                         <Text color={mode('gray.600', 'gray.400')} fontSize={{ 'base': 'xs', 'md': 'sm'}}>
                             Showing 1 to 4 of 8 results
                         </Text>
@@ -152,7 +153,7 @@ export const NewsList = ({ market }) => {
                 )
                 : 
                 (
-                    <Flex sx={paginationStyle} width={{ 'base': '85%', 'md': 'full' }}>
+                    <Flex sx={paginationStyle} width={{ 'base': '80%', 'md': 'full' }}>
                         <Text color={mode('gray.600', 'gray.400')} fontSize={{ 'base': 'xs', 'md': 'sm'}}>
                             Showing 5 to 8 of 8 results
                         </Text>

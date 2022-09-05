@@ -19,7 +19,7 @@ export const ToggleButton = (props: BoxProps) => (
   <Box
     borderWidth="1px"
     py={1}
-    px={{ 'base': 2, 'md': 3 }}
+    px={{ 'base': 1, 'md': 3 }}
     borderRadius="3xl"
     cursor="pointer"
     transition="all 0.2s"

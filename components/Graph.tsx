@@ -7,7 +7,7 @@ import {
 export default function Graph({ market }) {
 
     return (
-        <VStack width={{ 'base': '85%', 'md': 'full' }}>
+        <VStack width={{ 'base': '80%', 'md': 'full' }}>
             <Table variant='simple'>
                 <Thead>
                     <Tr>
