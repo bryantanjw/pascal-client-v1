@@ -1,7 +1,6 @@
 import {
-    Progress, Text, HStack, Stack, VStack,
+    Progress, Text, HStack, VStack,
     Table, Thead, Tbody, Tr, Th, Td,
-    ButtonGroup, Button, useDisclosure, Heading
 } from '@chakra-ui/react'
 
 export default function Graph({ market }) {

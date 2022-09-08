@@ -18,7 +18,7 @@ import Graph from './Graph'
 import WithSubnavigation from './TopBar'
 import MarketResolution from './MarketResolution'
 import { useWallet } from '@solana/wallet-adapter-react'
-// import { TokenSwapForm } from './TokenSwap';
+import { TokenSwapForm } from './TokenSwap';
 import styles from '../styles/Home.module.css'
 
 // Dynamically load ResearchGraph component on client side
@@ -102,7 +102,7 @@ const MarketView = ({ market }) => {
                                         <Divider borderColor={dividerColor} />
 
                                         {/* Statistics */}
-                                        <Stack py={2} direction={'column'}>
+                                        <Stack py={3} direction={'column'}>
                                             <HStack spacing={3}>
                                                 <Image filter={iconColor} alt='Statistics' width={'18px'} src={`/Statistics.png`} />
                                                 <Heading sx={sectionHeadingStyle}>Statistics</Heading>
@@ -117,7 +117,7 @@ const MarketView = ({ market }) => {
                                         <Divider borderColor={dividerColor} />
 
                                         {/* Market Resolution */}
-                                        <Stack py={2} direction={'column'}>
+                                        <Stack py={3} direction={'column'}>
                                             <HStack spacing={3}>
                                                 <Image filter={iconColor} alt='Resolution' width={'18px'} src={`/Resolution.png`} />
                                                 <Heading sx={sectionHeadingStyle}>Market Resolution</Heading>
@@ -141,9 +141,7 @@ const MarketView = ({ market }) => {
 
                 <Flex position={'static'} direction="column" align="center" flex="1">
                     <TradeForm market={market} />
-                    {/* {isOwner && (
                     <TokenSwapForm />
-                    )} */}
                 </Flex>
 
             </Stack>

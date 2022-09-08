@@ -6,10 +6,21 @@ import {
     useColorModeValue, 
     Image, Text, Heading,
     Box,
-    useCheckboxGroup
+    useCheckboxGroup,
+    transition,
+    background
 } from '@chakra-ui/react'
 import styles from '../styles/Home.module.css'
 import { FilterToggle } from './FilterToggle'
+
+// Style config
+const gradientBackgroundStyle = {
+    filter: 'blur(55px)',
+    position: 'absolute',
+    zIndex: -1,
+    opacity: '40%',
+    width: '80%'
+}
 
 const categories = ['Financials', 'Economics', 'Crypto', 'Climate']
 
@@ -29,8 +40,14 @@ function EventCard({ event }) {
     return (
           <a href={`/trade/${event.eventId}`}>
             <Stack spacing={4} p={5}
-                borderColor={useColorModeValue('#eaeaea', '#696969')} borderWidth={1}
-                _hover={{borderColor: useColorModeValue('gray.400', 'white')}}
+                borderColor={useColorModeValue('#CFDAE1', '#696969')} borderWidth={1}
+                _hover={{
+                    // borderColor: useColorModeValue('gray.400', 'white'),
+                    boxShadow: '2xl',
+                    transition: '150ms',
+                    borderColor: useColorModeValue('white', 'gray.700'),
+                    background: useColorModeValue('white', 'gray.700')
+                }}
                 className={styles.card}>
                 {/* Set event's category icon */}
                 <Image filter={iconColor} src={`/${event.category}.svg`} alt={event.category} width={25} height={25}/>
@@ -97,6 +114,14 @@ const List = () => {
                 ))}
             </HStack>
 
+            <Image sx={gradientBackgroundStyle} src={'gradient-background.jpeg'}
+                alt={'background'} top={'100px'} transform={'rotate(180deg)'} visibility={useColorModeValue('visible', 'hidden')}
+            />
+
+            <Image sx={gradientBackgroundStyle} src={'gradient-background.jpeg'} visibility={useColorModeValue('visible', 'hidden')}
+                alt={'background'} bottom={'50px'} transform={'rotate(0deg)'} 
+            />
+            
             <SimpleGrid columns={{ base: 1, md: 3 }} spacing={5}>
                 {filteredEvents.length != 0 ?
                     (filteredEvents.map((event: any) => (

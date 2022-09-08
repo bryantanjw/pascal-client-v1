@@ -1,11 +1,12 @@
 {
-  "name": "pascals-markets",
+  "name": "pascal-finance",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "test": "ts-node test/main.ts",
     "lint": "next lint"
   },
   "dependencies": {
@@ -16,13 +17,13 @@
     "@project-serum/borsh": "^0.2.5",
     "@pythnetwork/client": "^2.7.1",
     "@solana-mobile/wallet-adapter-mobile": "^0.9.0",
-    "@solana/spl-token": "^0.3.4",
-    "@solana/spl-token-swap": "^0.2.1",
+    "@solana/spl-token": "^0.2.0",
+    "@solana/spl-token-swap": "^0.1.3",
     "@solana/wallet-adapter-base": "^0.9.16",
     "@solana/wallet-adapter-react": "^0.15.18",
     "@solana/wallet-adapter-react-ui": "^0.9.16",
     "@solana/wallet-adapter-wallets": "^0.18.5",
-    "@solana/web3.js": "^1.54.0",
+    "@solana/web3.js": "^1.59.0",
     "chakra-react-select": "^4.2.1",
     "chakra-ui-steps": "^1.7.4",
     "chart.js": "^3.6.0",
