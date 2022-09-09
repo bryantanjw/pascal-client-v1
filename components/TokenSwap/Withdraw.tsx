@@ -106,16 +106,10 @@ export const WithdrawSingleTokenType: FC = (props: {
     }
 
     return (
-        <Box
-            p={4}
-            display={{ md: "flex" }}
-            maxWidth="32rem"
-            margin={2}
-            justifyContent="center"
-        >
+        <Box>
             <form onSubmit={handleWithdrawSubmit}>
-                <FormControl isRequired>
-                    <FormLabel color="gray.200">
+                <FormControl>
+                    <FormLabel>
                         LP-Token Withdrawal Amount
                     </FormLabel>
                     <NumberInput
@@ -125,7 +119,7 @@ export const WithdrawSingleTokenType: FC = (props: {
                             setAmount(parseInt(valueString))
                         }
                     >
-                        <NumberInputField id="amount" color="gray.400" />
+                        <NumberInputField id="amount"/>
                     </NumberInput>
                 </FormControl>
                 <Button width="full" mt={4} type="submit">

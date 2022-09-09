@@ -133,16 +133,10 @@ export const SwapToken: FC = () => {
     }
 
     return (
-        <Box
-            p={4}
-            display={{ md: "flex" }}
-            maxWidth="32rem"
-            margin={2}
-            justifyContent="center"
-        >
+        <Box>
             <form onSubmit={handleSwapSubmit}>
                 <FormControl isRequired>
-                    <FormLabel color="gray.200">Swap Amount</FormLabel>
+                    <FormLabel>Swap Amount</FormLabel>
                     <NumberInput
                         max={1000}
                         min={1}
@@ -150,14 +144,13 @@ export const SwapToken: FC = () => {
                             setAmount(parseInt(valueString))
                         }
                     >
-                        <NumberInputField id="amount" color="gray.400" />
+                        <NumberInputField id="amount" />
                     </NumberInput>
                     <div style={{ display: "felx" }}>
                         <Select
                             display={{ md: "flex" }}
                             justifyContent="center"
                             placeholder="Token to Swap"
-                            color="white"
                             variant="outline"
                             dropShadow="#282c34"
                             onChange={(item) =>
@@ -165,14 +158,12 @@ export const SwapToken: FC = () => {
                             }
                         >
                             <option
-                                style={{ color: "#282c34" }}
                                 value="option1"
                             >
                                 {" "}
                                 Krypt{" "}
                             </option>
                             <option
-                                style={{ color: "#282c34" }}
                                 value="option2"
                             >
                                 {" "}

@@ -5,7 +5,8 @@ import {
     Heading,
     Flex, Link, 
     Tab, Tabs, TabList, TabPanels, TabPanel, useColorModeValue as mode,
-    Image
+    Image,
+    useColorModeValue
 } from '@chakra-ui/react'
 import { ArrowBackIcon } from '@chakra-ui/icons'
 import { useRouter } from 'next/router'
@@ -18,7 +19,6 @@ import Graph from './Graph'
 import WithSubnavigation from './TopBar'
 import MarketResolution from './MarketResolution'
 import { useWallet } from '@solana/wallet-adapter-react'
-import { TokenSwapForm } from './TokenSwap';
 import styles from '../styles/Home.module.css'
 
 // Dynamically load ResearchGraph component on client side
@@ -38,7 +38,12 @@ const MarketView = ({ market }) => {
     const tabListStyle = {
         fontWeight:' semibold',
         fontSize: 'lg',
-        px: 0
+        px: 0,
+        textColor: 'gray.400',
+        _selected: {
+            textColor: useColorModeValue('black', 'gray.100'),
+            borderColor: useColorModeValue('black', 'gray.100')
+        }
     }
     const sectionHeadingStyle = {
         fontSize: 'lg',
@@ -141,7 +146,6 @@ const MarketView = ({ market }) => {
 
                 <Flex position={'static'} direction="column" align="center" flex="1">
                     <TradeForm market={market} />
-                    <TokenSwapForm />
                 </Flex>
 
             </Stack>

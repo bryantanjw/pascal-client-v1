@@ -1,11 +1,19 @@
 import {
     Box,
     Button,
-    FormControl,
-    FormLabel,
-    NumberInput,
-    NumberInputField,
+    FormControl, FormLabel,
+    NumberInput, NumberInputField,
+    Stack,
+    Flex,
+    Text,
+    useColorModeValue as mode,
+    Alert,
+    Tooltip,
+    HStack,
+    Heading,
+    Link,
 } from "@chakra-ui/react"
+import { InfoOutlineIcon, WarningTwoIcon, ExternalLinkIcon } from "@chakra-ui/icons"
 import { FC, useState } from "react"
 import * as Web3 from "@solana/web3.js"
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
@@ -20,6 +28,31 @@ import {
 } from "../../utils/constants"
 import { TokenSwap, TOKEN_SWAP_PROGRAM_ID } from "@solana/spl-token-swap"
 import * as token from "@solana/spl-token"
+
+const DepositLiquidityInfo = (props) => {
+    const { label, value, children } = props
+    return (
+      <Flex justify="space-between" fontSize="xs">
+        <Text fontWeight="medium" color={mode('gray.600', 'gray.400')}>
+            {label}
+        </Text>
+            {value ? <Text fontWeight="medium">{value}</Text> : children}
+      </Flex>
+    )
+}
+
+const AddressesInfo = (props) => {
+    const { label, value, link } = props
+    return (
+        <Stack>
+            <HStack spacing={3}>
+                <Text>{label}</Text>
+                <Text>{value}</Text>
+                <Link href={link}><ExternalLinkIcon /></Link>
+            </HStack>
+        </Stack>
+    )
+}
 
 export const DepositSingleTokenType: FC = (props: {
     onInputChange?: (val: number) => void
@@ -104,36 +137,66 @@ export const DepositSingleTokenType: FC = (props: {
     }
 
     return (
-        <Box
-            p={4}
-            display={{ md: "flex" }}
-            maxWidth="32rem"
-            margin={2}
-            justifyContent="center"
-        >
-            <form onSubmit={handleSubmit}>
-                <div style={{ padding: "0px 10px 5px 7px" }}>
-                    <FormControl isRequired>
-                        <FormLabel color="gray.200">
-                            LP-Tokens to receive for deposit to Liquidity Pool
-                        </FormLabel>
-                        <NumberInput
-                            onChange={(valueString) =>
-                                setAmount(parseInt(valueString))
-                            }
-                            style={{
-                                fontSize: 20,
-                            }}
-                            placeholder="0.00"
-                        >
-                            <NumberInputField id="amount" color="gray.400" />
-                        </NumberInput>
-                        <Button width="full" mt={4} type="submit">
-                            Deposit
-                        </Button>
-                    </FormControl>
-                </div>
-            </form>
+        <Box>
+            <FormControl onSubmit={handleSubmit}>
+                <FormLabel>
+                    Deposit
+                </FormLabel>
+
+                <NumberInput
+                    onChange={(valueString) =>
+                        setAmount(parseInt(valueString))
+                    }
+                    placeholder="0.00"
+                >
+                    <NumberInputField id="amount" />
+                </NumberInput>
+
+                <Stack my={4} spacing={3} p={4} borderWidth={"1px"} rounded={'md'}>
+                    <DepositLiquidityInfo label={'Pool Liquidity (YES)'} value={'#'} />
+                    <DepositLiquidityInfo label={'Pool Liquidity (NO)'} value={'#'} />
+                    <DepositLiquidityInfo label={'LP Supply'} value={'#'} />
+                    <DepositLiquidityInfo label={'Addresses'} 
+                        value={
+                            <Tooltip fontSize='xs' placement={'bottom-end'}
+                                label={
+                                    <Stack direction={'column'} p={3}>
+                                        <Heading fontSize={'sm'}>Addresses</Heading>
+                                        <AddressesInfo label={"YES"} value={'#'} link={'#'} />
+                                        <AddressesInfo label={"NO"} value={'#'} link={'#'} />
+                                        <AddressesInfo label={"LP"} value={"#"} link={"#"} />
+                                        <AddressesInfo label={"AMM ID"} value={"#"} link={"#"} />
+                                        <AddressesInfo label={"Market ID"} value={"#"} link={"#"} />
+                                    </Stack>
+                                }
+                            >
+                                <InfoOutlineIcon cursor={'help'} />
+                            </Tooltip>
+                        }
+                    />
+                    <DepositLiquidityInfo label={'Slippage'} value={'1%'} />
+                </Stack>
+
+                <Alert bg={mode('blue.50', 'blue.900')} fontSize={'xs'} rounded={'md'} 
+                    px={4} flexDirection={'column'}>
+                    <WarningTwoIcon alignSelf={'start'} mb={2}/>
+                    Providing liquidity is risky. 
+                    It is important to withdraw liquidity before the event occurs.
+                </Alert>
+
+                <Button 
+                    size="lg" 
+                    mt={4} 
+                    textColor={mode('white', '#353535')} 
+                    bg={mode('#353535', 'gray.50')} 
+                    width={'full'}
+                    _hover={{
+                        bg: mode('black', 'gray.100')
+                    }}
+                >
+                    Add liquidity
+                </Button>
+            </FormControl>
         </Box>
     )
 }

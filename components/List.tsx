@@ -18,22 +18,20 @@ const gradientBackgroundStyle = {
     filter: 'blur(55px)',
     position: 'absolute',
     zIndex: -1,
-    opacity: '40%',
+    opacity: '50%',
     width: '80%'
 }
-
+const statStyle = {
+    align: 'center',
+    direction: 'row',
+    filter: 'invert(40%)'
+}
 const categories = ['Financials', 'Economics', 'Crypto', 'Climate']
 
 // TODO: 1. add createEvent button/modal for admin
 // 2. dynamic closing date of event
 function EventCard({ event }) {
-    // Style config
     const iconColor = useColorModeValue('invert(0%)', 'invert(100%)')
-    const statStyle = {
-        align: 'center',
-        direction: 'row',
-        filter: 'invert(50%)'
-    }
     
     const dt = new Date(event.closing_date)
 
@@ -44,7 +42,7 @@ function EventCard({ event }) {
                 _hover={{
                     // borderColor: useColorModeValue('gray.400', 'white'),
                     boxShadow: '2xl',
-                    transition: '150ms',
+                    transition: 'all .3s ease',
                     borderColor: useColorModeValue('white', 'gray.700'),
                     background: useColorModeValue('white', 'gray.700')
                 }}

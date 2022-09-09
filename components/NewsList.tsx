@@ -11,7 +11,6 @@ import {
   Link,
   Tooltip,
   Button,
-  ButtonGroup,
   useColorModeValue as mode,
 } from '@chakra-ui/react'
 import { InfoOutlineIcon } from '@chakra-ui/icons'
@@ -133,7 +132,7 @@ export const NewsList = ({ market }) => {
                     fontSize='sm' padding={3}
                     hasArrow arrowSize={15} placement='left'
                     >
-                    <InfoOutlineIcon px={2} w={9} h={9} />
+                    <InfoOutlineIcon px={2} w={9} h={9} cursor={'help'} />
                 </Tooltip>
             </Flex>
 
