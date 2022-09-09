@@ -2,10 +2,12 @@ import {
     Box,
     Button,
     FormControl,
-    FormLabel,
-    NumberInput,
-    NumberInputField,
+    NumberInput, NumberInputField,
+    Stack,
+    useColorModeValue as mode,
+    Alert,
 } from "@chakra-ui/react"
+import { InfoOutlineIcon, WarningTwoIcon, ExternalLinkIcon } from "@chakra-ui/icons"
 import { FC, useState } from "react"
 import * as Web3 from "@solana/web3.js"
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
@@ -22,6 +24,8 @@ import {
 import { TokenSwap, TOKEN_SWAP_PROGRAM_ID } from "@solana/spl-token-swap"
 import * as token from "@solana/spl-token"
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token"
+import { LiquidityInfo } from "./Deposit"
+import styles from '../../styles/Home.module.css'
 
 export const WithdrawSingleTokenType: FC = (props: {
     onInputChange?: (val: number) => void
@@ -107,25 +111,39 @@ export const WithdrawSingleTokenType: FC = (props: {
 
     return (
         <Box>
-            <form onSubmit={handleWithdrawSubmit}>
-                <FormControl>
-                    <FormLabel>
-                        LP-Token Withdrawal Amount
-                    </FormLabel>
-                    <NumberInput
-                        max={1000}
-                        min={1}
-                        onChange={(valueString) =>
-                            setAmount(parseInt(valueString))
-                        }
-                    >
-                        <NumberInputField id="amount"/>
-                    </NumberInput>
-                </FormControl>
-                <Button width="full" mt={4} type="submit">
-                    Withdraw
+            <FormControl onSubmit={handleWithdrawSubmit}>
+                <NumberInput
+                    onChange={(valueString) =>
+                        setAmount(parseInt(valueString))
+                    }
+                >
+                    <NumberInputField id="amount" 
+                        placeholder="Enter amount to withdraw" fontWeight={'medium'} fontSize={'sm'} 
+                    />
+                </NumberInput>
+
+                <Stack my={3} spacing={3} p={4} borderWidth={"1px"} rounded={'md'}>
+                    <LiquidityInfo label={'Pool Liquidity (YES)'} value={'#'} />
+                    <LiquidityInfo label={'Pool Liquidity (NO)'} value={'#'} />
+                    <LiquidityInfo label={'LP Supply'} value={'#'} />
+                    <LiquidityInfo label={'Slippage'} value={'1%'} />
+                </Stack>
+
+                <Button 
+                    className={
+                        mode(styles.wallet_adapter_button_trigger_light_mode, 
+                            styles.wallet_adapter_button_trigger_dark_mode
+                        )
+                    } 
+                    size="lg" 
+                    mt={3} 
+                    textColor={mode('white', '#353535')} 
+                    bg={mode('#353535', 'gray.50')} 
+                    width={'full'}
+                >
+                    Remove liquidity
                 </Button>
-            </form>
+            </FormControl>
         </Box>
     )
 }

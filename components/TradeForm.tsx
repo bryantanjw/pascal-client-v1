@@ -16,6 +16,7 @@ import Confetti from 'react-dom-confetti'
 import { Step, Steps, useSteps } from "chakra-ui-steps"
 import * as React from 'react'
 import { TokenSwapForm } from './TokenSwap'
+import styles from '../styles/Home.module.css'
 
 type TradeFormItemProps = {
   label: string
@@ -89,7 +90,7 @@ export const TradeForm = ({ market }) => {
       fontWeight: 'semibold'
     },
   }
-   // Styling config //
+  // Styling config //
   
   // TODO: state management for place order (below is temporary)
   const placeOrder = async () => {
@@ -106,13 +107,15 @@ export const TradeForm = ({ market }) => {
   return (
     <>
     {/* TODO: refine progress bar design */}
-    <Stack overflow={'visible'} spacing="8" rounded="lg" padding="6" borderWidth={'1px'}
-      width={{'base': 's', 'md': '330px'}}>
+    <Stack overflow={'visible'} spacing="8" 
+      rounded="xl" padding="6" borderWidth={'1px'} 
+      position={{ 'sm': 'relative', 'lg': 'fixed'}} left={{ 'sm': 'none', 'lg': '60%'}}
+      width={{'base': 's', 'md': '340px'}}>
       
       <Tabs variant={'unstyled'}>
           <TabList mb={3}>
             <Tab sx={tabListStyle}>Swap</Tab>
-            <Tab ml={3} sx={tabListStyle}>Liquidity</Tab>
+            <Tab ml={3} sx={tabListStyle}>Pool</Tab>
           </TabList>
 
           <TabPanels>
@@ -140,7 +143,7 @@ export const TradeForm = ({ market }) => {
 
                   <Stack spacing={8}>
                     <Heading width={'90%'} fontSize={'2xl'} fontWeight={'semibold'}>
-                      Will {market.short} close above {market.target_value} on {month} {day}, {year}
+                      Will {market.short} close above {market.target_value} on {month} {day}, {year}?
                     </Heading>
                     
                     <ButtonGroup onClick={nextStep} justifyContent={'center'} size="lg" spacing='3'>
@@ -164,9 +167,9 @@ export const TradeForm = ({ market }) => {
                         <NumberInputStepper><NumberIncrementStepper/><NumberDecrementStepper /></NumberInputStepper>
                       </NumberInput>
                     </TradeFormItem>
-                    <TradeFormItem label="Fees">
+                    {/* <TradeFormItem label="Fees">
                       1%
-                    </TradeFormItem>
+                    </TradeFormItem> */}
                     <Flex justify="space-between">
                       <Text fontSize="lg" fontWeight="semibold">
                         Total
@@ -179,7 +182,13 @@ export const TradeForm = ({ market }) => {
 
                   <ButtonGroup justifyContent={'center'} size="lg" fontSize="md" spacing='3'>
                     <Button borderColor={useColorModeValue('#353535', 'gray.100')} variant={'outline'} onClick={prevStep}><ArrowBackIcon color={useColorModeValue('#353535', 'gray.50')} /></Button>
-                    <Button textColor={useColorModeValue('white', '#353535')} bg={useColorModeValue('#353535', 'gray.50')} width={'80%'}
+                    <Button 
+                    className={
+                      useColorModeValue(styles.wallet_adapter_button_trigger_light_mode, 
+                        styles.wallet_adapter_button_trigger_dark_mode
+                      )
+                    } 
+                      textColor={useColorModeValue('white', '#353535')} bg={useColorModeValue('#353535', 'gray.50')} width={'80%'}
                       _hover={{
                         bg: useColorModeValue('black', 'gray.300')
                       }}

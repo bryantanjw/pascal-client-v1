@@ -32,14 +32,14 @@ export default function WithSubnavigation() {
     return (
         <Box>
             <Flex
-                bg={useColorModeValue('white', 'gray.800')}
+                bg={useColorModeValue('white', 'gray.900')}
                 color={useColorModeValue('gray.600', 'white')}
                 minH={'70px'}
                 py={{ base: 2 }}
                 px={{ base: 4 }}
                 borderBottom={1}
                 borderStyle={'solid'}
-                borderColor={useColorModeValue('gray.200', 'gray.900')}
+                borderColor={useColorModeValue('gray.200', 'gray.800')}
                 align={'center'}
             >
                 <Flex
@@ -98,9 +98,9 @@ export default function WithSubnavigation() {
 }
   
 const DesktopNav = () => {
-    const linkColor = useColorModeValue('gray.600', 'gray.200');
+    const linkColor = useColorModeValue('gray.500', 'gray.500');
     const linkHoverColor = useColorModeValue('gray.800', 'white');
-    const popoverContentBgColor = useColorModeValue('white', 'gray.800');
+    const popoverContentBgColor = useColorModeValue('white', 'gray.900');
   
     return (
         <Stack direction={'row'} spacing={8}>
@@ -129,7 +129,7 @@ const DesktopNav = () => {
                         bg={popoverContentBgColor}
                         p={4}
                         rounded={'xl'}
-                        minW={'sm'}>
+                        minW={'xs'}>
                     <Stack>
                         {navItem.children.map((child) => (
                         <DesktopSubNav key={child.label} {...child} />
@@ -181,7 +181,7 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
 const MobileNav = () => {
     return (
         <Stack
-            bg={useColorModeValue('white', 'gray.800')}
+            bg={useColorModeValue('white', 'gray.900')}
             p={4}
             display={{ md: 'none' }}>
             {NAV_ITEMS.map((navItem) => (

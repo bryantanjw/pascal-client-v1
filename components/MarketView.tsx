@@ -1,4 +1,5 @@
-import React from 'react';
+import React from 'react'
+import Head from 'next/head'
 import {
     Box, Divider,
     Stack, HStack, SimpleGrid,
@@ -20,6 +21,7 @@ import WithSubnavigation from './TopBar'
 import MarketResolution from './MarketResolution'
 import { useWallet } from '@solana/wallet-adapter-react'
 import styles from '../styles/Home.module.css'
+import { title } from 'process'
 
 // Dynamically load ResearchGraph component on client side
 const ResearchGraph = dynamic(import('./ResearchGraph'), {
@@ -57,7 +59,23 @@ const MarketView = ({ market }) => {
 
     return (
         <div className={styles.container}>
+        <Head>
+            <title>{market.title}</title>
+            <meta name="description" content="Trade directly on the outcome of events" />
+            <meta property="og:title" content={market.title} />
+            <meta
+            property="og:description"
+            content="Trade directly on the outcome of events"
+            />
+            <meta
+            property="og:image"
+            content="/Preview.png"
+            />
+            <link rel="icon" href="/favicon.ico" />
+        </Head>
+
         <WithSubnavigation />
+
         <Box
             overflow={'hidden'}
             maxW={{ base: '3xl', lg: '5xl' }}
@@ -65,21 +83,22 @@ const MarketView = ({ market }) => {
             px={{ base: '1', md: '8', lg: '12' }}
             py={{ base: '6', md: '8', lg: '14' }}
         >
+            <Link onClick={() => router.back()}>
+                <Stack mb={6} align={'center'} direction={'row'} width={{ 'base': '85%', 'md': 'full' }}>
+                    <ArrowBackIcon mr={4}/>
+                    <Heading fontSize={{ 'base': 'xl', 'md': '2xl' }} fontWeight="extrabold">
+                        {market.title}
+                    </Heading>
+                </Stack>
+            </Link>
+
             <Stack
                 direction={{ base: 'column', lg: 'row' }}
                 align={{ lg: 'flex-start' }}
+                width={{ 'sm': 'full', 'lg': '65%' }}
                 spacing={5}
             >
                 <Stack spacing={{ base: '8', md: '10' }} minW={'sm'} flex="2">
-                    <Link onClick={() => router.back()}>
-                        <Stack align={'center'} direction={'row'} width={{ 'base': '85%', 'md': 'full' }}>
-                            <ArrowBackIcon mr={4}/>
-                            <Heading fontSize={{ 'base': 'xl', 'md': '2xl' }} fontWeight="extrabold">
-                                {market.title}
-                            </Heading>
-                        </Stack>
-                    </Link>
-
                     <Tabs colorScheme={'black'}>
                         <TabList>
                             <Tab sx={tabListStyle}>Graph</Tab>
@@ -144,7 +163,7 @@ const MarketView = ({ market }) => {
                     </Tabs>
                 </Stack>
 
-                <Flex position={'static'} direction="column" align="center" flex="1">
+                <Flex direction="column" align="center">
                     <TradeForm market={market} />
                 </Flex>
 

@@ -9,7 +9,6 @@ const Home: NextPage = () => {
   
   return (
     <div className={styles.container}>
-      <WithSubnavigation />
       <Head>
         <title>Pascal Finance</title>
         <meta name="description" content="Trade directly on the outcome of events" />
@@ -24,6 +23,8 @@ const Home: NextPage = () => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      
+      <WithSubnavigation />
 
       <Box maxW={{ base: '3xl', lg: '5xl' }}
         mx="auto"
@@ -38,21 +39,22 @@ const Home: NextPage = () => {
               <Text
                 as={'span'}
                 position={'relative'}
-                _after={{
-                  content: "''",
-                  width: 'full',
-                  height: '30%',
-                  position: 'absolute',
-                  bottom: 1,
-                  left: 0,
-                  bg: 'purple.400',
-                  zIndex: -1,
-                }}>
-                Trade directly
+              >
+                Trade
+              </Text>
+              <Text
+                as={'span'}
+                position={'relative'}
+                color={'gray.400'}
+              >
+                &nbsp;directly
               </Text>
               <br />
-              <Text as={'span'} color={'purple.400'}>
-                on the outcome of events.
+              <Text as={'span'} color={'gray.400'}>
+                on the outcome of
+              </Text>
+              <Text as={'span'}>
+                &nbsp;events.
               </Text>
             </Heading>
             <Text color={'gray.500'} fontSize={{ base: 'xl', md: '2xl' }}>

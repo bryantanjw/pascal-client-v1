@@ -1,17 +1,19 @@
 import {
     Box,
     Button,
-    FormControl, FormLabel,
+    FormControl,
     NumberInput, NumberInputField,
     Stack,
     Flex,
     Text,
     useColorModeValue as mode,
     Alert,
-    Tooltip,
     HStack,
-    Heading,
+    Code,
     Link,
+    Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverBody,
+    useClipboard,
+    useToast,
 } from "@chakra-ui/react"
 import { InfoOutlineIcon, WarningTwoIcon, ExternalLinkIcon } from "@chakra-ui/icons"
 import { FC, useState } from "react"
@@ -28,8 +30,9 @@ import {
 } from "../../utils/constants"
 import { TokenSwap, TOKEN_SWAP_PROGRAM_ID } from "@solana/spl-token-swap"
 import * as token from "@solana/spl-token"
+import styles from '../../styles/Home.module.css'
 
-const DepositLiquidityInfo = (props) => {
+export const LiquidityInfo = (props) => {
     const { label, value, children } = props
     return (
       <Flex justify="space-between" fontSize="xs">
@@ -42,13 +45,24 @@ const DepositLiquidityInfo = (props) => {
 }
 
 const AddressesInfo = (props) => {
+    const toast = useToast()
     const { label, value, link } = props
+    const { hasCopied, onCopy } = useClipboard(value)
+
     return (
         <Stack>
             <HStack spacing={3}>
                 <Text>{label}</Text>
-                <Text>{value}</Text>
-                <Link href={link}><ExternalLinkIcon /></Link>
+                <Code onClick={() => {
+                    onCopy
+                    toast({
+                        title: 'Address copied to clipboard.',
+                        status: 'success',
+                        duration: 5000,
+                        isClosable: true,
+                    })              
+                }} cursor={'pointer'}>{value}</Code>
+                <Link href={link} isExternal><ExternalLinkIcon /></Link>
             </HStack>
         </Stack>
     )
@@ -139,42 +153,38 @@ export const DepositSingleTokenType: FC = (props: {
     return (
         <Box>
             <FormControl onSubmit={handleSubmit}>
-                <FormLabel>
-                    Deposit
-                </FormLabel>
-
                 <NumberInput
                     onChange={(valueString) =>
                         setAmount(parseInt(valueString))
                     }
-                    placeholder="0.00"
                 >
-                    <NumberInputField id="amount" />
+                    <NumberInputField id="amount" fontWeight={'medium'} 
+                        placeholder="Enter amount to deposit" fontSize={'sm'} 
+                    />
                 </NumberInput>
 
-                <Stack my={4} spacing={3} p={4} borderWidth={"1px"} rounded={'md'}>
-                    <DepositLiquidityInfo label={'Pool Liquidity (YES)'} value={'#'} />
-                    <DepositLiquidityInfo label={'Pool Liquidity (NO)'} value={'#'} />
-                    <DepositLiquidityInfo label={'LP Supply'} value={'#'} />
-                    <DepositLiquidityInfo label={'Addresses'} 
-                        value={
-                            <Tooltip fontSize='xs' placement={'bottom-end'}
-                                label={
-                                    <Stack direction={'column'} p={3}>
-                                        <Heading fontSize={'sm'}>Addresses</Heading>
+                <Stack my={3} spacing={3} p={4} borderWidth={"1px"} rounded={'md'}>
+                    <LiquidityInfo label={'Pool Liquidity (YES)'} value={'#'} />
+                    <LiquidityInfo label={'Pool Liquidity (NO)'} value={'#'} />
+                    <LiquidityInfo label={'LP Supply'} value={'#'} />
+                    <LiquidityInfo label={'Addresses'}>
+                        <Popover placement="bottom-end" isLazy>
+                            <PopoverTrigger><InfoOutlineIcon cursor={'help'} /></PopoverTrigger>
+                            <PopoverContent width={'full'}>
+                                <PopoverHeader fontSize={'sm'}>Addresses</PopoverHeader>
+                                <PopoverBody>
+                                    <Stack p={2}>
                                         <AddressesInfo label={"YES"} value={'#'} link={'#'} />
                                         <AddressesInfo label={"NO"} value={'#'} link={'#'} />
                                         <AddressesInfo label={"LP"} value={"#"} link={"#"} />
                                         <AddressesInfo label={"AMM ID"} value={"#"} link={"#"} />
                                         <AddressesInfo label={"Market ID"} value={"#"} link={"#"} />
                                     </Stack>
-                                }
-                            >
-                                <InfoOutlineIcon cursor={'help'} />
-                            </Tooltip>
-                        }
-                    />
-                    <DepositLiquidityInfo label={'Slippage'} value={'1%'} />
+                                </PopoverBody>
+                            </PopoverContent>
+                        </Popover>
+                    </LiquidityInfo>
+                    <LiquidityInfo label={'Slippage'} value={'1%'} />
                 </Stack>
 
                 <Alert bg={mode('blue.50', 'blue.900')} fontSize={'xs'} rounded={'md'} 
@@ -185,14 +195,16 @@ export const DepositSingleTokenType: FC = (props: {
                 </Alert>
 
                 <Button 
+                    className={
+                        mode(styles.wallet_adapter_button_trigger_light_mode, 
+                            styles.wallet_adapter_button_trigger_dark_mode
+                        )
+                    } 
                     size="lg" 
-                    mt={4} 
+                    mt={5} 
                     textColor={mode('white', '#353535')} 
                     bg={mode('#353535', 'gray.50')} 
                     width={'full'}
-                    _hover={{
-                        bg: mode('black', 'gray.100')
-                    }}
                 >
                     Add liquidity
                 </Button>

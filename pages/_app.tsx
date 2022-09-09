@@ -1,9 +1,10 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import { ChakraProvider } from '@chakra-ui/react'
-import { StepsStyleConfig as Steps } from 'chakra-ui-steps';
+import { mode } from '@chakra-ui/theme-tools'
+import { StepsStyleConfig as Steps } from 'chakra-ui-steps'
 import { extendTheme } from '@chakra-ui/react'
-import WalletContextProvider from 'components/WalletContextProvider';
+import WalletContextProvider from 'components/WalletContextProvider'
 
 const colors = {
   brand: {
@@ -12,12 +13,19 @@ const colors = {
     700: '#2a69ac',
   },
 }
-
+const styles = {
+  global: props => ({
+    body: {
+      bg: mode('#F9FBFA', 'gray.900')(props),
+    },
+  }),
+};
 const theme = extendTheme({ 
   colors,
   components: {
     Steps,
   },
+  styles,
 })
 
 function MyApp({ Component, pageProps }: AppProps) {
