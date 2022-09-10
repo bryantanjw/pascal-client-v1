@@ -13,16 +13,20 @@ export const TokenSwapForm = () => {
     // Style config //
     const tabStyle = {
         flex: 1,
-        color: mode('gray.500', 'gray.400'),
-        bg: mode('gray.50', 'none'),
+        // color: mode('gray.500', 'gray.400'),
+        // bg: mode('gray.50', 'none'),
+        color: mode('gray.800', 'gray.100'),
         borderRadius: 'lg',
         fontSize: 'sm',
+        mx: '2px',
         fontWeight: 'medium',
         transition: 'all .2s ease',
-        _hover : { bg: mode('gray.100', 'whiteAlpha.100')},
+        _hover : { bg: mode('blackAlpha.50', 'whiteAlpha.100')},
         _selected: {
-            bg: mode('gray.600', 'gray.600'),
-            color: 'white',
+            // bg: mode('gray.600', 'gray.600'),
+            // color: 'white',
+            bg: mode('gray.50', 'gray.600'),
+            boxShadow: 'md',
         }
     }
     // Style config //
@@ -42,10 +46,9 @@ export const TokenSwapForm = () => {
 
             <Tabs variant={'unstyled'}>
                 <TabList 
-                    borderRadius={'lg'}
+                    borderRadius={'lg'} bg={mode('#EFEEEE', 'gray.800')} py={'2px'}
                 >
                     <Tab sx={tabStyle}>Deposit</Tab>
-                    <Divider orientation="vertical" mx={3} alignSelf={'center'} height={6} borderWidth={'0.5px'} borderColor={mode('gray.400', 'gray.600')} />
                     <Tab sx={tabStyle}>Withdraw</Tab>
                 </TabList>
 
@@ -56,7 +59,7 @@ export const TokenSwapForm = () => {
                     </TabPanel>
 
                     {/* Withdraw Liquidity */}
-                    <TabPanel px={0}>
+                    <TabPanel px={0} pb={0}>
                         <WithdrawSingleTokenType />
                     </TabPanel>
                 </TabPanels>

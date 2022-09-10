@@ -21,7 +21,6 @@ import WithSubnavigation from './TopBar'
 import MarketResolution from './MarketResolution'
 import { useWallet } from '@solana/wallet-adapter-react'
 import styles from '../styles/Home.module.css'
-import { title } from 'process'
 
 // Dynamically load ResearchGraph component on client side
 const ResearchGraph = dynamic(import('./ResearchGraph'), {
@@ -95,7 +94,7 @@ const MarketView = ({ market }) => {
             <Stack
                 direction={{ base: 'column', lg: 'row' }}
                 align={{ lg: 'flex-start' }}
-                width={{ 'sm': 'full', 'lg': '65%' }}
+                width={{ 'sm': 'full', 'lg': '64%' }}
                 spacing={5}
             >
                 <Stack spacing={{ base: '8', md: '10' }} minW={'sm'} flex="2">

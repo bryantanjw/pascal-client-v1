@@ -16,6 +16,7 @@ import {
     useToast,
 } from "@chakra-ui/react"
 import { InfoOutlineIcon, WarningTwoIcon, ExternalLinkIcon } from "@chakra-ui/icons"
+import { useFormik } from 'formik'
 import { FC, useState } from "react"
 import * as Web3 from "@solana/web3.js"
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
@@ -30,6 +31,7 @@ import {
 } from "../../utils/constants"
 import { TokenSwap, TOKEN_SWAP_PROGRAM_ID } from "@solana/spl-token-swap"
 import * as token from "@solana/spl-token"
+import { truncate } from "utils/truncateAddress";
 import styles from '../../styles/Home.module.css'
 
 export const LiquidityInfo = (props) => {
@@ -53,12 +55,13 @@ const AddressesInfo = (props) => {
         <Stack>
             <HStack spacing={3}>
                 <Text>{label}</Text>
-                <Code onClick={() => {
+                <Code fontSize={'xs'} onClick={() => {
                     onCopy
                     toast({
                         title: 'Address copied to clipboard.',
                         status: 'success',
-                        duration: 5000,
+                        position: 'bottom-right',
+                        duration: 4000,
                         isClosable: true,
                     })              
                 }} cursor={'pointer'}>{value}</Code>
@@ -77,10 +80,17 @@ export const DepositSingleTokenType: FC = (props: {
     const { connection } = useConnection()
     const { publicKey, sendTransaction } = useWallet()
 
-    const handleSubmit = (event: any) => {
-        event.preventDefault()
-        handleTransactionSubmit()
-    }
+    // Handle deposit form submit
+    const toast = useToast()
+    const formik = useFormik({
+        initialValues: {
+            depositAmount: '',
+        },
+        onSubmit: values => {
+            handleTransactionSubmit();
+            setAmount(parseInt(values.depositAmount))
+        },
+    })
 
     const handleTransactionSubmit = async () => {
         if (!publicKey) {
@@ -138,12 +148,16 @@ export const DepositSingleTokenType: FC = (props: {
         transaction.add(instruction)
         try {
             let txid = await sendTransaction(transaction, connection)
-            alert(
-                `Transaction submitted: https://explorer.solana.com/tx/${txid}?cluster=devnet`
-            )
             console.log(
                 `Transaction submitted: https://explorer.solana.com/tx/${txid}?cluster=devnet`
             )
+            toast({
+                title: `Transaction submitted: https://explorer.solana.com/tx/${txid}?cluster=devnet`,
+                position: "bottom-right",
+                isClosable: true,
+                duration: 8000,
+                status: 'success',
+            })
         } catch (e) {
             console.log(JSON.stringify(e))
             alert(JSON.stringify(e))
@@ -152,14 +166,12 @@ export const DepositSingleTokenType: FC = (props: {
 
     return (
         <Box>
-            <FormControl onSubmit={handleSubmit}>
-                <NumberInput
-                    onChange={(valueString) =>
-                        setAmount(parseInt(valueString))
-                    }
-                >
+            <form onSubmit={formik.handleSubmit}>
+                <NumberInput>
                     <NumberInputField id="amount" fontWeight={'medium'} 
-                        placeholder="Enter amount to deposit" fontSize={'sm'} 
+                        placeholder="Enter amount to deposit" fontSize={'sm'}
+                        onChange={formik.handleChange}
+                        value={formik.values.depositAmount}
                     />
                 </NumberInput>
 
@@ -170,14 +182,14 @@ export const DepositSingleTokenType: FC = (props: {
                     <LiquidityInfo label={'Addresses'}>
                         <Popover placement="bottom-end" isLazy>
                             <PopoverTrigger><InfoOutlineIcon cursor={'help'} /></PopoverTrigger>
-                            <PopoverContent width={'full'}>
+                            <PopoverContent width={'full'} boxShadow={'2xl'}>
                                 <PopoverHeader fontSize={'sm'}>Addresses</PopoverHeader>
                                 <PopoverBody>
                                     <Stack p={2}>
-                                        <AddressesInfo label={"YES"} value={'#'} link={'#'} />
-                                        <AddressesInfo label={"NO"} value={'#'} link={'#'} />
-                                        <AddressesInfo label={"LP"} value={"#"} link={"#"} />
-                                        <AddressesInfo label={"AMM ID"} value={"#"} link={"#"} />
+                                        <AddressesInfo label={"YES"} value={truncate(kryptMint.toBase58(), 8)} link={'#'} />
+                                        <AddressesInfo label={"NO"} value={truncate(ScroogeCoinMint.toBase58(), 8)} link={'#'} />
+                                        <AddressesInfo label={"LP"} value={truncate(poolMint.toBase58(), 8)} link={"#"} />
+                                        <AddressesInfo label={"AMM ID"} value={truncate(TOKEN_SWAP_PROGRAM_ID.toBase58(), 8)} link={"#"} />
                                         <AddressesInfo label={"Market ID"} value={"#"} link={"#"} />
                                     </Stack>
                                 </PopoverBody>
@@ -194,21 +206,19 @@ export const DepositSingleTokenType: FC = (props: {
                     It is important to withdraw liquidity before the event occurs.
                 </Alert>
 
-                <Button 
+                <Button type={'submit'}
                     className={
                         mode(styles.wallet_adapter_button_trigger_light_mode, 
                             styles.wallet_adapter_button_trigger_dark_mode
                         )
                     } 
-                    size="lg" 
-                    mt={5} 
-                    textColor={mode('white', '#353535')} 
-                    bg={mode('#353535', 'gray.50')} 
+                    size="lg" mt={5} textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')} 
                     width={'full'}
+                    boxShadow={'xl'}
                 >
                     Add liquidity
                 </Button>
-            </FormControl>
+            </form>
         </Box>
     )
 }

@@ -30,11 +30,11 @@ const MarketResolution = ({ market }) => {
                 {chunks.map(({ match, text }) => {
                     if (!match) return text
                     return text === 'then the market resolves to Yes' ? (
-                    <Text display={'inline'} color={mode('pink.500', 'pink.100')} fontWeight={'bold'}>
+                    <Text key={text} display={'inline'} color={mode('pink.500', 'pink.100')} fontWeight={'bold'}>
                         {text}
                     </Text>
                     ) : (
-                    <Text display={'inline'} fontWeight={'bold'}>
+                    <Text key={text} display={'inline'} fontWeight={'bold'}>
                         {text}
                     </Text>
                     )

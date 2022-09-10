@@ -1,10 +1,11 @@
 import {
-    Box,
+    HStack,
     Button,
     FormControl,
     FormLabel,
     NumberInput,
     NumberInputField,
+    VStack,
 } from "@chakra-ui/react"
 import { FC, useState } from "react"
 import * as Web3 from "@solana/web3.js"
@@ -185,16 +186,11 @@ export const Airdrop: FC = () => {
     }
 
     return (
-        <Box
-            p={4}
-            display={{ md: "flex" }}
-            maxWidth="32rem"
-            margin={2}
-            justifyContent="center"
-        >
-            <form style={{ margin: 2 }} onSubmit={handleKryptSubmit}>
-                <FormControl isRequired>
-                    <FormLabel color="gray.200">Krypt</FormLabel>
+        <HStack>
+            <VStack>
+                <form style={{ margin: 2 }} onSubmit={handleKryptSubmit}>
+                <FormControl isRequired onSubmit={handleKryptSubmit}>
+                    <FormLabel>Krypt</FormLabel>
                     <NumberInput
                         max={1000}
                         min={1}
@@ -202,17 +198,19 @@ export const Airdrop: FC = () => {
                             setAmount(parseInt(valueString))
                         }
                     >
-                        <NumberInputField id="amount" color="gray.400" />
+                        <NumberInputField id="amount" />
                     </NumberInput>
                 </FormControl>
                 <Button width="full" mt={4} type="submit">
                     Airdrop Krypt
                 </Button>
-            </form>
+                </form>
+            </VStack>
 
-            <form style={{ margin: 2 }} onSubmit={handleScroogeSubmit}>
+            <VStack>
+                <form style={{ margin: 2 }} onSubmit={handleScroogeSubmit}>
                 <FormControl isRequired>
-                    <FormLabel color="gray.200">Scrooge</FormLabel>
+                    <FormLabel>Scrooge</FormLabel>
                     <NumberInput
                         max={1000}
                         min={1}
@@ -220,13 +218,14 @@ export const Airdrop: FC = () => {
                             setAmount(parseInt(valueString))
                         }
                     >
-                        <NumberInputField id="amount" color="gray.400" />
+                        <NumberInputField id="amount" />
                     </NumberInput>
                 </FormControl>
                 <Button width="full" mt={4} type="submit">
                     Airdrop Scrooge
                 </Button>
-            </form>
-        </Box>
+                </form>
+            </VStack>
+        </HStack>
     )
 }

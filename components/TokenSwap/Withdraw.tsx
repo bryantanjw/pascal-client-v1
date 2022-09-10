@@ -5,9 +5,9 @@ import {
     NumberInput, NumberInputField,
     Stack,
     useColorModeValue as mode,
-    Alert,
+    useToast,
 } from "@chakra-ui/react"
-import { InfoOutlineIcon, WarningTwoIcon, ExternalLinkIcon } from "@chakra-ui/icons"
+import { useFormik } from 'formik'
 import { FC, useState } from "react"
 import * as Web3 from "@solana/web3.js"
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
@@ -35,10 +35,17 @@ export const WithdrawSingleTokenType: FC = (props: {
     const { connection } = useConnection()
     const { publicKey, sendTransaction } = useWallet()
 
-    const handleWithdrawSubmit = (event: any) => {
-        event.preventDefault()
-        handleTransactionSubmit()
-    }
+    // Handle deposit form submit
+    const toast = useToast()
+    const formik = useFormik({
+        initialValues: {
+            withdrawAmount: '',
+        },
+        onSubmit: values => {
+            handleTransactionSubmit();
+            setAmount(parseInt(values.withdrawAmount))
+        },
+    })
 
     const handleTransactionSubmit = async () => {
         if (!publicKey) {
@@ -97,13 +104,25 @@ export const WithdrawSingleTokenType: FC = (props: {
         transaction.add(instruction)
         try {
             let txid = await sendTransaction(transaction, connection)
-            alert(
-                `Transaction submitted: https://explorer.solana.com/tx/${txid}?cluster=devnet`
-            )
+            toast({
+                title: `Transaction submitted: https://explorer.solana.com/tx/${txid}?cluster=devnet`,
+                position: "bottom-right",
+                isClosable: true,
+                duration: 8000,
+                status: 'success',
+            })
             console.log(
                 `Transaction submitted: https://explorer.solana.com/tx/${txid}?cluster=devnet`
             )
         } catch (e) {
+            toast({
+                title: 'Transaction failed',
+                description: JSON.stringify(e),
+                position: "bottom-right",
+                isClosable: true,
+                duration: 8000,
+                status: 'error',
+            })
             console.log(JSON.stringify(e))
             alert(JSON.stringify(e))
         }
@@ -111,16 +130,15 @@ export const WithdrawSingleTokenType: FC = (props: {
 
     return (
         <Box>
-            <FormControl onSubmit={handleWithdrawSubmit}>
-                <NumberInput
-                    onChange={(valueString) =>
-                        setAmount(parseInt(valueString))
-                    }
-                >
-                    <NumberInputField id="amount" 
-                        placeholder="Enter amount to withdraw" fontWeight={'medium'} fontSize={'sm'} 
+            <form onSubmit={formik.handleSubmit}>
+                <NumberInput>
+                    <NumberInputField id="amount" fontWeight={'medium'} 
+                        placeholder="Enter amount to withdraw" fontSize={'sm'}
+                        onChange={formik.handleChange}
+                        value={formik.values.withdrawAmount}
                     />
                 </NumberInput>
+
 
                 <Stack my={3} spacing={3} p={4} borderWidth={"1px"} rounded={'md'}>
                     <LiquidityInfo label={'Pool Liquidity (YES)'} value={'#'} />
@@ -129,21 +147,19 @@ export const WithdrawSingleTokenType: FC = (props: {
                     <LiquidityInfo label={'Slippage'} value={'1%'} />
                 </Stack>
 
-                <Button 
+                <Button type={"submit"}
                     className={
                         mode(styles.wallet_adapter_button_trigger_light_mode, 
                             styles.wallet_adapter_button_trigger_dark_mode
                         )
                     } 
-                    size="lg" 
-                    mt={3} 
-                    textColor={mode('white', '#353535')} 
-                    bg={mode('#353535', 'gray.50')} 
+                    size="lg" mt={3} textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')} 
                     width={'full'}
+                    boxShadow={'xl'}
                 >
                     Remove liquidity
                 </Button>
-            </FormControl>
+            </form>
         </Box>
     )
 }

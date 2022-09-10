@@ -19,7 +19,7 @@ const gradientBackgroundStyle = {
     position: 'absolute',
     zIndex: -1,
     opacity: '50%',
-    width: '80%'
+    width: '60%'
 }
 const statStyle = {
     align: 'center',
@@ -39,6 +39,7 @@ function EventCard({ event }) {
           <a href={`/trade/${event.eventId}`}>
             <Stack spacing={4} p={5}
                 borderColor={useColorModeValue('#CFDAE1', '#696969')} borderWidth={1}
+                backdropFilter={'blur(50px)'}
                 _hover={{
                     // borderColor: useColorModeValue('gray.400', 'white'),
                     boxShadow: '2xl',
@@ -113,11 +114,11 @@ const List = () => {
             </HStack>
 
             <Image sx={gradientBackgroundStyle} src={'gradient-background.jpeg'}
-                alt={'background'} top={'100px'} transform={'rotate(180deg)'} visibility={useColorModeValue('visible', 'hidden')}
+                alt={'background'} right={'100px'} top={'100px'} transform={'rotate(180deg)'} visibility={useColorModeValue('visible', 'hidden')}
             />
 
             <Image sx={gradientBackgroundStyle} src={'gradient-background.jpeg'} visibility={useColorModeValue('visible', 'hidden')}
-                alt={'background'} bottom={'50px'} transform={'rotate(0deg)'} 
+                alt={'background'} left={'150px'} bottom={'0px'} transform={'rotate(180deg)'} 
             />
             
             <SimpleGrid columns={{ base: 1, md: 3 }} spacing={5}>

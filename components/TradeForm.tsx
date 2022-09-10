@@ -17,6 +17,8 @@ import { Step, Steps, useSteps } from "chakra-ui-steps"
 import * as React from 'react'
 import { TokenSwapForm } from './TokenSwap'
 import styles from '../styles/Home.module.css'
+import { Airdrop } from './TokenSwap/AirdropForm'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 type TradeFormItemProps = {
   label: string
@@ -44,6 +46,9 @@ export const TradeForm = ({ market }) => {
   })
   const [numberInput, setNumberInput] = useState<any>(1)
   const [isLoading, setIsLoading] = useState<Boolean | undefined>(false)
+
+  const { publicKey } = useWallet()
+  const isOwner = ( publicKey ? publicKey.toString() === process.env.NEXT_PUBLIC_OWNER_PUBLIC_KEY : false )
  
   // Styling config //
   const confettiConfig = {
@@ -116,6 +121,9 @@ export const TradeForm = ({ market }) => {
           <TabList mb={3}>
             <Tab sx={tabListStyle}>Swap</Tab>
             <Tab ml={3} sx={tabListStyle}>Pool</Tab>
+            {isOwner &&
+              <Tab ml={3} sx={tabListStyle}>Airdrop</Tab>
+            }
           </TabList>
 
           <TabPanels>
@@ -157,7 +165,7 @@ export const TradeForm = ({ market }) => {
               
               || activeStep === 1 && (
                 <Stack spacing={8}>
-                  <Heading size="md">Order Summary</Heading>
+                  <Heading size="md">Trade Summary</Heading>
 
                   <Stack spacing="4">
                     <TradeFormItem label="Price per contract" value={`${market.probability[0].yes}`} />
@@ -182,13 +190,13 @@ export const TradeForm = ({ market }) => {
 
                   <ButtonGroup justifyContent={'center'} size="lg" fontSize="md" spacing='3'>
                     <Button borderColor={useColorModeValue('#353535', 'gray.100')} variant={'outline'} onClick={prevStep}><ArrowBackIcon color={useColorModeValue('#353535', 'gray.50')} /></Button>
-                    <Button 
+                    <Button type={'submit'}
                     className={
                       useColorModeValue(styles.wallet_adapter_button_trigger_light_mode, 
                         styles.wallet_adapter_button_trigger_dark_mode
                       )
                     } 
-                      textColor={useColorModeValue('white', '#353535')} bg={useColorModeValue('#353535', 'gray.50')} width={'80%'}
+                      textColor={useColorModeValue('white', '#353535')} bg={useColorModeValue('#353535', 'gray.50')} width={'80%'} boxShadow={'xl'}
                       _hover={{
                         bg: useColorModeValue('black', 'gray.300')
                       }}
@@ -220,6 +228,11 @@ export const TradeForm = ({ market }) => {
           {/* Pool Tab */}
           <TabPanel px={0}>
               <TokenSwapForm />
+          </TabPanel>
+
+          {/* Airdrop Tab for testing */}
+          <TabPanel px={0}>
+              <Airdrop />
           </TabPanel>
 
         </TabPanels>

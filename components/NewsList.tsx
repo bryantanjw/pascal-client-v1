@@ -45,7 +45,7 @@ const NewsListItem = (props: NewsListItemProp) => {
                 marginTop={1}
                 display="flex"
                 justifyContent="space-between"
-                transition={'border-color 0.3s linear'}
+                transition={'border-color 0.1s linear'}
                 _hover={{ borderColor:'gray.400' }}>
                 
                     <Flex>
