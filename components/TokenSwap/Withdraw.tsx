@@ -6,7 +6,9 @@ import {
     Stack,
     useColorModeValue as mode,
     useToast,
+    Alert,
 } from "@chakra-ui/react"
+import { WarningTwoIcon } from "@chakra-ui/icons"
 import { useFormik } from 'formik'
 import { FC, useState } from "react"
 import * as Web3 from "@solana/web3.js"
@@ -124,7 +126,6 @@ export const WithdrawSingleTokenType: FC = (props: {
                 status: 'error',
             })
             console.log(JSON.stringify(e))
-            alert(JSON.stringify(e))
         }
     }
 

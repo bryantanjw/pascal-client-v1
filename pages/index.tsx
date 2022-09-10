@@ -4,6 +4,7 @@ import styles from '../styles/Home.module.css'
 import WithSubnavigation from 'components/TopBar'
 import List from 'components/List'
 import { Box, Stack, Heading, Text } from '@chakra-ui/react'
+import Layout from 'components/Layout'
 
 const Home: NextPage = () => {
   
@@ -26,45 +27,47 @@ const Home: NextPage = () => {
       
       <WithSubnavigation />
 
-      <Box maxW={{ base: '3xl', lg: '5xl' }}
-        mx="auto"
-        py={{ base: '10', md: '10', lg: '12' }}
-      >
-        <Stack spacing={{ base: 8, md: 10 }}>
+      <Layout>
+        <Box maxW={{ base: '3xl', lg: '5xl' }}
+          mx="auto"
+          py={{ base: '10', md: '10', lg: '12' }}
+        >
+          <Stack spacing={{ base: 8, md: 10 }}>
 
-          <Heading
-              lineHeight={1.1}
-              fontWeight={600}
-              fontSize={{ base: '4xl', sm: '4xl', lg: '6xl' }}>
-              <Text
-                as={'span'}
-                position={'relative'}
-              >
-                Trade
+            <Heading
+                lineHeight={1.1}
+                fontWeight={600}
+                fontSize={{ base: '4xl', sm: '4xl', lg: '6xl' }}>
+                <Text
+                  as={'span'}
+                  position={'relative'}
+                >
+                  Trade
+                </Text>
+                <Text
+                  as={'span'}
+                  position={'relative'}
+                  color={'gray.400'}
+                >
+                  &nbsp;directly
+                </Text>
+                <br />
+                <Text as={'span'} color={'gray.400'}>
+                  on the outcome of
+                </Text>
+                <Text as={'span'}>
+                  &nbsp;events.
+                </Text>
+              </Heading>
+              <Text color={'gray.500'} fontSize={{ base: 'xl', md: '2xl' }}>
+                A commodity derivative powered by automated market makers.
               </Text>
-              <Text
-                as={'span'}
-                position={'relative'}
-                color={'gray.400'}
-              >
-                &nbsp;directly
-              </Text>
-              <br />
-              <Text as={'span'} color={'gray.400'}>
-                on the outcome of
-              </Text>
-              <Text as={'span'}>
-                &nbsp;events.
-              </Text>
-            </Heading>
-            <Text color={'gray.500'} fontSize={{ base: 'xl', md: '2xl' }}>
-              A commodity derivative powered by automated market makers.
-            </Text>
 
-          <List />
+            <List />
 
-        </Stack>
-      </Box>
+          </Stack>
+        </Box>
+      </Layout>
     </div>
   )
 }

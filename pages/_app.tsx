@@ -5,6 +5,8 @@ import { mode } from '@chakra-ui/theme-tools'
 import { StepsStyleConfig as Steps } from 'chakra-ui-steps'
 import { extendTheme } from '@chakra-ui/react'
 import WalletContextProvider from 'components/WalletContextProvider'
+import NextNProgress from "nextjs-progressbar"
+import { AnimatePresence } from 'framer-motion'
 
 const colors = {
   brand: {
@@ -28,11 +30,19 @@ const theme = extendTheme({
   styles,
 })
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps, router }: AppProps) {
+  const url = router.route
   return (
     <ChakraProvider theme={theme}>
       <WalletContextProvider>
-        <Component {...pageProps} />
+      {/* <NextNProgress /> */}
+      <AnimatePresence
+        exitBeforeEnter
+        initial={false}
+        onExitComplete={() => window.scrollTo(0, 0)}
+      >
+        <Component {...pageProps} key={url} />
+      </AnimatePresence>
       </WalletContextProvider>
     </ChakraProvider>
   )

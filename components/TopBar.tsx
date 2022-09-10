@@ -6,7 +6,7 @@ import {
     Stack,
     Collapse,
     Icon,
-    Link,
+    Link as ChakraLink,
     Popover,
     PopoverTrigger,
     PopoverContent,
@@ -14,16 +14,17 @@ import {
     useBreakpointValue,
     useDisclosure,
 } from '@chakra-ui/react';
-import { ColorModeSwitcher } from './ColorModeSwitcher';
+import { ColorModeSwitcher } from './ColorModeSwitcher'
+import ChakraNextLink from './ChakraNextLink'
 import {
     HamburgerIcon,
     CloseIcon,
     ChevronDownIcon,
     ChevronRightIcon,
-} from '@chakra-ui/icons';
+} from '@chakra-ui/icons'
 import {
     WalletMultiButton
-} from '@solana/wallet-adapter-react-ui';
+} from '@solana/wallet-adapter-react-ui'
 import styles from '../styles/Home.module.css'
 
 export default function WithSubnavigation() {
@@ -108,7 +109,7 @@ const DesktopNav = () => {
             <Box key={navItem.label}>
                 <Popover trigger={'hover'} placement={'bottom-start'}>
                 <PopoverTrigger>
-                    <Link
+                    <ChakraNextLink scroll={false}
                         p={2}
                         href={navItem.href ?? '#'}
                         fontSize={'sm'}
@@ -119,7 +120,7 @@ const DesktopNav = () => {
                             color: linkHoverColor,
                         }}>
                         {navItem.label}
-                    </Link>
+                    </ChakraNextLink>
                 </PopoverTrigger>
     
                 {navItem.children && (
@@ -146,7 +147,7 @@ const DesktopNav = () => {
   
 const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
     return (
-        <Link
+        <ChakraLink
             href={href}
             role={'group'}
             display={'block'}
@@ -156,7 +157,7 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
             <Stack direction={'row'} align={'center'}>
             <Box>
                 <Text
-                transition={'all .3s ease'}
+                transition={'all .1s ease'}
                 _groupHover={{ color: 'blue.400' }}
                 fontWeight={500}>
                 {label}
@@ -164,7 +165,7 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
                 <Text fontSize={'sm'}>{subLabel}</Text>
             </Box>
             <Flex
-                transition={'all .3s ease'}
+                transition={'all .1s ease'}
                 transform={'translateX(-10px)'}
                 opacity={0}
                 _groupHover={{ opacity: '100%', transform: 'translateX(0)' }}
@@ -174,7 +175,7 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
                 <Icon color={'blue.400'} w={5} h={5} as={ChevronRightIcon} />
             </Flex>
             </Stack>
-        </Link>
+        </ChakraLink>
     );
   };
   
@@ -198,7 +199,7 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
         <Stack spacing={4} onClick={children && onToggle}>
             <Flex
             py={2}
-            as={Link}
+            as={ChakraLink}
             href={href ?? '#'}
             justify={'space-between'}
             align={'center'}
@@ -231,9 +232,9 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
                 align={'start'}>
                 {children &&
                 children.map((child) => (
-                    <Link key={child.label} py={2} href={child.href}>
+                    <ChakraLink key={child.label} py={2} href={child.href}>
                     {child.label}
-                    </Link>
+                    </ChakraLink>
                 ))}
             </Stack>
             </Collapse>

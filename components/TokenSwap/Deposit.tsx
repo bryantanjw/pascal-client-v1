@@ -159,8 +159,15 @@ export const DepositSingleTokenType: FC = (props: {
                 status: 'success',
             })
         } catch (e) {
+            toast({
+                title: 'Transaction failed',
+                description: JSON.stringify(e),
+                position: "bottom-right",
+                isClosable: true,
+                duration: 8000,
+                status: 'error',
+            })
             console.log(JSON.stringify(e))
-            alert(JSON.stringify(e))
         }
     }
 
@@ -206,7 +213,7 @@ export const DepositSingleTokenType: FC = (props: {
                     It is important to withdraw liquidity before the event occurs.
                 </Alert>
 
-                <Button type={'submit'}
+                <Button type={'submit'} isLoading={formik.isSubmitting}
                     className={
                         mode(styles.wallet_adapter_button_trigger_light_mode, 
                             styles.wallet_adapter_button_trigger_dark_mode

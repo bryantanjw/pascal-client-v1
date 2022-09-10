@@ -112,7 +112,7 @@ export const TradeForm = ({ market }) => {
   return (
     <>
     {/* TODO: refine progress bar design */}
-    <Stack overflow={'visible'} spacing="8" 
+    <Stack spacing="8" 
       rounded="xl" padding="6" borderWidth={'1px'} 
       position={{ 'sm': 'relative', 'lg': 'fixed'}} left={{ 'sm': 'none', 'lg': '60%'}}
       width={{'base': 's', 'md': '340px'}}>
