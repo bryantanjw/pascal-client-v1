@@ -160,7 +160,7 @@ export const WithdrawSingleTokenType: FC = (props: {
                         TOKEN_SWAP_PROGRAM_ID={TOKEN_SWAP_PROGRAM_ID}
                     />
 
-                    <PoolTooltip publicKey={publicKey} label={'Connect wallet to deposit'}>
+                    <PoolTooltip publicKey={publicKey} label={'Connect wallet to withdraw'}>
                         <Button type={"submit"} isDisabled={!publicKey}
                             className={
                                 mode(styles.wallet_adapter_button_trigger_light_mode, 

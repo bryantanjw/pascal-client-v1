@@ -9,13 +9,14 @@ import {
     useCheckboxGroup,
     ScaleFade,
     Skeleton,
+    chakra, shouldForwardProp, Grid,
 } from '@chakra-ui/react'
 import styles from '../styles/Home.module.css'
 import { FilterToggle } from './FilterToggle'
-import Link from 'next/link'
 import ChakraNextLink from './ChakraNextLink'
+import { motion, isValidMotionProp } from 'framer-motion'
 
-// Style config
+// Style config //
 const gradientBackgroundStyle = {
     filter: 'blur(60px)',
     position: 'absolute',
@@ -28,9 +29,11 @@ const statStyle = {
     direction: 'row',
     filter: 'invert(40%)'
 }
+// Style config //
+
 const categories = ['Financials', 'Economics', 'Crypto', 'Climate']
 
-// TODO: 1. add createEvent button/modal for admin
+// TODO: 1. add createMarket button/modal for admin
 // 2. dynamic closing date of event
 function EventCard({ event }) {
     const iconColor = useColorModeValue('invert(0%)', 'invert(100%)')
@@ -125,9 +128,9 @@ const List = () => {
             />
 
             <Image sx={gradientBackgroundStyle} src={'gradient-background.jpeg'} visibility={useColorModeValue('visible', 'hidden')}
-                alt={'background'} left={'50%'} bottom={'0px'} transform={'rotate(340deg)'} 
+                alt={'background'} right={'100px'} bottom={'0px'} transform={'rotate(300deg)'} 
             />
-            
+
             <SimpleGrid columns={{ base: 1, md: 3 }} spacing={5}>
                 {filteredEvents.length != 0 ?
                     (filteredEvents.map((event: any) => (
@@ -146,4 +149,4 @@ const List = () => {
     );
 };
   
-export default List;
+export default List

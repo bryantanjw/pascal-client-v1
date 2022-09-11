@@ -47,12 +47,12 @@ const Home: NextPage = () => {
                 <Text
                   as={'span'}
                   position={'relative'}
-                  color={'gray.400'}
+                  color={'gray.500'}
                 >
                   &nbsp;directly
                 </Text>
                 <br />
-                <Text as={'span'} color={'gray.400'}>
+                <Text as={'span'} color={'gray.500'}>
                   on the outcome of
                 </Text>
                 <Text as={'span'}>
