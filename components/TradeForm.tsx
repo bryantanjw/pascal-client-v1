@@ -191,7 +191,10 @@ export const TradeForm = ({ market }) => {
                   </Stack>
 
                   <ButtonGroup justifyContent={'center'} size="lg" fontSize="md" spacing='3'>
-                    <Button borderColor={useColorModeValue('#353535', 'gray.100')} variant={'outline'} onClick={prevStep}><ArrowBackIcon color={useColorModeValue('#353535', 'gray.50')} /></Button>
+                    <Button onClick={prevStep} borderColor={useColorModeValue('#353535', 'gray.100')} variant={'outline'}>
+                      <ArrowBackIcon color={useColorModeValue('#353535', 'gray.50')} />
+                    </Button>
+
                     <Button type={'submit'} isDisabled={!publicKey}
                     className={
                       useColorModeValue(styles.wallet_adapter_button_trigger_light_mode, 

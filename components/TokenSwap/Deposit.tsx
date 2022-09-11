@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react"
 import { WarningTwoIcon, ExternalLinkIcon } from "@chakra-ui/icons"
 import { useFormik } from 'formik'
-import { FC, useEffect, useState } from "react"
+import { FC, useState } from "react"
 import * as Web3 from "@solana/web3.js"
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
 import {
@@ -27,7 +27,7 @@ import {
 } from "../../utils/constants"
 import { TokenSwap, TOKEN_SWAP_PROGRAM_ID } from "@solana/spl-token-swap"
 import * as token from "@solana/spl-token"
-import { MarketLiquidityInfo } from "./LiquidityInfo"
+import { MarketLiquidityInfo, PoolTooltip } from "./LiquidityInfo"
 import styles from '../../styles/Home.module.css'
 
 export const DepositSingleTokenType: FC = (props: {
@@ -167,18 +167,20 @@ export const DepositSingleTokenType: FC = (props: {
                         It is important to withdraw liquidity before the event occurs.
                     </Alert>
 
-                    <Button type={'submit'} isLoading={formik.isSubmitting} isDisabled={!publicKey}
-                        className={
-                            mode(styles.wallet_adapter_button_trigger_light_mode, 
-                                styles.wallet_adapter_button_trigger_dark_mode
-                            )
-                        } 
-                        size="lg" mt={5} textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')} 
-                        width={'full'}
-                        boxShadow={'xl'}
-                    >
-                        Add liquidity
-                    </Button>
+                    <PoolTooltip publicKey={publicKey} label={'Connect wallet to deposit'}>
+                        <Button type={'submit'} isLoading={formik.isSubmitting} isDisabled={!publicKey}
+                            className={
+                                mode(styles.wallet_adapter_button_trigger_light_mode, 
+                                    styles.wallet_adapter_button_trigger_dark_mode
+                                )
+                            } 
+                            size="lg" mt={5} textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')} 
+                            width={'full'}
+                            boxShadow={'xl'}
+                        >
+                            Add liquidity
+                        </Button>
+                    </PoolTooltip>
                 </FormControl>
             </form>
         </Box>

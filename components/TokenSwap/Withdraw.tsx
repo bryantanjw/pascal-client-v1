@@ -3,7 +3,7 @@ import {
     Button,
     FormControl,
     NumberInput, NumberInputField,
-    Stack, HStack,
+    HStack,
     useColorModeValue as mode,
     useToast,
     Link,
@@ -28,7 +28,7 @@ import {
 import { TokenSwap, TOKEN_SWAP_PROGRAM_ID } from "@solana/spl-token-swap"
 import * as token from "@solana/spl-token"
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token"
-import { MarketLiquidityInfo } from "./LiquidityInfo"
+import { MarketLiquidityInfo, PoolTooltip } from "./LiquidityInfo"
 import styles from '../../styles/Home.module.css'
 
 export const WithdrawSingleTokenType: FC = (props: {
@@ -160,18 +160,20 @@ export const WithdrawSingleTokenType: FC = (props: {
                         TOKEN_SWAP_PROGRAM_ID={TOKEN_SWAP_PROGRAM_ID}
                     />
 
-                    <Button type={"submit"} isDisabled={!publicKey}
-                        className={
-                            mode(styles.wallet_adapter_button_trigger_light_mode, 
-                                styles.wallet_adapter_button_trigger_dark_mode
-                            )
-                        } 
-                        size="lg" mt={3} textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')} 
-                        width={'full'}
-                        boxShadow={'xl'}
-                    >
-                        Remove liquidity
-                    </Button>
+                    <PoolTooltip publicKey={publicKey} label={'Connect wallet to deposit'}>
+                        <Button type={"submit"} isDisabled={!publicKey}
+                            className={
+                                mode(styles.wallet_adapter_button_trigger_light_mode, 
+                                    styles.wallet_adapter_button_trigger_dark_mode
+                                )
+                            } 
+                            size="lg" mt={3} textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')} 
+                            width={'full'}
+                            boxShadow={'xl'}
+                        >
+                            Remove liquidity
+                        </Button>
+                    </PoolTooltip>
                 </FormControl>
             </form>
         </Box>

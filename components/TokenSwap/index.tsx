@@ -12,6 +12,7 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react"
 import { useEffect, useState } from "react"
 import { poolMint } from "utils/constants"
 import { TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID } from "@solana/spl-token"
+import { PoolTooltip } from "./LiquidityInfo"
 
 export const TokenSwapForm = () => {
     const { connection } = useConnection()
@@ -53,6 +54,7 @@ export const TokenSwapForm = () => {
     }
     // Style config //
 
+    //  derive the wallet's associated token address.
     async function findAssociatedTokenAddress(
         walletAddress: PublicKey,
         tokenMintAddress: PublicKey
@@ -66,7 +68,8 @@ export const TokenSwapForm = () => {
             ASSOCIATED_TOKEN_PROGRAM_ID
         )
         )[0]
-        console.log(associatedAddress.toBase58())
+        console.log("User's associated token address", associatedAddress.toBase58())
+
         return associatedAddress
     }
     
@@ -75,10 +78,15 @@ export const TokenSwapForm = () => {
             return
         }
         const fetchPoolBalance = async () => {
-            const address = await findAssociatedTokenAddress(publicKey, poolMint)
-            const balance = (await connection.getTokenAccountBalance(address)).value.uiAmount
+            try {
+                const address = await findAssociatedTokenAddress(publicKey, poolMint)
+                const balance = (await connection.getTokenAccountBalance(address)).value.uiAmount
 
-            setAccountLiquidity(balance?.toLocaleString())
+                setAccountLiquidity(balance?.toLocaleString())
+            } catch (err) {
+                console.log(err)
+                setAccountLiquidity(0)
+            }
         }
 
         fetchPoolBalance()
@@ -86,16 +94,18 @@ export const TokenSwapForm = () => {
 
     return (
         <Stack spacing={7}>
-            <Stack spacing={3} filter={blurChange()} transition={'all .2s'}>
-                <Flex justify={'space-between'}>
-                    <Text sx={textStyle} color={mode('gray.600', 'gray.400')}>Your Liquidity</Text>
-                    <Text sx={textStyle}>{accountLiquidity} LP</Text>
-                </Flex>
-                <Flex justify={'space-between'}>
-                    <Text sx={textStyle} color={mode('gray.600', 'gray.400')}>Your Earnings</Text>
-                    <Text sx={textStyle}># USDC</Text>
-                </Flex>
-            </Stack>
+            <PoolTooltip publicKey={publicKey} label={'Connect wallet to view liquidity'}>
+                <Stack spacing={3} filter={blurChange()} transition={'all .2s ease'} cursor={publicKey ? 'auto': 'not-allowed'}>
+                    <Flex justify={'space-between'}>
+                        <Text sx={textStyle} color={mode('gray.600', 'gray.400')}>Your Liquidity</Text>
+                        <Text sx={textStyle}>{accountLiquidity} LP</Text>
+                    </Flex>
+                    <Flex justify={'space-between'}>
+                        <Text sx={textStyle} color={mode('gray.600', 'gray.400')}>Your Earnings</Text>
+                        <Text sx={textStyle}># USDC</Text>
+                    </Flex>
+                </Stack>
+            </PoolTooltip>
 
             <Tabs variant={'unstyled'}>
                 <TabList 
@@ -119,10 +129,4 @@ export const TokenSwapForm = () => {
             </Tabs>
         </Stack>
     )
-}
-
-const spring = {
-    type: "spring",
-    stiffness: 700,
-    damping: 30
 }

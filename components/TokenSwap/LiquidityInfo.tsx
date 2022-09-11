@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import React, { useState, useEffect, ReactNode } from "react"
 import {
     Flex,
     Stack,
@@ -9,11 +9,13 @@ import {
     useColorModeValue as mode,
     useClipboard,
     useToast,
+    Tooltip,
     Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverBody,
 } from "@chakra-ui/react"
 import { ExternalLinkIcon, InfoOutlineIcon } from "@chakra-ui/icons"
 import { truncate } from "utils/truncateAddress"
 import { useWallet } from "@solana/wallet-adapter-react"
+import * as Web3 from "@solana/web3.js"
 
 const AddressesInfo = (props) => {
     const toast = useToast()
@@ -103,5 +105,18 @@ export const MarketLiquidityInfo = (props) => {
             </LiquidityInfo>
             <LiquidityInfo label={'Slippage'} value={'1%'} />
         </Stack>
+    )
+}
+
+export const PoolTooltip = (props) => {
+    const { publicKey, label, children } = props
+
+    return (
+        <Tooltip hasArrow label={label} shouldWrapChildren 
+            isDisabled={publicKey ? true : false}
+            p={3} rounded={'md'} placement={'auto'}
+        >
+            {children}
+        </Tooltip>
     )
 }
