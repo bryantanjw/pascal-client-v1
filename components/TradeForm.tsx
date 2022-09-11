@@ -115,7 +115,9 @@ export const TradeForm = ({ market }) => {
     <Stack spacing="8" 
       rounded="xl" padding="6" borderWidth={'1px'} 
       position={{ 'sm': 'relative', 'lg': 'fixed'}} left={{ 'sm': 'none', 'lg': '60%'}}
-      width={{'base': 's', 'md': '340px'}}>
+      width={{'base': 's', 'md': '340px'}}
+      boxShadow={'sm'}
+    >
       
       <Tabs variant={'unstyled'}>
           <TabList mb={3}>
@@ -165,7 +167,7 @@ export const TradeForm = ({ market }) => {
               
               || activeStep === 1 && (
                 <Stack spacing={8}>
-                  <Heading size="md">Trade Summary</Heading>
+                  <Heading size="md">Swap Summary</Heading>
 
                   <Stack spacing="4">
                     <TradeFormItem label="Price per contract" value={`${market.probability[0].yes}`} />
@@ -190,7 +192,7 @@ export const TradeForm = ({ market }) => {
 
                   <ButtonGroup justifyContent={'center'} size="lg" fontSize="md" spacing='3'>
                     <Button borderColor={useColorModeValue('#353535', 'gray.100')} variant={'outline'} onClick={prevStep}><ArrowBackIcon color={useColorModeValue('#353535', 'gray.50')} /></Button>
-                    <Button type={'submit'}
+                    <Button type={'submit'} isDisabled={!publicKey}
                     className={
                       useColorModeValue(styles.wallet_adapter_button_trigger_light_mode, 
                         styles.wallet_adapter_button_trigger_dark_mode

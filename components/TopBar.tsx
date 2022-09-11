@@ -109,7 +109,7 @@ const DesktopNav = () => {
             <Box key={navItem.label}>
                 <Popover trigger={'hover'} placement={'bottom-start'}>
                 <PopoverTrigger>
-                    <ChakraNextLink scroll={false}
+                    <ChakraNextLink
                         p={2}
                         href={navItem.href ?? '#'}
                         fontSize={'sm'}

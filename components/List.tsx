@@ -15,7 +15,7 @@ import Link from 'next/link'
 
 // Style config
 const gradientBackgroundStyle = {
-    filter: 'blur(55px)',
+    filter: 'blur(60px)',
     position: 'absolute',
     zIndex: -1,
     opacity: '50%',
@@ -122,7 +122,7 @@ const List = () => {
             />
 
             <Image sx={gradientBackgroundStyle} src={'gradient-background.jpeg'} visibility={useColorModeValue('visible', 'hidden')}
-                alt={'background'} left={'0px'} bottom={'0px'} transform={'rotate(200deg)'} 
+                alt={'background'} left={'50%'} bottom={'0px'} transform={'rotate(340deg)'} 
             />
             
             <SimpleGrid columns={{ base: 1, md: 3 }} spacing={5}>

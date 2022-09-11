@@ -3,21 +3,16 @@ import {
     Button,
     FormControl,
     NumberInput, NumberInputField,
-    Stack,
-    Flex,
     Text,
     useColorModeValue as mode,
     Alert,
     HStack,
-    Code,
     Link,
-    Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverBody,
-    useClipboard,
     useToast,
 } from "@chakra-ui/react"
-import { InfoOutlineIcon, WarningTwoIcon, ExternalLinkIcon } from "@chakra-ui/icons"
+import { WarningTwoIcon, ExternalLinkIcon } from "@chakra-ui/icons"
 import { useFormik } from 'formik'
-import { FC, useState } from "react"
+import { FC, useEffect, useState } from "react"
 import * as Web3 from "@solana/web3.js"
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
 import {
@@ -28,48 +23,12 @@ import {
     poolKryptAccount,
     poolScroogeAccount,
     poolMint,
+    tokenAccountPool,
 } from "../../utils/constants"
 import { TokenSwap, TOKEN_SWAP_PROGRAM_ID } from "@solana/spl-token-swap"
 import * as token from "@solana/spl-token"
-import { truncate } from "utils/truncateAddress";
+import { MarketLiquidityInfo } from "./LiquidityInfo"
 import styles from '../../styles/Home.module.css'
-
-export const LiquidityInfo = (props) => {
-    const { label, value, children } = props
-    return (
-      <Flex justify="space-between" fontSize="xs">
-        <Text fontWeight="medium" color={mode('gray.600', 'gray.400')}>
-            {label}
-        </Text>
-            {value ? <Text fontWeight="medium">{value}</Text> : children}
-      </Flex>
-    )
-}
-
-const AddressesInfo = (props) => {
-    const toast = useToast()
-    const { label, value, link } = props
-    const { hasCopied, onCopy } = useClipboard(value)
-
-    return (
-        <Stack>
-            <HStack spacing={3}>
-                <Text>{label}</Text>
-                <Code fontSize={'xs'} onClick={() => {
-                    onCopy
-                    toast({
-                        title: 'Address copied to clipboard.',
-                        status: 'success',
-                        position: 'bottom-right',
-                        duration: 4000,
-                        isClosable: true,
-                    })              
-                }} cursor={'pointer'}>{value}</Code>
-                <Link href={link} isExternal><ExternalLinkIcon /></Link>
-            </HStack>
-        </Stack>
-    )
-}
 
 export const DepositSingleTokenType: FC = (props: {
     onInputChange?: (val: number) => void
@@ -86,9 +45,10 @@ export const DepositSingleTokenType: FC = (props: {
         initialValues: {
             depositAmount: '',
         },
-        onSubmit: values => {
+        onSubmit: (values, actions) => {
+            actions.setSubmitting(true)
             handleTransactionSubmit();
-            setAmount(parseInt(values.depositAmount))
+            actions.setSubmitting(false);
         },
     })
 
@@ -149,23 +109,32 @@ export const DepositSingleTokenType: FC = (props: {
         try {
             let txid = await sendTransaction(transaction, connection)
             console.log(
-                `Transaction submitted: https://explorer.solana.com/tx/${txid}?cluster=devnet`
+                `Transaction submitted: https://solscan.io/tx/${txid}?cluster=devnet`
             )
             toast({
-                title: `Transaction submitted: https://explorer.solana.com/tx/${txid}?cluster=devnet`,
+                title: "Transaction submitted",
+                description: 
+                    <Link href={`https://solscan.io/tx/${txid}?cluster=devnet`} isExternal>
+                        <HStack>
+                            <Text>View transaction</Text>
+                            <ExternalLinkIcon />
+                        </HStack>
+                    </Link>,
                 position: "bottom-right",
                 isClosable: true,
                 duration: 8000,
                 status: 'success',
+                containerStyle: { marginBottom: '25px'},
             })
         } catch (e) {
             toast({
                 title: 'Transaction failed',
-                description: JSON.stringify(e),
+                description: JSON.stringify(e.message),
                 position: "bottom-right",
                 isClosable: true,
                 duration: 8000,
                 status: 'error',
+                containerStyle: { marginBottom: '25px'},
             })
             console.log(JSON.stringify(e))
         }
@@ -174,57 +143,43 @@ export const DepositSingleTokenType: FC = (props: {
     return (
         <Box>
             <form onSubmit={formik.handleSubmit}>
-                <NumberInput>
-                    <NumberInputField id="amount" fontWeight={'medium'} 
-                        placeholder="Enter amount to deposit" fontSize={'sm'}
-                        onChange={formik.handleChange}
-                        value={formik.values.depositAmount}
+                <FormControl>
+                    <NumberInput onChange={(valueString) => setAmount(parseInt(valueString))}>
+                        <NumberInputField id="amount" value={formik.values.depositAmount}
+                            fontWeight={'medium'} 
+                            placeholder="Enter amount to deposit" 
+                            fontSize={'sm'}
+                        />
+                    </NumberInput>
+
+                    <MarketLiquidityInfo 
+                        connection={connection}
+                        poolAccountA={poolKryptAccount} 
+                        poolAccountB={poolScroogeAccount}
+                        tokenAccountPool={tokenAccountPool}
+                        TOKEN_SWAP_PROGRAM_ID={TOKEN_SWAP_PROGRAM_ID}
                     />
-                </NumberInput>
+                    
+                    <Alert bg={mode('blue.50', 'blue.900')} fontSize={'xs'} rounded={'md'} 
+                        px={4} flexDirection={'column'}>
+                        <WarningTwoIcon alignSelf={'start'} mb={2}/>
+                        Providing liquidity is risky. 
+                        It is important to withdraw liquidity before the event occurs.
+                    </Alert>
 
-                <Stack my={3} spacing={3} p={4} borderWidth={"1px"} rounded={'md'}>
-                    <LiquidityInfo label={'Pool Liquidity (YES)'} value={'#'} />
-                    <LiquidityInfo label={'Pool Liquidity (NO)'} value={'#'} />
-                    <LiquidityInfo label={'LP Supply'} value={'#'} />
-                    <LiquidityInfo label={'Addresses'}>
-                        <Popover placement="bottom-end" isLazy>
-                            <PopoverTrigger><InfoOutlineIcon cursor={'help'} /></PopoverTrigger>
-                            <PopoverContent width={'full'} boxShadow={'2xl'}>
-                                <PopoverHeader fontSize={'sm'}>Addresses</PopoverHeader>
-                                <PopoverBody>
-                                    <Stack p={2}>
-                                        <AddressesInfo label={"YES"} value={truncate(kryptMint.toBase58(), 8)} link={'#'} />
-                                        <AddressesInfo label={"NO"} value={truncate(ScroogeCoinMint.toBase58(), 8)} link={'#'} />
-                                        <AddressesInfo label={"LP"} value={truncate(poolMint.toBase58(), 8)} link={"#"} />
-                                        <AddressesInfo label={"AMM ID"} value={truncate(TOKEN_SWAP_PROGRAM_ID.toBase58(), 8)} link={"#"} />
-                                        <AddressesInfo label={"Market ID"} value={"#"} link={"#"} />
-                                    </Stack>
-                                </PopoverBody>
-                            </PopoverContent>
-                        </Popover>
-                    </LiquidityInfo>
-                    <LiquidityInfo label={'Slippage'} value={'1%'} />
-                </Stack>
-
-                <Alert bg={mode('blue.50', 'blue.900')} fontSize={'xs'} rounded={'md'} 
-                    px={4} flexDirection={'column'}>
-                    <WarningTwoIcon alignSelf={'start'} mb={2}/>
-                    Providing liquidity is risky. 
-                    It is important to withdraw liquidity before the event occurs.
-                </Alert>
-
-                <Button type={'submit'} isLoading={formik.isSubmitting}
-                    className={
-                        mode(styles.wallet_adapter_button_trigger_light_mode, 
-                            styles.wallet_adapter_button_trigger_dark_mode
-                        )
-                    } 
-                    size="lg" mt={5} textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')} 
-                    width={'full'}
-                    boxShadow={'xl'}
-                >
-                    Add liquidity
-                </Button>
+                    <Button type={'submit'} isLoading={formik.isSubmitting} isDisabled={!publicKey}
+                        className={
+                            mode(styles.wallet_adapter_button_trigger_light_mode, 
+                                styles.wallet_adapter_button_trigger_dark_mode
+                            )
+                        } 
+                        size="lg" mt={5} textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')} 
+                        width={'full'}
+                        boxShadow={'xl'}
+                    >
+                        Add liquidity
+                    </Button>
+                </FormControl>
             </form>
         </Box>
     )

@@ -1,12 +1,13 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
-import { ChakraProvider } from '@chakra-ui/react'
+import { ChakraProvider, useColorModeValue } from '@chakra-ui/react'
 import { mode } from '@chakra-ui/theme-tools'
 import { StepsStyleConfig as Steps } from 'chakra-ui-steps'
 import { extendTheme } from '@chakra-ui/react'
 import WalletContextProvider from 'components/WalletContextProvider'
 import NextNProgress from "nextjs-progressbar"
 import { AnimatePresence } from 'framer-motion'
+import { baseURL } from 'config'
 
 const colors = {
   brand: {
@@ -31,11 +32,12 @@ const theme = extendTheme({
 })
 
 function MyApp({ Component, pageProps, router }: AppProps) {
-  const url = router.route
+  const url = `${baseURL}${router.route}`
+ 
   return (
     <ChakraProvider theme={theme}>
       <WalletContextProvider>
-      {/* <NextNProgress /> */}
+      <NextNProgress height={2} color={'black'} />
       <AnimatePresence
         exitBeforeEnter
         initial={false}

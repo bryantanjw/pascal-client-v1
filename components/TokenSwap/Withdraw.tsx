@@ -3,12 +3,13 @@ import {
     Button,
     FormControl,
     NumberInput, NumberInputField,
-    Stack,
+    Stack, HStack,
     useColorModeValue as mode,
     useToast,
-    Alert,
+    Link,
+    Text,
 } from "@chakra-ui/react"
-import { WarningTwoIcon } from "@chakra-ui/icons"
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { useFormik } from 'formik'
 import { FC, useState } from "react"
 import * as Web3 from "@solana/web3.js"
@@ -22,11 +23,12 @@ import {
     poolScroogeAccount,
     poolMint,
     feeAccount,
+    tokenAccountPool,
 } from "../../utils/constants"
 import { TokenSwap, TOKEN_SWAP_PROGRAM_ID } from "@solana/spl-token-swap"
 import * as token from "@solana/spl-token"
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token"
-import { LiquidityInfo } from "./Deposit"
+import { MarketLiquidityInfo } from "./LiquidityInfo"
 import styles from '../../styles/Home.module.css'
 
 export const WithdrawSingleTokenType: FC = (props: {
@@ -45,7 +47,6 @@ export const WithdrawSingleTokenType: FC = (props: {
         },
         onSubmit: values => {
             handleTransactionSubmit();
-            setAmount(parseInt(values.withdrawAmount))
         },
     })
 
@@ -107,11 +108,19 @@ export const WithdrawSingleTokenType: FC = (props: {
         try {
             let txid = await sendTransaction(transaction, connection)
             toast({
-                title: `Transaction submitted: https://explorer.solana.com/tx/${txid}?cluster=devnet`,
+                title: "Transaction submitted",
+                description: 
+                    <Link href={`https://solscan.io/tx/${txid}?cluster=devnet`} isExternal>
+                        <HStack>
+                            <Text>View transaction</Text>
+                            <ExternalLinkIcon />
+                        </HStack>
+                    </Link>,
                 position: "bottom-right",
                 isClosable: true,
                 duration: 8000,
                 status: 'success',
+                containerStyle: { marginBottom: '50px'},
             })
             console.log(
                 `Transaction submitted: https://explorer.solana.com/tx/${txid}?cluster=devnet`
@@ -119,11 +128,12 @@ export const WithdrawSingleTokenType: FC = (props: {
         } catch (e) {
             toast({
                 title: 'Transaction failed',
-                description: JSON.stringify(e),
+                description: JSON.stringify(e.message),
                 position: "bottom-right",
                 isClosable: true,
                 duration: 8000,
                 status: 'error',
+                containerStyle: { marginBottom: '50px'},
             })
             console.log(JSON.stringify(e))
         }
@@ -132,34 +142,37 @@ export const WithdrawSingleTokenType: FC = (props: {
     return (
         <Box>
             <form onSubmit={formik.handleSubmit}>
-                <NumberInput>
-                    <NumberInputField id="amount" fontWeight={'medium'} 
-                        placeholder="Enter amount to withdraw" fontSize={'sm'}
-                        onChange={formik.handleChange}
-                        value={formik.values.withdrawAmount}
+                <FormControl>
+                    <NumberInput onChange={(valueString) => setAmount(parseInt(valueString))}>
+                        <NumberInputField id="amount" fontWeight={'medium'} 
+                            placeholder="Enter amount to withdraw" fontSize={'sm'}
+                            onChange={formik.handleChange}
+                            value={formik.values.withdrawAmount}
+                        />
+                    </NumberInput>
+
+
+                    <MarketLiquidityInfo 
+                        connection={connection}
+                        poolAccountA={poolKryptAccount} 
+                        poolAccountB={poolScroogeAccount}
+                        tokenAccountPool={tokenAccountPool}
+                        TOKEN_SWAP_PROGRAM_ID={TOKEN_SWAP_PROGRAM_ID}
                     />
-                </NumberInput>
 
-
-                <Stack my={3} spacing={3} p={4} borderWidth={"1px"} rounded={'md'}>
-                    <LiquidityInfo label={'Pool Liquidity (YES)'} value={'#'} />
-                    <LiquidityInfo label={'Pool Liquidity (NO)'} value={'#'} />
-                    <LiquidityInfo label={'LP Supply'} value={'#'} />
-                    <LiquidityInfo label={'Slippage'} value={'1%'} />
-                </Stack>
-
-                <Button type={"submit"}
-                    className={
-                        mode(styles.wallet_adapter_button_trigger_light_mode, 
-                            styles.wallet_adapter_button_trigger_dark_mode
-                        )
-                    } 
-                    size="lg" mt={3} textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')} 
-                    width={'full'}
-                    boxShadow={'xl'}
-                >
-                    Remove liquidity
-                </Button>
+                    <Button type={"submit"} isDisabled={!publicKey}
+                        className={
+                            mode(styles.wallet_adapter_button_trigger_light_mode, 
+                                styles.wallet_adapter_button_trigger_dark_mode
+                            )
+                        } 
+                        size="lg" mt={3} textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')} 
+                        width={'full'}
+                        boxShadow={'xl'}
+                    >
+                        Remove liquidity
+                    </Button>
+                </FormControl>
             </form>
         </Box>
     )
