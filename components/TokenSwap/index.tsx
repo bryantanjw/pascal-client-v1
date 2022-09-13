@@ -4,6 +4,7 @@ import {
     Text,
     Flex,
     useColorModeValue as mode,
+    Heading,
 } from "@chakra-ui/react"
 import { DepositSingleTokenType } from "./Deposit"
 import { WithdrawSingleTokenType } from "./Withdraw"
@@ -12,7 +13,17 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react"
 import { useEffect, useState } from "react"
 import { poolMint } from "utils/constants"
 import { TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID } from "@solana/spl-token"
-import { PoolTooltip } from "./LiquidityInfo"
+import { CustomTooltip } from "./LiquidityInfo"
+
+export function blurChange(publicKey) {
+    let blur
+    if (publicKey) {
+        blur = 'blur(0px)'
+    } else {
+        blur = 'blur(2px)'
+    }
+    return blur
+}
 
 export const TokenSwapForm = () => {
     const { connection } = useConnection()
@@ -41,16 +52,6 @@ export const TokenSwapForm = () => {
     const textStyle = {
         fontWeight: 'medium',
         fontSize: 'sm',
-        
-    }
-    function blurChange() {
-        let blur
-        if (publicKey) {
-            blur = 'blur(0px)'
-        } else {
-            blur = 'blur(2px)'
-        }
-        return blur
     }
     // Style config //
 
@@ -75,37 +76,46 @@ export const TokenSwapForm = () => {
     
     useEffect(() => {
         if (!publicKey) {
+            setAccountLiquidity(0)
             return
         }
-        const fetchPoolBalance = async () => {
+        const fetchUserPoolBalance = async () => {
             try {
                 const address = await findAssociatedTokenAddress(publicKey, poolMint)
                 const balance = (await connection.getTokenAccountBalance(address)).value.uiAmount
 
                 setAccountLiquidity(balance?.toLocaleString())
             } catch (err) {
-                console.log(err)
+                console.log("fetchUserPoolBalance", err)
                 setAccountLiquidity(0)
             }
         }
 
-        fetchPoolBalance()
+        fetchUserPoolBalance()
+
+        const interval=setInterval(()=>{
+            fetchUserPoolBalance()
+        }, 15000)
+        return()=>clearInterval(interval)
+
     }, [connection, publicKey])
 
     return (
         <Stack spacing={7}>
-            <PoolTooltip publicKey={publicKey} label={'Connect wallet to view liquidity'}>
-                <Stack spacing={3} filter={blurChange()} transition={'all .2s ease'} cursor={publicKey ? 'auto': 'not-allowed'}>
+            <CustomTooltip publicKey={publicKey} label={'Connect wallet to view liquidity'}>
+                <Stack spacing={2} transition={'all .2s ease'} cursor={publicKey ? 'auto': 'not-allowed'}>
                     <Flex justify={'space-between'}>
-                        <Text sx={textStyle} color={mode('gray.600', 'gray.400')}>Your Liquidity</Text>
+                        <Text sx={textStyle} color={mode('gray.600', 'gray.400')}>My Liquidity</Text>
                         <Text sx={textStyle}>{accountLiquidity} LP</Text>
                     </Flex>
+
                     <Flex justify={'space-between'}>
-                        <Text sx={textStyle} color={mode('gray.600', 'gray.400')}>Your Earnings</Text>
-                        <Text sx={textStyle}># USDC</Text>
+                        <Text sx={textStyle} color={mode('gray.600', 'gray.400')}>My Earnings</Text>
+                        <Text sx={textStyle}>0 USD</Text>
                     </Flex>
+
                 </Stack>
-            </PoolTooltip>
+            </CustomTooltip>
 
             <Tabs variant={'unstyled'}>
                 <TabList 

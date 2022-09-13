@@ -7,7 +7,7 @@ import {
   NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
   Stack,
   Text,
-  useColorModeValue,
+  useColorModeValue as mode,
   CircularProgress,
   Tabs, TabList, TabPanels, Tab, TabPanel,
 } from '@chakra-ui/react'
@@ -19,6 +19,7 @@ import { TokenSwapForm } from './TokenSwap'
 import styles from '../styles/Home.module.css'
 import { Airdrop } from './TokenSwap/AirdropForm'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { CustomTooltip } from './TokenSwap/LiquidityInfo'
 
 type TradeFormItemProps = {
   label: string
@@ -31,7 +32,7 @@ const TradeFormItem = (props: TradeFormItemProps) => {
   
   return (
     <Flex justify="space-between" fontSize="sm">
-      <Text fontWeight="medium" color={useColorModeValue('gray.600', 'gray.400')}>
+      <Text fontWeight="medium" color={mode('gray.600', 'gray.400')}>
         {label}
       </Text>
       {value ? <Text fontWeight="medium">{value}</Text> : children}
@@ -40,16 +41,6 @@ const TradeFormItem = (props: TradeFormItemProps) => {
 }
 
 export const TradeForm = ({ market }) => {
-  const steps = [{ label: "" }, { label: "" }]
-  const { nextStep, prevStep, reset, activeStep } = useSteps({
-    initialStep: 0,
-  })
-  const [numberInput, setNumberInput] = useState<any>(1)
-  const [isLoading, setIsLoading] = useState<Boolean | undefined>(false)
-
-  const { publicKey } = useWallet()
-  const isOwner = ( publicKey ? publicKey.toString() === process.env.NEXT_PUBLIC_OWNER_PUBLIC_KEY : false )
- 
   // Styling config //
   const confettiConfig = {
     angle: 90,
@@ -65,17 +56,17 @@ export const TradeForm = ({ market }) => {
     colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"]
   }
   const headerTextStyle = {
-    textColor: useColorModeValue('gray.500', 'gray.300'),
+    textColor: mode('gray.500', 'gray.300'),
     fontWeight: 'bold',
     fontSize: 'sm',
   }
   const colorSchemeYes = {
-    textColor: useColorModeValue('#D53F8C', '#FBB6CE'),
+    textColor: mode('purple.500', 'purple.200'),
     fontSize: '5xl',
     fontWeight: 'semibold'
   }
   const colorSchemeNo = {
-    textColor: useColorModeValue('#2C7C7C', '#81E6D9'),
+    textColor: mode('#2C7C7C', '#81E6D9'),
     fontSize: '5xl',
     fontWeight: 'semibold'
   }
@@ -86,7 +77,7 @@ export const TradeForm = ({ market }) => {
     rounded: 'lg',
     px: '3',
     transition: 'all .2s ease',
-    _hover: {bg: useColorModeValue('blue.50', 'blue.900')},
+    _hover: {bg: mode('blue.50', 'blue.900')},
     _selected: {
       bg: 'blue.500',
       boxShadow: '0px 1px 25px -5px rgb(66 153 225 / 48%), 0 10px 10px -5px rgb(66 153 225 / 43%)',
@@ -96,13 +87,15 @@ export const TradeForm = ({ market }) => {
     },
   }
   // Styling config //
-  
-  // TODO: state management for place order (below is temporary)
-  const placeOrder = async () => {
-    setIsLoading(true);
-    nextStep();
-    setTimeout(() => setIsLoading(false), 500);
-  }
+
+  const steps = [{ label: "" }, { label: "" }]
+  const { nextStep, prevStep, reset, activeStep } = useSteps({
+    initialStep: 0,
+  })
+  const [numberInput, setNumberInput] = useState<any>(1)
+
+  const { publicKey } = useWallet()
+  const isOwner = ( publicKey ? publicKey.toString() === process.env.NEXT_PUBLIC_OWNER_PUBLIC_KEY : false )
 
   const dt = new Date(market.closing_date)
   const day = dt.getDate().toString()
@@ -145,9 +138,9 @@ export const TradeForm = ({ market }) => {
                     <Text sx={headerTextStyle}>
                       Market says
                     </Text>
-                    {(market.probability[0].yes >= market.probability[0].yes)
-                      ? <Heading sx={colorSchemeYes}>Yes {market.probability[0].yes * 100}%</Heading>
-                      : <Heading sx={colorSchemeNo}>No {market.probability[0].no * 100}%</Heading>
+                    {(market.outcomes[0].probability >= market.outcomes[1].probability)
+                      ? <Heading sx={colorSchemeYes}>Yes {market.outcomes[0].probability * 100}%</Heading>
+                      : <Heading sx={colorSchemeNo}>No {market.outcomes[1].probability * 100}%</Heading>
                     }
                   </Flex>
 
@@ -157,7 +150,7 @@ export const TradeForm = ({ market }) => {
                     </Heading>
                     
                     <ButtonGroup onClick={nextStep} justifyContent={'center'} size="lg" spacing='3'>
-                      <Button p={7} width={'full'} colorScheme='pink'>Yes, it will</Button>
+                      <Button p={7} width={'full'} colorScheme='purple'>Yes, it will</Button>
                       <Button p={7} width={'full'} colorScheme='teal'>No, it won&apos;t</Button>
                     </ButtonGroup>
                   </Stack>
@@ -170,7 +163,7 @@ export const TradeForm = ({ market }) => {
                   <Heading size="md">Swap Summary</Heading>
 
                   <Stack spacing="4">
-                    <TradeFormItem label="Price per contract" value={`${market.probability[0].yes}`} />
+                    <TradeFormItem label="Price per contract" value={`${market.outcomes[0].probability}`} />
                     <TradeFormItem label="No. of contracts">
                       <NumberInput onChange={(e) => setNumberInput(e)} size={'sm'} width={'35%'} defaultValue={numberInput} min={1} max={100}>
                         <NumberInputField fontSize={'sm'} textAlign={'end'} />
@@ -185,33 +178,28 @@ export const TradeForm = ({ market }) => {
                         Total
                       </Text>
                       <Text fontSize="xl" fontWeight="extrabold">
-                        {numberInput * market.probability[0].yes} SOL
+                        {numberInput * market.outcomes[0].probability} SOL
                       </Text>
                     </Flex>
                   </Stack>
 
                   <ButtonGroup justifyContent={'center'} size="lg" fontSize="md" spacing='3'>
-                    <Button onClick={prevStep} borderColor={useColorModeValue('#353535', 'gray.100')} variant={'outline'}>
-                      <ArrowBackIcon color={useColorModeValue('#353535', 'gray.50')} />
+                    <Button onClick={prevStep} borderColor={mode('#353535', 'gray.100')} variant={'outline'}>
+                      <ArrowBackIcon color={mode('#353535', 'gray.50')} />
                     </Button>
 
-                    <Button type={'submit'} isDisabled={!publicKey}
-                    className={
-                      useColorModeValue(styles.wallet_adapter_button_trigger_light_mode, 
-                        styles.wallet_adapter_button_trigger_dark_mode
-                      )
-                    } 
-                      textColor={useColorModeValue('white', '#353535')} bg={useColorModeValue('#353535', 'gray.50')} width={'80%'} boxShadow={'xl'}
-                      _hover={{
-                        bg: useColorModeValue('black', 'gray.300')
-                      }}
-                      onClick={placeOrder}
-                    >
-                    {isLoading ? (
-                        <CircularProgress isIndeterminate size="24px" color="white.500" />
-                        ) : (
-                            'Place order'
-                    )}</Button>
+                      <Button type={'submit'} isDisabled={!publicKey}
+                        className={
+                          mode(styles.wallet_adapter_button_trigger_light_mode, 
+                            styles.wallet_adapter_button_trigger_dark_mode
+                          )
+                        }
+                        textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')} 
+                        boxShadow={'xl'} width={'full'}
+                        onClick={nextStep}
+                      >
+                        Place Order
+                      </Button>
                   </ButtonGroup>
                 </Stack>
               )
@@ -243,7 +231,7 @@ export const TradeForm = ({ market }) => {
         </TabPanels>
       </Tabs>
     </Stack>
-    <Confetti active={!isLoading} config={confettiConfig} />
+    {/* <Confetti active={!isLoading} config={confettiConfig} /> */}
     </>
   )
 }

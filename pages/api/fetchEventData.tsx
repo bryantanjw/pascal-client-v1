@@ -1,4 +1,4 @@
-import events from "./events.json";
+import markets from "./markets.json";
 
 export default async function handler(req, res) {
     if (req.method === "POST") {
@@ -6,10 +6,10 @@ export default async function handler(req, res) {
         console.log(slug)
 
         if (!slug) {
-            res.status(400).send("Missing eventId");
+            res.status(400).send("Missing marketId");
         }
 
-        const event = events.find((p) => p.eventId == slug)
+        const event = markets.find((p) => p.marketId == slug)
         
         if (event) {
             const { ...props } = event

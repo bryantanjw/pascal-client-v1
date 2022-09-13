@@ -72,14 +72,25 @@ export const MarketLiquidityInfo = (props) => {
 
     useEffect(() => {
         const fetchPoolBalance = async () => {
-            const poolBalanceA = (await connection.getTokenAccountBalance(poolAccountA)).value.uiAmount
-            const poolBalanceB = (await connection.getTokenAccountBalance(poolAccountB)).value.uiAmount
-            const poolBalanceLP = (await connection.getTokenAccountBalance(tokenAccountPool)).value.uiAmount
-            setPoolBalanceA(poolBalanceA?.toLocaleString())
-            setPoolBalanceB(poolBalanceB?.toLocaleString())
-            setPoolBalanceLP(poolBalanceLP?.toLocaleString())
+            try {
+                const poolBalanceA = (await connection.getTokenAccountBalance(poolAccountA)).value.uiAmount
+                const poolBalanceB = (await connection.getTokenAccountBalance(poolAccountB)).value.uiAmount
+                const poolBalanceLP = (await connection.getTokenAccountBalance(tokenAccountPool)).value.uiAmount
+                setPoolBalanceA(poolBalanceA?.toLocaleString())
+                setPoolBalanceB(poolBalanceB?.toLocaleString())
+                setPoolBalanceLP(poolBalanceLP?.toLocaleString())
+            } catch (err) {
+                console.log("fetchPoolBalance", err)
+            }
         }
+        
         fetchPoolBalance()
+
+        const interval = setInterval(()=>{
+            fetchPoolBalance()
+        }, 15000)
+        return () => clearInterval(interval)
+        
     }, [connection, poolAccountA, poolAccountB, publicKey, tokenAccountPool])
 
     return (
@@ -90,7 +101,7 @@ export const MarketLiquidityInfo = (props) => {
             <LiquidityInfo label={'Addresses'}>
                 <Popover placement="bottom-end" isLazy>
                     <PopoverTrigger><InfoOutlineIcon cursor={'help'} /></PopoverTrigger>
-                    <PopoverContent width={'full'} boxShadow={'2xl'} bg={mode('#F9FBFA', 'gray.900')}>
+                    <PopoverContent width={'full'} boxShadow={'2xl'} bg={mode('#F9FAFB', 'gray.900')}>
                         <PopoverHeader fontSize={'sm'}>Addresses</PopoverHeader>
                         <PopoverBody>
                             <Stack p={2}>
@@ -108,7 +119,7 @@ export const MarketLiquidityInfo = (props) => {
     )
 }
 
-export const PoolTooltip = (props) => {
+export const CustomTooltip = (props) => {
     const { publicKey, label, children } = props
 
     return (

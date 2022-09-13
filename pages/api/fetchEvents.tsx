@@ -1,8 +1,8 @@
-import events from "./events.json"
+import markets from "./markets.json"
 
 export default function handler(req, res) {
   if (req.method === "GET") {
-    const allEvents = events.map((event) => {
+    const allEvents = markets.map((event) => {
 
       const { ...props } = event;
       return props;

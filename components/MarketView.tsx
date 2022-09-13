@@ -5,21 +5,20 @@ import {
     Stack, HStack, SimpleGrid,
     Heading,
     Flex, 
-    Tab, Tabs, TabList, TabPanels, TabPanel, useColorModeValue as mode,
+    Tab, Tabs, TabList, TabPanels, TabPanel, 
+    useColorModeValue as mode,
     Image,
-    useColorModeValue
 } from '@chakra-ui/react'
 import { ArrowBackIcon } from '@chakra-ui/icons'
 import { useRouter } from 'next/router'
-import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import MarketProgress from './MarketProgress'
 import { Stat } from './Stat'
 import NewsList from './NewsList'
 import { TradeForm } from './TradeForm'
-import Graph from './Graph'
 import WithSubnavigation from './TopBar'
 import MarketResolution from './MarketResolution'
+import OutcomeGraph from './OutcomeGraph'
 import Layout from './Layout'
 import ChakraNextLink from './ChakraNextLink'
 import { useWallet } from '@solana/wallet-adapter-react'
@@ -45,8 +44,8 @@ const MarketView = ({ market }) => {
         px: 0,
         textColor: 'gray.400',
         _selected: {
-            textColor: useColorModeValue('black', 'gray.100'),
-            borderColor: useColorModeValue('black', 'gray.100')
+            textColor: mode('black', 'gray.100'),
+            borderColor: mode('black', 'gray.100')
         }
     }
     const sectionHeadingStyle = {
@@ -86,10 +85,12 @@ const MarketView = ({ market }) => {
                 px={{ base: '1', md: '8', lg: '12' }}
                 py={{ base: '6', md: '8', lg: '14' }}
             >
-                <ChakraNextLink href={'/'} scroll={false}>
+                <ChakraNextLink href={'/'} scroll={false} _hover={{textDecoration: 'none'}}>
                     <Stack mb={6} align={'center'} direction={'row'} width={{ 'base': '85%', 'md': 'full' }}>
                         <ArrowBackIcon mr={4}/>
-                        <Heading fontSize={{ 'base': 'xl', 'md': '2xl' }} fontWeight="extrabold">
+                        <Heading className={styles.text_link} _before={{ bg: mode('black', 'white') }}
+                            fontSize={{ 'base': 'xl', 'md': '2xl' }} fontWeight="extrabold"
+                        >
                             {market.title}
                         </Heading>
                     </Stack>
@@ -109,7 +110,7 @@ const MarketView = ({ market }) => {
 
                             <TabPanels>
                                 <TabPanel key={0} px={0}>
-                                    <Graph market={market} />
+                                    <OutcomeGraph market={market} publicKey={publicKey} />
                                 </TabPanel>
                             </TabPanels>
                         </Tabs>

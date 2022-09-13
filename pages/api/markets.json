@@ -1,14 +1,20 @@
 [
     {
-        "eventId": "1",
+        "marketId": "1",
         "short": "S&P500",
         "title": "S&P500 daily close price",
         "recurrence": "Daily",
         "category": "Financials",
-        "probability": [{
-            "yes": 0.5,
-            "no": 0.5
-        }],
+        "outcomes": [
+            {
+                "title": "Yes",
+                "probability": 0.5
+            },
+            {
+                "title": "No",
+                "probability": 0.5
+            }
+        ],
         "liquidity": 0.00,
         "volume": 0.00,
         "market_opened_date": "2022-08-29T09:30:00-0400",
@@ -21,15 +27,21 @@
         "resolution_comment": "If the end-of-day S&P 500 index value"
     },
     {
-        "eventId": "2",
+        "marketId": "2",
         "short": "S&P500",
         "title": "S&P500 weekly close price",
         "recurrence": "Weekly",
         "category": "Financials",
-        "probability": [{
-            "yes": 0.5,
-            "no": 0.5
-        }],
+        "outcomes": [
+            {
+                "title": "Yes",
+                "probability": 0.5
+            },
+            {
+                "title": "No",
+                "probability": 0.5
+            }
+        ],
         "liquidity": 0.00,
         "volume": 0.00,
         "market_opened_date": "2022-08-29T09:30:00-0400",
@@ -41,15 +53,21 @@
         "resolution_comment": "If the end-of-day S&P 500 index value"
     },
     {
-        "eventId": "3",
+        "marketId": "3",
         "short": "TSLA stock value",
         "title": "TSLA daily close price",
         "recurrence": "Daily",
         "category": "Financials",
-        "probability": [{
-            "yes": 0.5,
-            "no": 0.5
-        }],
+        "outcomes": [
+            {
+                "title": "Yes",
+                "probability": 0.5
+            },
+            {
+                "title": "No",
+                "probability": 0.5
+            }
+        ],
         "liquidity": 0.00,
         "volume": 0.00,
         "market_opened_date": "2022-08-29T09:30:00-0400",
@@ -62,15 +80,21 @@
         "resolution_comment": "If the end-of-day TSLA value"
     },
     {
-        "eventId": "4",
+        "marketId": "4",
         "short": "",
         "title": "Inflation",
         "recurrence": "Monthly",
         "category": "Economics",
-        "probability": [{
-            "yes": 0.5,
-            "no": 0.5
-        }],
+        "outcomes": [
+            {
+                "title": "Yes",
+                "probability": 0.5
+            },
+            {
+                "title": "No",
+                "probability": 0.5
+            }
+        ],
         "liquidity": 0.00,
         "volume": 0.00,
         "market_opened_date": "2022-08-29T09:30:00-0400",
@@ -83,15 +107,21 @@
         "resolution_comment": "If the Consumer Price Index (CPI) as reported by the BLS's monthly single-digit Consumer Price Index Summary Report increases by more than"
     },
     {
-        "eventId": "5",
+        "marketId": "5",
         "short": "NYC temp",
         "title": "NYC high temp",
         "recurrence": "Monthly",
         "category": "Climate",
-        "probability": [{
-            "yes": 0.5,
-            "no": 0.5
-        }],
+        "outcomes": [
+            {
+                "title": "Yes",
+                "probability": 0.5
+            },
+            {
+                "title": "No",
+                "probability": 0.5
+            }
+        ],
         "liquidity": 0.00,
         "volume": 0.00,
         "market_opened_date": "2022-08-29T09:30:00-0400",
@@ -104,15 +134,21 @@
         "resolution_comment": "If the highest temperature recorded in Central Park, New York"
     },
     {
-        "eventId": "6",
+        "marketId": "6",
         "short": "SOL",
         "title": "SOL weekly close price",
         "recurrence": "Weekly",
         "category": "Crypto",
-        "probability": [{
-            "yes": 0.5,
-            "no": 0.5
-        }],
+        "outcomes": [
+            {
+                "title": "Yes",
+                "probability": 0.5
+            },
+            {
+                "title": "No",
+                "probability": 0.5
+            }
+        ],
         "liquidity": 0.00,
         "volume": 0.00,
         "market_opened_date": "2022-08-29T09:30:00-0400",
@@ -125,15 +161,21 @@
         "resolution_comment":"If the end-of-day SOL value for"
     },
     {
-        "eventId": "7",
+        "marketId": "7",
         "short": "DeGods' floor price",
         "title": "DeGods NFT weekly close floor price",
         "recurrence": "Weekly",
         "category": "Crypto",
-        "probability": [{
-            "yes": 0.5,
-            "no": 0.5
-        }],
+        "outcomes": [
+            {
+                "title": "Yes",
+                "probability": 0.5
+            },
+            {
+                "title": "No",
+                "probability": 0.5
+            }
+        ],
         "liquidity": 0.00,
         "volume": 0.00,
         "market_opened_date": "2022-08-29T09:30:00-0400",

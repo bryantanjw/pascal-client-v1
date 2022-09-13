@@ -19,7 +19,7 @@ const colors = {
 const styles = {
   global: props => ({
     body: {
-      bg: mode('#F9FBFA', 'gray.900')(props),
+      bg: mode('#F9FAFB', 'gray.900')(props),
     },
   }),
 };
@@ -39,7 +39,7 @@ function MyApp({ Component, pageProps, router }: AppProps) {
       <WalletContextProvider>
       <NextNProgress height={2} color={'black'} />
       <AnimatePresence
-        exitBeforeEnter
+        mode='wait'
         initial={false}
         onExitComplete={() => window.scrollTo(0, 0)}
       >

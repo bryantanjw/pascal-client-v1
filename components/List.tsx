@@ -9,12 +9,10 @@ import {
     useCheckboxGroup,
     ScaleFade,
     Skeleton,
-    chakra, shouldForwardProp, Grid,
 } from '@chakra-ui/react'
 import styles from '../styles/Home.module.css'
 import { FilterToggle } from './FilterToggle'
 import ChakraNextLink from './ChakraNextLink'
-import { motion, isValidMotionProp } from 'framer-motion'
 
 // Style config //
 const gradientBackgroundStyle = {
@@ -41,7 +39,7 @@ function EventCard({ event }) {
     const dt = new Date(event.closing_date)
 
     return (
-        <ChakraNextLink href={`/trade/${event.eventId}`} scroll={false} _hover={{ textDecoration:'none'}}>
+        <ChakraNextLink href={`/trade/${event.marketId}`} scroll={false} _hover={{ textDecoration:'none'}}>
             <ScaleFade initialScale={0.9} in={true}>
                 <Stack spacing={4} p={5}
                     borderColor={useColorModeValue('#CFDAE1', '#696969')} borderWidth={1}
@@ -67,8 +65,8 @@ function EventCard({ event }) {
                         <Flex fontWeight={'semibold'} justify={'space-between'}>
                             <Text>&gt; {event.target_value}</Text>
                             <Stack direction={'row'} spacing={3}>
-                                <Text color={'pink.500'}>Yes {event.probability[0].yes} ⓒ</Text>
-                                <Text color={'teal.500'}>No {event.probability[0].no} ⓒ</Text>
+                                <Text color={'purple.500'}>Yes ${event.outcomes[0].probability}</Text>
+                                <Text color={'teal.500'}>No ${event.outcomes[1].probability}</Text>
                             </Stack>
                         </Flex>
 
@@ -93,7 +91,7 @@ function EventCard({ event }) {
 
 // TODO: add filter and search
 const List = () => {
-    const [events, setEvents] = useState([]);
+    const [markets, setMarkets] = useState([]);
     
     // FilterToggle state management is be ignored for the time being
     const { value, getCheckboxProps } = useCheckboxGroup({ defaultValue: [] })
@@ -102,12 +100,12 @@ const List = () => {
         fetch(`/api/fetchEvents`)
         .then(response => response.json())
         .then(data => {
-            setEvents(data);
-            console.log("events", data);
+            setMarkets(data);
+            console.log("markets", data);
         });
     }, []);
 
-    const filteredEvents = events.filter(({ category }) => value.includes(category))
+    const filteredEvents = markets.filter(({ category }) => value.includes(category))
 
     return (
         <Box>
@@ -134,12 +132,12 @@ const List = () => {
             <SimpleGrid columns={{ base: 1, md: 3 }} spacing={5}>
                 {filteredEvents.length != 0 ?
                     (filteredEvents.map((event: any) => (
-                        <Stack key={event.eventId}>
+                        <Stack key={event.marketId}>
                             <EventCard event={event} />
                         </Stack>
                     )))
-                    : (events.map((event: any) => (
-                        <Stack key={event.eventId}>
+                    : (markets.map((event: any) => (
+                        <Stack key={event.marketId}>
                             <EventCard event={event} />
                         </Stack>
                     )))

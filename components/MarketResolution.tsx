@@ -23,14 +23,14 @@ const MarketResolution = ({ market }) => {
 
     return (
         <Stack spacing={3} direction={'column'} width={{ 'base': '80%', 'md': 'full' }}>
-            <Box borderColor={mode('pink.200', 'pink.900')} bg={mode('pink.100', 'pink.800')} mt={3} 
+            <Box borderColor={mode('purple.200', 'purple.900')} bg={mode('purple.100', 'purple.800')} mt={3} 
                 borderWidth={1} rounded={'md'} p={4}
                 >
                 {/* Custom highlight texts */}
                 {chunks.map(({ match, text }) => {
                     if (!match) return text
                     return text === 'then the market resolves to Yes' ? (
-                    <Text key={text} display={'inline'} color={mode('pink.500', 'pink.100')} fontWeight={'bold'}>
+                    <Text key={text} display={'inline'} color={mode('purple.500', 'purple.100')} fontWeight={'bold'}>
                         {text}
                     </Text>
                     ) : (

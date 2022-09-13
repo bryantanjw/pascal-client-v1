@@ -1,17 +1,17 @@
 import {
     Box,
     Button,
-    FormControl,
-    NumberInput, NumberInputField,
     Text,
     useColorModeValue as mode,
     Alert,
     HStack,
     Link,
     useToast,
+    Input,
+    ScaleFade,
 } from "@chakra-ui/react"
-import { WarningTwoIcon, ExternalLinkIcon } from "@chakra-ui/icons"
-import { useFormik } from 'formik'
+import { WarningTwoIcon, ExternalLinkIcon, CheckIcon, CloseIcon } from "@chakra-ui/icons"
+import { Formik } from 'formik'
 import { FC, useState } from "react"
 import * as Web3 from "@solana/web3.js"
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
@@ -27,32 +27,23 @@ import {
 } from "../../utils/constants"
 import { TokenSwap, TOKEN_SWAP_PROGRAM_ID } from "@solana/spl-token-swap"
 import * as token from "@solana/spl-token"
-import { MarketLiquidityInfo, PoolTooltip } from "./LiquidityInfo"
+import { MarketLiquidityInfo, CustomTooltip } from "./LiquidityInfo"
 import styles from '../../styles/Home.module.css'
-
+ 
 export const DepositSingleTokenType: FC = (props: {
     onInputChange?: (val: number) => void
     onMintChange?: (account: string) => void
 }) => {
-    const [poolTokenAmount, setAmount] = useState(0)
-
     const { connection } = useConnection()
     const { publicKey, sendTransaction } = useWallet()
 
-    // Handle deposit form submit
-    const toast = useToast()
-    const formik = useFormik({
-        initialValues: {
-            depositAmount: '',
-        },
-        onSubmit: (values, actions) => {
-            actions.setSubmitting(true)
-            handleTransactionSubmit();
-            actions.setSubmitting(false);
-        },
-    })
+    const [isLoading, setLoading] = useState(false)
+    const [isSuccess, setSuccess] = useState(false)
+    const [isSubmitted, setSubmitted] = useState(false)
 
-    const handleTransactionSubmit = async () => {
+    const toast = useToast()
+
+    const handleTransactionSubmit = async (depositPoolTokenAmount) => {
         if (!publicKey) {
             alert("Please connect your wallet!")
             return
@@ -100,14 +91,16 @@ export const DepositSingleTokenType: FC = (props: {
             tokenAccountPool, // user LP-token account the swap pool mints LP-token to
             TOKEN_SWAP_PROGRAM_ID, // address of the Token Swap Program
             token.TOKEN_PROGRAM_ID, // address of the Token Program
-            poolTokenAmount * 10 ** poolMintInfo.decimals, // amount of LP-token the depositor expects to receive
+            depositPoolTokenAmount * 10 ** poolMintInfo.decimals, // amount of LP-token the depositor expects to receive
             100e9, // maximum amount of token A allowed to deposit (prevent slippage)
             100e9 // maximum amount of token B allowed to deposit (prevent slippage)
         )
 
         transaction.add(instruction)
         try {
+            setLoading(true)
             let txid = await sendTransaction(transaction, connection)
+            
             console.log(
                 `Transaction submitted: https://solscan.io/tx/${txid}?cluster=devnet`
             )
@@ -120,69 +113,99 @@ export const DepositSingleTokenType: FC = (props: {
                             <ExternalLinkIcon />
                         </HStack>
                     </Link>,
-                position: "bottom-right",
+                position: "top",
                 isClosable: true,
                 duration: 8000,
                 status: 'success',
-                containerStyle: { marginBottom: '25px'},
+                variant: 'subtle',
+                containerStyle: { marginTop: '75px', marginBottom: '-65px'},
             })
+            setSuccess(true)
         } catch (e) {
+            setSuccess(false)
             toast({
                 title: 'Transaction failed',
-                description: JSON.stringify(e.message),
-                position: "bottom-right",
+                description: JSON.stringify(e.message).replace(/^"(.*)"$/, '$1'),
+                position: "top",
                 isClosable: true,
                 duration: 8000,
                 status: 'error',
-                containerStyle: { marginBottom: '25px'},
+                variant: 'subtle',
+                containerStyle: { marginTop: '75px', marginBottom: '-65px'},
             })
             console.log(JSON.stringify(e))
         }
+        setLoading(false)
+        setSubmitted(true)
     }
 
     return (
         <Box>
-            <form onSubmit={formik.handleSubmit}>
-                <FormControl>
-                    <NumberInput onChange={(valueString) => setAmount(parseInt(valueString))}>
-                        <NumberInputField id="amount" value={formik.values.depositAmount}
-                            fontWeight={'medium'} 
-                            placeholder="Enter amount to deposit" 
-                            fontSize={'sm'}
+            <Formik initialValues={{ depositAmount: ''}}
+                onSubmit={(values) => {
+                    // setAmount(parseInt(values.depositAmount));
+                    console.log("depositPoolTokenAmount", values.depositAmount)
+                    handleTransactionSubmit(values.depositAmount);
+                    setTimeout(() => {
+                        setSubmitted(false);
+                    }, 5000);
+                }}
+            >
+                {({
+                    values,
+                    errors,
+                    touched,
+                    handleChange,
+                    handleBlur,
+                    handleSubmit,
+                    isSubmitting,
+                }) => (
+                    <form onSubmit={handleSubmit}>
+                        <Input
+                            type="depositAmount"
+                            name="depositAmount"
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            value={values.depositAmount}
+                            placeholder="Enter amount to deposit"
+                            autoComplete="off"
                         />
-                    </NumberInput>
 
-                    <MarketLiquidityInfo 
-                        connection={connection}
-                        poolAccountA={poolKryptAccount} 
-                        poolAccountB={poolScroogeAccount}
-                        tokenAccountPool={tokenAccountPool}
-                        TOKEN_SWAP_PROGRAM_ID={TOKEN_SWAP_PROGRAM_ID}
-                    />
-                    
-                    <Alert bg={mode('blue.50', 'blue.900')} fontSize={'xs'} rounded={'md'} 
-                        px={4} flexDirection={'column'}>
-                        <WarningTwoIcon alignSelf={'start'} mb={2}/>
-                        Providing liquidity is risky. 
-                        It is important to withdraw liquidity before the event occurs.
-                    </Alert>
+                        <MarketLiquidityInfo 
+                            connection={connection}
+                            poolAccountA={poolKryptAccount} 
+                            poolAccountB={poolScroogeAccount}
+                            tokenAccountPool={tokenAccountPool}
+                            TOKEN_SWAP_PROGRAM_ID={TOKEN_SWAP_PROGRAM_ID}
+                        />
+                        
+                        <Alert bg={mode('blue.50', 'blue.900')} fontSize={'xs'} rounded={'md'} 
+                            px={4} flexDirection={'column'}>
+                            <WarningTwoIcon alignSelf={'start'} mb={2}/>
+                            Providing liquidity is risky. 
+                            It is important to withdraw liquidity before the event occurs.
+                        </Alert>
 
-                    <PoolTooltip publicKey={publicKey} label={'Connect wallet to deposit'}>
-                        <Button type={'submit'} isLoading={formik.isSubmitting} isDisabled={!publicKey}
-                            className={
-                                mode(styles.wallet_adapter_button_trigger_light_mode, 
-                                    styles.wallet_adapter_button_trigger_dark_mode
-                                )
-                            } 
-                            size="lg" mt={5} textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')} 
-                            width={'full'}
-                            boxShadow={'xl'}
-                        >
-                            Add liquidity
-                        </Button>
-                    </PoolTooltip>
-                </FormControl>
-            </form>
+                        <CustomTooltip publicKey={publicKey} label={'Connect wallet to deposit'}>
+                            <Button type={'submit'} isLoading={isLoading} isDisabled={!publicKey || !values.depositAmount}
+                                className={
+                                    mode(styles.wallet_adapter_button_trigger_light_mode, 
+                                        styles.wallet_adapter_button_trigger_dark_mode
+                                    )
+                                } 
+                                size="lg" mt={5} textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')} 
+                                width={'full'}
+                                boxShadow={'xl'}
+                            >
+                                {isSubmitted
+                                ? <ScaleFade initialScale={0.5} in={true}>{isSuccess ? <CheckIcon /> : <CloseIcon />}</ScaleFade>
+                                : <ScaleFade initialScale={0.5} in={true}>Add liquidity</ScaleFade>
+                                }
+                            </Button>
+                        </CustomTooltip>
+                    </form>
+                )}
+            </Formik>
         </Box>
     )
 }

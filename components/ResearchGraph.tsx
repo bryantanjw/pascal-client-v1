@@ -68,15 +68,15 @@ const ResearchGraph = ({ market }) => {
   return (
     <Stack spacing={5}>
       {/* TODO: add change in price */}
-      <Heading fontSize={'2xl'} color={useColorModeValue('purple.500', 'purple.300')}>{market.target_value}</Heading>
+      <Heading fontSize={'2xl'} color={"#3182CE"}>{market.target_value}</Heading>
 
       <AreaChart width={586} height={250} data={data} 
         margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
 
         <defs>
           <linearGradient id="colorvalue" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor={useColorModeValue('#8884d8', '#A982E3')} stopOpacity={0.8}/>
-            <stop offset="95%" stopColor={useColorModeValue('#8884d8', '#A982E3')} stopOpacity={0}/>
+            <stop offset="5%" stopColor={'#3182CE'} stopOpacity={0.8}/>
+            <stop offset="95%" stopColor={'#3182CE'} stopOpacity={0}/>
           </linearGradient>
         </defs>
         
@@ -90,7 +90,7 @@ const ResearchGraph = ({ market }) => {
         <CartesianGrid opacity={useColorModeValue('50%', '20%')} vertical={false} />
         <Tooltip content={<CustomTooltip active payload label/>} />
         
-        <Area type="monotone" dataKey="value" stroke={useColorModeValue('#8884d8', '#A982E3')} fillOpacity={1} fill="url(#colorvalue)" />
+        <Area type="monotone" dataKey="value" stroke={'#3182CE'} fillOpacity={1} fill="url(#colorvalue)" />
       </AreaChart>
     </Stack>
   );

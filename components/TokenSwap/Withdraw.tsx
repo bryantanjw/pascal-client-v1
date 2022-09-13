@@ -1,16 +1,16 @@
 import {
     Box,
     Button,
-    FormControl,
-    NumberInput, NumberInputField,
+    Input,
+    ScaleFade,
     HStack,
     useColorModeValue as mode,
     useToast,
     Link,
     Text,
 } from "@chakra-ui/react"
-import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { useFormik } from 'formik'
+import { ExternalLinkIcon, CheckIcon, CloseIcon } from "@chakra-ui/icons"
+import { Formik } from 'formik'
 import { FC, useState } from "react"
 import * as Web3 from "@solana/web3.js"
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
@@ -28,29 +28,25 @@ import {
 import { TokenSwap, TOKEN_SWAP_PROGRAM_ID } from "@solana/spl-token-swap"
 import * as token from "@solana/spl-token"
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token"
-import { MarketLiquidityInfo, PoolTooltip } from "./LiquidityInfo"
+import { MarketLiquidityInfo, CustomTooltip } from "./LiquidityInfo"
 import styles from '../../styles/Home.module.css'
 
 export const WithdrawSingleTokenType: FC = (props: {
     onInputChange?: (val: number) => void
     onMintChange?: (account: string) => void
 }) => {
-    const [poolTokenAmount, setAmount] = useState(0)
+
     const { connection } = useConnection()
     const { publicKey, sendTransaction } = useWallet()
 
-    // Handle deposit form submit
-    const toast = useToast()
-    const formik = useFormik({
-        initialValues: {
-            withdrawAmount: '',
-        },
-        onSubmit: values => {
-            handleTransactionSubmit();
-        },
-    })
+    const [isLoading, setLoading] = useState(false)
+    const [isSuccess, setSuccess] = useState(false)
+    const [isSubmitted, setSubmitted] = useState(false)
 
-    const handleTransactionSubmit = async () => {
+    // Handle withdraw form submit
+    const toast = useToast()
+
+    const handleTransactionSubmit = async (withdrawPoolTokenAmount) => {
         if (!publicKey) {
             alert("Please connect your wallet!")
             return
@@ -99,14 +95,18 @@ export const WithdrawSingleTokenType: FC = (props: {
             scroogeATA, // user token B account to receive tokens withdrawn from swap pool token B account
             TOKEN_SWAP_PROGRAM_ID, // address of the Token Swap Program
             TOKEN_PROGRAM_ID, // address of the Token Program
-            poolTokenAmount * 10 ** poolMintInfo.decimals, // amount of LP-tokens the user expects to burn on withdraw
+            withdrawPoolTokenAmount * 10 ** poolMintInfo.decimals, // amount of LP-tokens the user expects to burn on withdraw
             0, // minimum amount of token A to withdraw (prevent slippage)
             0 // minimum amount of token A to withdraw (prevent slippage)
         )
 
         transaction.add(instruction)
         try {
+            setLoading(true)
             let txid = await sendTransaction(transaction, connection)
+            console.log(
+                `Transaction submitted: https://explorer.solana.com/tx/${txid}?cluster=devnet`
+            )
             toast({
                 title: "Transaction submitted",
                 description: 
@@ -116,66 +116,90 @@ export const WithdrawSingleTokenType: FC = (props: {
                             <ExternalLinkIcon />
                         </HStack>
                     </Link>,
-                position: "bottom-right",
+                position: "top",
                 isClosable: true,
                 duration: 8000,
                 status: 'success',
                 containerStyle: { marginBottom: '50px'},
             })
-            console.log(
-                `Transaction submitted: https://explorer.solana.com/tx/${txid}?cluster=devnet`
-            )
+            setSuccess(true)
         } catch (e) {
             toast({
                 title: 'Transaction failed',
                 description: JSON.stringify(e.message),
-                position: "bottom-right",
+                position: "top",
                 isClosable: true,
                 duration: 8000,
                 status: 'error',
                 containerStyle: { marginBottom: '50px'},
             })
+            setSuccess(false)
             console.log(JSON.stringify(e))
         }
+        setLoading(false)
+        setSubmitted(true)
     }
 
     return (
         <Box>
-            <form onSubmit={formik.handleSubmit}>
-                <FormControl>
-                    <NumberInput onChange={(valueString) => setAmount(parseInt(valueString))}>
-                        <NumberInputField id="amount" fontWeight={'medium'} 
-                            placeholder="Enter amount to withdraw" fontSize={'sm'}
-                            onChange={formik.handleChange}
-                            value={formik.values.withdrawAmount}
+            <Formik initialValues={{ withdrawAmount: ''}}
+                onSubmit={(values) => {
+                    // setAmount(parseInt(values.withdrawAmount));
+                    console.log("withdrawPoolTokenAmount", values.withdrawAmount)
+                    handleTransactionSubmit(values.withdrawAmount);
+                    setTimeout(() => {
+                        setSubmitted(false);
+                    }, 5000);
+                }}
+            >
+                {({
+                    values,
+                    errors,
+                    touched,
+                    handleChange,
+                    handleBlur,
+                    handleSubmit,
+                    isSubmitting,
+                }) => (
+                    <form onSubmit={handleSubmit}>
+                        <Input
+                            type="withdrawAmount"
+                            name="withdrawAmount"
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            value={values.withdrawAmount}
+                            placeholder="Enter amount to withdraw"
+                            autoComplete="off"
                         />
-                    </NumberInput>
 
+                        <MarketLiquidityInfo 
+                            connection={connection}
+                            poolAccountA={poolKryptAccount} 
+                            poolAccountB={poolScroogeAccount}
+                            tokenAccountPool={tokenAccountPool}
+                            TOKEN_SWAP_PROGRAM_ID={TOKEN_SWAP_PROGRAM_ID}
+                        />
 
-                    <MarketLiquidityInfo 
-                        connection={connection}
-                        poolAccountA={poolKryptAccount} 
-                        poolAccountB={poolScroogeAccount}
-                        tokenAccountPool={tokenAccountPool}
-                        TOKEN_SWAP_PROGRAM_ID={TOKEN_SWAP_PROGRAM_ID}
-                    />
-
-                    <PoolTooltip publicKey={publicKey} label={'Connect wallet to withdraw'}>
-                        <Button type={"submit"} isDisabled={!publicKey}
-                            className={
-                                mode(styles.wallet_adapter_button_trigger_light_mode, 
-                                    styles.wallet_adapter_button_trigger_dark_mode
-                                )
-                            } 
-                            size="lg" mt={3} textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')} 
-                            width={'full'}
-                            boxShadow={'xl'}
-                        >
-                            Remove liquidity
-                        </Button>
-                    </PoolTooltip>
-                </FormControl>
-            </form>
+                        <CustomTooltip publicKey={publicKey} label={'Connect wallet to withdraw'}>
+                            <Button type={'submit'} isLoading={isLoading} isDisabled={!publicKey || !values.withdrawAmount}
+                                className={
+                                    mode(styles.wallet_adapter_button_trigger_light_mode, 
+                                        styles.wallet_adapter_button_trigger_dark_mode
+                                    )
+                                } 
+                                size="lg" mt={5} textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')} 
+                                width={'full'}
+                                boxShadow={'xl'}
+                            >
+                                {isSubmitted
+                                ? <ScaleFade initialScale={0.5} in={true}>{!isSuccess ? <CloseIcon /> : <CheckIcon />}</ScaleFade>
+                                : <ScaleFade initialScale={0.5} in={true}>Remove liquidity</ScaleFade>
+                                }
+                            </Button>
+                        </CustomTooltip>
+                    </form>
+                )}
+            </Formik>
         </Box>
     )
 }

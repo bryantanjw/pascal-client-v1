@@ -46,37 +46,38 @@ const NewsListItem = (props: NewsListItemProp) => {
                 display="flex"
                 justifyContent="space-between"
                 transition={'border-color 0.1s linear'}
-                _hover={{ borderColor:'gray.400' }}>
+                _hover={{ borderColor:'gray.400' }}
+            >
                 
-                    <Flex>
-                        <Image width={{ 'base': '110px', 'md':'150px' }} height={{ 'base': 'fit', 'md': '100px' }}
-                            borderRadius="md"
-                            src={imageUrl}
-                            alt={title}
-                            objectFit="cover"
-                            fallback={<Skeleton width={{ 'base': '110px', 'md':'150px' }} height={{ 'base': 'fit', 'md': '100px' }} />}
-                        />
-                    </Flex>
-                
-                    <Stack
-                        display="flex"
-                        flex="1"
-                        flexDirection="column"
-                        px={2}
-                        ml={4}>
-                        <Suspense fallback={<SkeletonText width={{ 'base': '80%', 'md': 'full' }}/>}>
-                            <Stack spacing={{ 'base': 1, 'md': '3' }} direction={{ 'base': 'column', 'md': 'row' }}>
-                                <Heading fontSize={{ 'base': 'sm', 'md': 'md' }}>{publication}</Heading>
-                                <Text fontSize={{ 'base': 'xs', 'md': 'sm' }} fontWeight={'semibold'} color='gray'>{datePublished}</Text>
-                            </Stack>
-                        </Suspense>
+                <Flex>
+                    <Image width={{ 'base': '110px', 'md':'150px' }} height={{ 'base': 'fit', 'md': '100px' }}
+                        borderRadius="md"
+                        src={imageUrl}
+                        alt={title}
+                        objectFit="cover"
+                        fallback={<Skeleton width={{ 'base': '110px', 'md':'150px' }} height={{ 'base': 'fit', 'md': '100px' }} />}
+                    />
+                </Flex>
+            
+                <Stack
+                    display="flex"
+                    flex="1"
+                    flexDirection="column"
+                    px={2}
+                    ml={4}>
+                    <Suspense fallback={<SkeletonText width={{ 'base': '80%', 'md': 'full' }}/>}>
+                        <Stack spacing={{ 'base': 1, 'md': '3' }} direction={{ 'base': 'column', 'md': 'row' }}>
+                            <Heading fontSize={{ 'base': 'sm', 'md': 'md' }}>{publication}</Heading>
+                            <Text fontSize={{ 'base': 'xs', 'md': 'sm' }} fontWeight={'semibold'} color='gray'>{datePublished}</Text>
+                        </Stack>
+                    </Suspense>
 
-                        <Suspense fallback={<SkeletonText width={{ 'base': '80%', 'md': 'full' }} />}>
-                            <Text fontSize={{ 'base': 'sm', 'md': 'md' }} marginTop="1" overflow={'hidden'} textOverflow={'ellipsis'}>
-                                {title}
-                            </Text>
-                        </Suspense>
-                    </Stack>
+                    <Suspense fallback={<SkeletonText width={{ 'base': '80%', 'md': 'full' }} />}>
+                        <Text fontSize={{ 'base': 'sm', 'md': 'md' }} marginTop="1" overflow={'hidden'} textOverflow={'ellipsis'}>
+                            {title}
+                        </Text>
+                    </Suspense>
+                </Stack>
 
             </Box>
         </Link>

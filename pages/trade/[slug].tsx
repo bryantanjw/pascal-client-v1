@@ -1,10 +1,10 @@
 import type { InferGetStaticPropsType } from 'next';
 import { useRouter } from 'next/router';
 import MarketView from 'components/MarketView';
-import events from "../api/events.json";
+import markets from "../api/markets.json";
 
 function getEvents() {
-  const allEvents = events.map((event) => {
+  const allEvents = markets.map((event) => {
 
     const { ...props } = event;
     return props
@@ -18,14 +18,14 @@ export const getStaticPaths = async () => {
   const allEvents= getEvents();
   return {
     // Get the paths to pre-render based on products at build time
-    paths: allEvents.map((event: any) => `/trade/${event.eventId}`),
+    paths: allEvents.map((event: any) => `/trade/${event.marketId}`),
     fallback: false,
   }
 }
 
 // should not call an internal API route inside getStaticProps
 export const getStaticProps = async ({ params: { slug } }) => {
-  const event = events.filter((item) => item.eventId === slug)[0]
+  const event = markets.filter((item) => item.marketId === slug)[0]
   console.log("Event", event)
   const { ...props } = event
   return { props: { props } }
