@@ -198,11 +198,10 @@
   content: "";
   position: absolute;
   display: block;
-  width: 100%;
+  width: 88%;
   height: 2px;
   bottom: 0;
-  left: 0;
-  background-color: #000;
+  right: 0;
   transform: scaleX(0);
   transition: transform 0.3s ease;
 }

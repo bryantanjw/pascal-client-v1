@@ -16,11 +16,11 @@ import ChakraNextLink from './ChakraNextLink'
 
 // Style config //
 const gradientBackgroundStyle = {
-    filter: 'blur(60px)',
+    filter: 'blur(110px)',
     position: 'absolute',
     zIndex: -1,
     opacity: '50%',
-    width: '60%'
+    width: '40%'
 }
 const statStyle = {
     align: 'center',
@@ -121,11 +121,11 @@ const List = () => {
                 ))}
             </HStack>
 
-            <Image sx={gradientBackgroundStyle} src={'gradient-background.jpeg'}
+            <Image sx={gradientBackgroundStyle} src={'gradient-bg.png'}
                 alt={'background'} right={'100px'} top={'100px'} transform={'rotate(180deg)'} visibility={useColorModeValue('visible', 'hidden')}
             />
 
-            <Image sx={gradientBackgroundStyle} src={'gradient-background.jpeg'} visibility={useColorModeValue('visible', 'hidden')}
+            <Image sx={gradientBackgroundStyle} src={'gradient-bg.png'} visibility={useColorModeValue('visible', 'hidden')}
                 alt={'background'} right={'100px'} bottom={'0px'} transform={'rotate(300deg)'} 
             />
 

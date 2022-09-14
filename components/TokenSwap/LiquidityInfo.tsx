@@ -15,7 +15,6 @@ import {
 import { ExternalLinkIcon, InfoOutlineIcon } from "@chakra-ui/icons"
 import { truncate } from "utils/truncateAddress"
 import { useWallet } from "@solana/wallet-adapter-react"
-import * as Web3 from "@solana/web3.js"
 
 const AddressesInfo = (props) => {
     const toast = useToast()
@@ -62,6 +61,7 @@ export const MarketLiquidityInfo = (props) => {
         poolAccountB,
         tokenAccountPool,
         TOKEN_SWAP_PROGRAM_ID,
+        isSubmitted
     } = props
 
     const [poolBalanceA, setPoolBalanceA] = useState<any>(0)
@@ -91,7 +91,7 @@ export const MarketLiquidityInfo = (props) => {
         }, 15000)
         return () => clearInterval(interval)
         
-    }, [connection, poolAccountA, poolAccountB, publicKey, tokenAccountPool])
+    }, [connection, poolAccountA, poolAccountB, publicKey, tokenAccountPool, isSubmitted])
 
     return (
         <Stack my={3} spacing={3} p={4} borderWidth={"1px"} rounded={'md'}>

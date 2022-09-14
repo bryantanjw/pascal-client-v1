@@ -260,7 +260,7 @@ const NAV_ITEMS: Array<NavItem> = [
     },
     {
         label: 'Docs',
-        href: '#',
+        href: 'https://docs.pascal.fi/',
     },
     {
         label: 'More',

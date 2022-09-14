@@ -9,7 +9,7 @@ import {
     Link,
     Text,
 } from "@chakra-ui/react"
-import { ExternalLinkIcon, CheckIcon, CloseIcon } from "@chakra-ui/icons"
+import { ExternalLinkIcon, CheckIcon } from "@chakra-ui/icons"
 import { Formik } from 'formik'
 import { FC, useState } from "react"
 import * as Web3 from "@solana/web3.js"
@@ -144,12 +144,10 @@ export const WithdrawSingleTokenType: FC = (props: {
         <Box>
             <Formik initialValues={{ withdrawAmount: ''}}
                 onSubmit={(values) => {
-                    // setAmount(parseInt(values.withdrawAmount));
-                    console.log("withdrawPoolTokenAmount", values.withdrawAmount)
                     handleTransactionSubmit(values.withdrawAmount);
                     setTimeout(() => {
-                        setSubmitted(false);
-                    }, 5000);
+                        setSuccess(false);
+                    }, 6000);
                 }}
             >
                 {({
@@ -191,10 +189,13 @@ export const WithdrawSingleTokenType: FC = (props: {
                                 width={'full'}
                                 boxShadow={'xl'}
                             >
-                                {isSubmitted
-                                ? <ScaleFade initialScale={0.5} in={true}>{!isSuccess ? <CloseIcon /> : <CheckIcon />}</ScaleFade>
-                                : <ScaleFade initialScale={0.5} in={true}>Remove liquidity</ScaleFade>
-                                }
+                                <ScaleFade initialScale={0.5} in={true}>
+                                    {isSuccess ? <CheckIcon /> : 
+                                    <ScaleFade initialScale={0.5} in={true}>
+                                        Remove liquidity
+                                    </ScaleFade>
+                                    }
+                                </ScaleFade>
                             </Button>
                         </CustomTooltip>
                     </form>

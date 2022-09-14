@@ -8,10 +8,10 @@ import {
   Stack,
   Text,
   useColorModeValue as mode,
-  CircularProgress,
-  Tabs, TabList, TabPanels, Tab, TabPanel,
+  Tooltip,
+  Tabs, TabList, TabPanels, Tab, TabPanel, HStack,
 } from '@chakra-ui/react'
-import { ArrowBackIcon } from '@chakra-ui/icons'
+import { ArrowBackIcon, InfoOutlineIcon } from '@chakra-ui/icons'
 import Confetti from 'react-dom-confetti'
 import { Step, Steps, useSteps } from "chakra-ui-steps"
 import * as React from 'react'
@@ -19,10 +19,9 @@ import { TokenSwapForm } from './TokenSwap'
 import styles from '../styles/Home.module.css'
 import { Airdrop } from './TokenSwap/AirdropForm'
 import { useWallet } from '@solana/wallet-adapter-react'
-import { CustomTooltip } from './TokenSwap/LiquidityInfo'
 
 type TradeFormItemProps = {
-  label: string
+  label: string | React.ReactNode
   value?: string
   children?: React.ReactNode
 }
@@ -92,7 +91,9 @@ export const TradeForm = ({ market }) => {
   const { nextStep, prevStep, reset, activeStep } = useSteps({
     initialStep: 0,
   })
+
   const [numberInput, setNumberInput] = useState<any>(1)
+  const [outcome, setOutcome] = useState<"yes" | "no">()
 
   const { publicKey } = useWallet()
   const isOwner = ( publicKey ? publicKey.toString() === process.env.NEXT_PUBLIC_OWNER_PUBLIC_KEY : false )
@@ -101,6 +102,10 @@ export const TradeForm = ({ market }) => {
   const day = dt.getDate().toString()
   const month = dt.toLocaleString('default', { month: 'long' })
   const year = dt.getFullYear().toString()
+
+  function settingOutcome(outcome) {
+    setOutcome(outcome)
+  }
   
   return (
     <>
@@ -113,24 +118,24 @@ export const TradeForm = ({ market }) => {
     >
       
       <Tabs variant={'unstyled'}>
-          <TabList mb={3}>
-            <Tab sx={tabListStyle}>Swap</Tab>
-            <Tab ml={3} sx={tabListStyle}>Pool</Tab>
-            {isOwner &&
-              <Tab ml={3} sx={tabListStyle}>Airdrop</Tab>
-            }
-          </TabList>
+        <TabList mb={3}>
+          <Tab sx={tabListStyle}>Swap</Tab>
+          <Tab ml={3} sx={tabListStyle}>Pool</Tab>
+          {isOwner &&
+            <Tab ml={3} sx={tabListStyle}>Airdrop</Tab>
+          }
+        </TabList>
 
-          <TabPanels>
-            {/* Swap Tab */}
-            <TabPanel px={0}>
-              {/* <Steps width={'45%'} orientation={'horizontal'} colorScheme={'gray'} activeStep={activeStep}>
-                {steps.map(({ label }, index) => (
-                  <Step label={label} key={index} />            
-                ))}
-              </Steps> */}
+        <TabPanels>
+          {/* Swap Tab */}
+          <TabPanel px={0}>
+            {/* <Steps width={'45%'} orientation={'horizontal'} colorScheme={'gray'} activeStep={activeStep}>
+              {steps.map(({ label }, index) => (
+                <Step label={label} key={index} />            
+              ))}
+            </Steps> */}
 
-              {
+            {
               activeStep === 0 && (
                 <Stack spacing={6}>
 
@@ -150,8 +155,17 @@ export const TradeForm = ({ market }) => {
                     </Heading>
                     
                     <ButtonGroup onClick={nextStep} justifyContent={'center'} size="lg" spacing='3'>
-                      <Button p={7} width={'full'} colorScheme='purple'>Yes, it will</Button>
-                      <Button p={7} width={'full'} colorScheme='teal'>No, it won&apos;t</Button>
+                      <Button id="yes" p={7} width={'full'} colorScheme='purple'
+                        onClick={() => settingOutcome("yes")}
+                      >
+                        Yes, it will
+                      </Button>
+                      
+                      <Button id="no" p={7} width={'full'} colorScheme='teal'
+                        onClick={() => settingOutcome("no")}
+                      >
+                        No, it won&apos;t
+                      </Button>
                     </ButtonGroup>
                   </Stack>
 
@@ -170,9 +184,18 @@ export const TradeForm = ({ market }) => {
                         <NumberInputStepper><NumberIncrementStepper/><NumberDecrementStepper /></NumberInputStepper>
                       </NumberInput>
                     </TradeFormItem>
-                    {/* <TradeFormItem label="Fees">
+                    <TradeFormItem 
+                      label={
+                        <HStack>
+                          <Text>Fees</Text>
+                          <Tooltip label={"A 2% fee goes to liquidity providers"} p={3}>
+                            <InfoOutlineIcon cursor={'help'} />
+                          </Tooltip>
+                        </HStack>
+                      }
+                    >
                       1%
-                    </TradeFormItem> */}
+                    </TradeFormItem>
                     <Flex justify="space-between">
                       <Text fontSize="lg" fontWeight="semibold">
                         Total
@@ -182,30 +205,31 @@ export const TradeForm = ({ market }) => {
                       </Text>
                     </Flex>
                   </Stack>
-
+                  
                   <ButtonGroup justifyContent={'center'} size="lg" fontSize="md" spacing='3'>
                     <Button onClick={prevStep} borderColor={mode('#353535', 'gray.100')} variant={'outline'}>
                       <ArrowBackIcon color={mode('#353535', 'gray.50')} />
                     </Button>
 
-                      <Button type={'submit'} isDisabled={!publicKey}
-                        className={
-                          mode(styles.wallet_adapter_button_trigger_light_mode, 
-                            styles.wallet_adapter_button_trigger_dark_mode
-                          )
-                        }
-                        textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')} 
-                        boxShadow={'xl'} width={'full'}
-                        onClick={nextStep}
-                      >
-                        Place Order
-                      </Button>
+                    <Button type={'submit'} isDisabled={!publicKey}
+                      className={
+                        mode(styles.wallet_adapter_button_trigger_light_mode, 
+                          styles.wallet_adapter_button_trigger_dark_mode
+                        )
+                      }
+                      textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')} 
+                      boxShadow={'xl'} width={'full'}
+                      onClick={nextStep}
+                    >
+                      Place Order
+                    </Button>
                   </ButtonGroup>
                 </Stack>
               )
             }
-            
-            {activeStep === steps.length && (
+          
+            {
+              activeStep === steps.length && (
               <Stack spacing={8}>
                 <Heading size={'md'}>
                   Woohoo! Your order has been placed!
@@ -214,7 +238,8 @@ export const TradeForm = ({ market }) => {
                   <Button onClick={reset} width={'full'}>Done</Button>
                 </ButtonGroup>
               </Stack>
-            )}
+              )
+            }
           </TabPanel>
 
 

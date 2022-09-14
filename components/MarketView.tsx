@@ -87,12 +87,14 @@ const MarketView = ({ market }) => {
             >
                 <ChakraNextLink href={'/'} scroll={false} _hover={{textDecoration: 'none'}}>
                     <Stack mb={6} align={'center'} direction={'row'} width={{ 'base': '85%', 'md': 'full' }}>
-                        <ArrowBackIcon mr={4}/>
-                        <Heading className={styles.text_link} _before={{ bg: mode('black', 'white') }}
-                            fontSize={{ 'base': 'xl', 'md': '2xl' }} fontWeight="extrabold"
-                        >
-                            {market.title}
-                        </Heading>
+                        <HStack className={styles.text_link} _before={{ bg: mode('black', 'white') }}>
+                            <ArrowBackIcon mr={4}/>
+                            <Heading _before={{ bg: mode('black', 'white') }}
+                                fontSize={{ 'base': 'xl', 'md': '2xl' }} fontWeight="extrabold"
+                            >
+                                {market.title}
+                            </Heading>
+                        </HStack>
                     </Stack>
                 </ChakraNextLink>
 
@@ -110,7 +112,7 @@ const MarketView = ({ market }) => {
 
                             <TabPanels>
                                 <TabPanel key={0} px={0}>
-                                    <OutcomeGraph market={market} publicKey={publicKey} />
+                                    <OutcomeGraph market={market} />
                                 </TabPanel>
                             </TabPanels>
                         </Tabs>

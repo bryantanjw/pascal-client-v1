@@ -3,7 +3,7 @@ import {
     Table, Thead, Tbody, Tr, Th, Td,
 } from '@chakra-ui/react'
 
-export default function OutcomeGraph({ market, publicKey }) {
+export default function OutcomeGraph({ market }) {
 
     return (
         <VStack width={{ 'base': '80%', 'md': 'full' }}>

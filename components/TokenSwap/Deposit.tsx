@@ -10,7 +10,7 @@ import {
     Input,
     ScaleFade,
 } from "@chakra-ui/react"
-import { WarningTwoIcon, ExternalLinkIcon, CheckIcon, CloseIcon } from "@chakra-ui/icons"
+import { WarningTwoIcon, ExternalLinkIcon, CheckIcon } from "@chakra-ui/icons"
 import { Formik } from 'formik'
 import { FC, useState } from "react"
 import * as Web3 from "@solana/web3.js"
@@ -143,12 +143,10 @@ export const DepositSingleTokenType: FC = (props: {
         <Box>
             <Formik initialValues={{ depositAmount: ''}}
                 onSubmit={(values) => {
-                    // setAmount(parseInt(values.depositAmount));
-                    console.log("depositPoolTokenAmount", values.depositAmount)
                     handleTransactionSubmit(values.depositAmount);
                     setTimeout(() => {
-                        setSubmitted(false);
-                    }, 5000);
+                        setSuccess(false);
+                    }, 6000);
                 }}
             >
                 {({
@@ -177,6 +175,7 @@ export const DepositSingleTokenType: FC = (props: {
                             poolAccountB={poolScroogeAccount}
                             tokenAccountPool={tokenAccountPool}
                             TOKEN_SWAP_PROGRAM_ID={TOKEN_SWAP_PROGRAM_ID}
+                            isSubmitted={isSubmitted}
                         />
                         
                         <Alert bg={mode('blue.50', 'blue.900')} fontSize={'xs'} rounded={'md'} 
@@ -197,10 +196,13 @@ export const DepositSingleTokenType: FC = (props: {
                                 width={'full'}
                                 boxShadow={'xl'}
                             >
-                                {isSubmitted
-                                ? <ScaleFade initialScale={0.5} in={true}>{isSuccess ? <CheckIcon /> : <CloseIcon />}</ScaleFade>
-                                : <ScaleFade initialScale={0.5} in={true}>Add liquidity</ScaleFade>
-                                }
+                                <ScaleFade initialScale={0.5} in={true}>
+                                    {isSuccess ? <CheckIcon /> : 
+                                    <ScaleFade initialScale={0.5} in={true}>
+                                        Add liquidity
+                                    </ScaleFade>
+                                    }
+                                </ScaleFade>
                             </Button>
                         </CustomTooltip>
                     </form>
