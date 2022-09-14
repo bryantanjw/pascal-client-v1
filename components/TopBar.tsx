@@ -115,6 +115,7 @@ const DesktopNav = () => {
                         fontSize={'sm'}
                         fontWeight={500}
                         color={linkColor}
+                        isExternal={navItem.isExternal}
                         _hover={{
                             textDecoration: 'none',
                             color: linkHoverColor,
@@ -247,6 +248,7 @@ interface NavItem {
     subLabel?: string;
     children?: Array<NavItem>;
     href?: string;
+    isExternal? : boolean;
 }
   
 const NAV_ITEMS: Array<NavItem> = [
@@ -261,6 +263,7 @@ const NAV_ITEMS: Array<NavItem> = [
     {
         label: 'Docs',
         href: 'https://docs.pascal.fi/',
+        isExternal: true,
     },
     {
         label: 'More',

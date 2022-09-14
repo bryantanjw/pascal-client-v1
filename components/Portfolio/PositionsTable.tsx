@@ -92,7 +92,7 @@ export const columns = [
         },
     },
     {
-        Header: 'Deposit',
+        Header: 'Shares',
     },
     {
         Header: 'Value',
