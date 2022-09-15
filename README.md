@@ -1,4 +1,4 @@
-# Pascal Protocol UI
+# Pascal Protocol Client
 Trade directly on the outcome of events and across AMM pools.
 
 ## Getting Started
