@@ -1,5 +1,5 @@
 {
-  "name": "pascal-finance",
+  "name": "pascal",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -44,7 +44,8 @@
     "react-use-measure": "^2.1.1",
     "recharts": "2.1.9",
     "swr": "^1.3.0",
-    "three": "^0.144.0"
+    "three": "^0.144.0",
+    "unfetch": "^4.2.0"
   },
   "devDependencies": {
     "@types/node": "18.0.0",

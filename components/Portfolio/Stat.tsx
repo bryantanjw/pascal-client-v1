@@ -4,7 +4,6 @@ import {
     useColorModeValue as mode,
     Badge,
     Text,
-    HStack,
     Stack,
     Heading,
 } from '@chakra-ui/react'
@@ -87,7 +86,7 @@ export function StatCard(props: StatCardProps) {
     <Box
         px={{ 'base': 3, 'md': 6 }}
         py="4"
-        bg={mode('white', 'gray.700')}
+        bg={mode('white', 'gray.800')}
         boxShadow={'md'}
         borderWidth={1}
         borderRadius={"md"}
@@ -107,7 +106,7 @@ export function StatCard(props: StatCardProps) {
   )
 }  
 
-export const Stats = () => {
+export const Stats = ({ account }) => {
   return (
     <Box as="section">
       <Box width={{ 'base': '100%', 'md': '2xl'}}>

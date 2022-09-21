@@ -4,7 +4,6 @@ import {
     Text,
     Flex,
     useColorModeValue as mode,
-    Heading,
 } from "@chakra-ui/react"
 import { DepositSingleTokenType } from "./Deposit"
 import { WithdrawSingleTokenType } from "./Withdraw"
@@ -14,6 +13,25 @@ import { useEffect, useState } from "react"
 import { poolMint } from "utils/constants"
 import { TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID } from "@solana/spl-token"
 import { CustomTooltip } from "./LiquidityInfo"
+
+//  derive the wallet's associated token address.
+export async function findAssociatedTokenAddress(
+    walletAddress: PublicKey,
+    tokenMintAddress: PublicKey
+): Promise<PublicKey> {
+    const associatedAddress = (await PublicKey.findProgramAddress(
+        [
+            walletAddress.toBuffer(),
+            TOKEN_PROGRAM_ID.toBuffer(),
+            tokenMintAddress.toBuffer(),
+        ],
+        ASSOCIATED_TOKEN_PROGRAM_ID
+    )
+    )[0]
+    console.log("User's associated token address", associatedAddress.toBase58())
+
+    return associatedAddress
+}
 
 export function blurChange(publicKey) {
     let blur
@@ -54,25 +72,6 @@ export const TokenSwapForm = () => {
         fontSize: 'sm',
     }
     // Style config //
-
-    //  derive the wallet's associated token address.
-    async function findAssociatedTokenAddress(
-        walletAddress: PublicKey,
-        tokenMintAddress: PublicKey
-    ): Promise<PublicKey> {
-        const associatedAddress = (await PublicKey.findProgramAddress(
-            [
-                walletAddress.toBuffer(),
-                TOKEN_PROGRAM_ID.toBuffer(),
-                tokenMintAddress.toBuffer(),
-            ],
-            ASSOCIATED_TOKEN_PROGRAM_ID
-        )
-        )[0]
-        console.log("User's associated token address", associatedAddress.toBase58())
-
-        return associatedAddress
-    }
     
     useEffect(() => {
         if (!publicKey) {

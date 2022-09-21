@@ -14,7 +14,9 @@ import { Line, Bar } from 'react-chartjs-2'
 import { 
     Flex, 
     Skeleton, 
-    Stack, 
+    Stack,
+    Text,
+    Center,
     useColorModeValue as mode,
 } from '@chakra-ui/react'
 
@@ -62,7 +64,7 @@ export const cumulativeReturnsData = {
   labels,
   datasets: [
     {
-        label: 'Cumulative Returns Dataset',
+        label: 'Cumulative Returns',
         data: [369, 143, 720, 225, 62, 872, 331, 680, -7, 226],
         borderColor: 'rgb(159,122,234)',
         backgroundColor: 'rgba(159,122,234, 0.5)',
@@ -75,7 +77,7 @@ export const weeklyReturnsData = {
     labels,
     datasets: [
       {
-          label: 'Weekly Returns Data',
+          label: 'Weekly Returns',
           data: [95, 70, 55, 69, 7, 61, -57, 63, -47, 35],
           borderColor: 'rgb(159,122,234)',
           backgroundColor: 'rgba(159,122,234, 0.5)',
@@ -84,26 +86,34 @@ export const weeklyReturnsData = {
     ],
 };
 
-export const ReturnsGraph = () => {
+export const ReturnsGraph = ({ account }) => {
   return (
     <Stack py={2} spacing={8}>
-        <Flex>
-            <Line
-                options={options} 
-                data={cumulativeReturnsData}
-                height={55}
-                fallbackContent={<Skeleton height={55} width={'full'} />}
-            />
-        </Flex>
+      {account &&
+        <>
+          <Flex>
+              <Line
+                  options={options} 
+                  data={cumulativeReturnsData}
+                  height={55}
+                  fallbackContent={<Skeleton height={55} width={'full'} />}
+              />
+          </Flex>
 
-        <Flex>
-            <Bar 
-                options={options} 
-                data={weeklyReturnsData}
-                height={55}
-                fallbackContent={<Skeleton height={55} width={'full'} />}
-            />
-        </Flex>
+          <Flex>
+              <Bar 
+                  options={options} 
+                  data={weeklyReturnsData}
+                  height={55}
+                  fallbackContent={<Skeleton height={55} width={'full'} />}
+              />
+          </Flex>
+        </>
+      }
+
+      {!account && 
+        <Text color={mode('gray.600', 'gray.700')} p={6} textAlign={'center'}>No positions found</Text>
+      }
     </Stack>
   )
 }

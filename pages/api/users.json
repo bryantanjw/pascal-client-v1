@@ -1,50 +1,64 @@
 [
-    {
-      "role": "NO",
-      "status": "active",
-      "earned": "$45,000",
-      "id": "blog",
-      "user": {
-        "image":
-          "Financials.svg",
-        "name": "S&P500 daily close",
-        "action": "Deposit"
+  {
+    "pubKey": "G3ZEAY19iDMjF7P57dgFUZiC4bpeFvMPKShenugL7E2Y",
+    "collateral": 3568181.02691129,
+    "freeCollateral": 1786071.456884368,
+    "totalAccountValue": 3568180.98341129,
+    "totalPositionSize": 6384939.6992,
+    "username": "user@domain.com",
+    "positions": [
+      {
+        "createdAt": "2019-03-05T09:56:55.728933+00:00",
+        "market": "S&P500 daily close",
+        "category": "Financials",
+        "action": "buy",
+        "size": 0.00,
+        "shares": 0.00,
+        "tokenBalance": 0.00,
+        "entryPrice": 138.22,
+        "realizedPnl": 3.39441714,
+        "status": "active",
+        "unrealizedPnl": 0,
+        "txId": "#"
+      },
+      {
+        "createdAt": "2019-03-05T09:56:55.728933+00:00",
+        "market": "SOL weekly close price",
+        "category": "Crypto",
+        "action": "buy",
+        "size": 0.00,
+        "shares": 0.00,
+        "tokenBalance": 0.00,
+        "entryPrice": 138.22,
+        "realizedPnl": 3.39441714,
+        "status": "closed",
+        "unrealizedPnl": 0,
+        "txId": "#"
       }
-    },
-    {
-      "role": "YES",
-      "status": "active",
-      "earned": "$4,840",
-      "id": "home",
-      "user": {
-        "image":
-          "Financials.svg",
-        "name": "TSLA weekly close",
-        "action": "Deposit"
+    ]
+  },
+  {
+    "pubKey": "2VrBH5uKb2dFutvCT8ztpyRDnLxaGKZyzi3HYe9G6qt5",
+    "collateral": 3568181.02691129,
+    "freeCollateral": 1786071.456884368,
+    "totalAccountValue": 3568180.98341129,
+    "totalPositionSize": 6384939.6992,
+    "username": "user@domain.com",
+    "positions": [
+      {
+        "createdAt": "2019-03-05T09:56:55.728933+00:00",
+        "market": "S&P500 daily close",
+        "category": "Financials",
+        "action": "buy",
+        "size": 0.00,
+        "shares": 0.00,
+        "tokenBalance": 0.00,
+        "entryPrice": 138.22,
+        "realizedPnl": 3.39441714,
+        "status": "active",
+        "unrealizedPnl": 0,
+        "txId": "#"
       }
-    },
-    {
-      "role": "YES",
-      "status": "resolving",
-      "id": "design-system",
-      "earned": "$89,054",
-      "user": {
-        "image":
-          "Crypto.svg",
-        "name": "DeGods NFT floor price",
-        "action": "Withdraw"
-      }
-    },
-    {
-      "role": "YES",
-      "status": "closed",
-      "earned": "$19,954",
-      "id": "home-2",
-      "user": {
-        "image":
-          "Economics.svg",
-        "name": "Inflation",
-        "action": "Deposit"
-      }
-    }
-  ]
+    ]
+  }
+]

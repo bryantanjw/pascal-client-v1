@@ -1,24 +1,48 @@
 import { 
     Box, 
     Heading,
+    Text,
+    Center,
     Tabs, TabList, TabPanels, Tab, TabPanel,
+    useColorModeValue,
 } from "@chakra-ui/react"
 import WithSubnavigation from "components/TopBar"
 import { Stats } from "components/Portfolio/Stat"
-import { PositionsTable } from "../components/Portfolio/PositionsTable"
-import styles from '../styles/Home.module.css'
+import { PositionsTable } from "@/components/Portfolio/PositionsTable"
 import { ReturnsGraph } from "components/Portfolio/ReturnsGraph"
 import ActivityTable from "components/Portfolio/ActivityTable"
 import Layout from "components/Layout"
+import { useConnection, useWallet } from "@solana/wallet-adapter-react"
+import fetch from 'unfetch'
+import useSWR from "swr"
 
-function Portfolio({ data }) {
+import styles from '@/styles/Home.module.css'
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
+
+export function blurChange(publicKey) {
+    let blur
+    if (publicKey) {
+        blur = 'blur(0px)'
+    } else {
+        blur = 'blur(2px)'
+    }
+    return blur
+}
+
+const fetcher = url => fetch(url).then(r => r.json())
+
+const Portfolio = () => {
+    const { connection } = useConnection()
+    const { publicKey } = useWallet()
+
+    const { data, error } = useSWR(`../api/users?pubKey=${publicKey?.toString()}`, fetcher)
 
     return (
         <div className={styles.container}>
             <WithSubnavigation />
             
             <Layout>
-                <Box as="section" py="12">
+                <Box as="section" py="12" blur={'15px'}>
                     <Box maxW={{ base: '3xl', lg: '5xl' }}
                         mx="auto"
                     >
@@ -26,25 +50,42 @@ function Portfolio({ data }) {
                             <Heading size="xl" mb="6">
                                 Your Portfolio
                             </Heading>
-                            
-                            <Stats />
 
-                            <Tabs py={10} variant={'enclosed'} colorScheme={'black'}>
-                                <TabList>
-                                    <Tab>Returns</Tab>
-                                    <Tab>Activity</Tab>
-                                </TabList>
-                                <TabPanels>
-                                    <TabPanel key={1} px={0}>
-                                        <ReturnsGraph />
-                                        <PositionsTable />
-                                    </TabPanel>
+                            {!publicKey &&
+                                <Center py={12} flexDirection={'column'}>
+                                    <Text py={4} fontSize={'lg'}>Connect your wallet to view your portfolio</Text>
+                                    <WalletMultiButton 
+                                        // eslint-disable-next-line react-hooks/rules-of-hooks
+                                        className={useColorModeValue(
+                                            styles.wallet_adapter_button_trigger_light_mode, 
+                                            styles.wallet_adapter_button_trigger_dark_mode
+                                        )} 
+                                    />
+                                </Center>
+                            }
 
-                                    <TabPanel key={2} px={0}>
-                                        <ActivityTable />
-                                    </TabPanel>
-                                </TabPanels>
-                            </Tabs>
+                            {publicKey &&
+                                <>
+                                {data && <Stats account={data} />}
+                        
+                                <Tabs py={10} variant={'enclosed'} colorScheme={'black'}>
+                                    <TabList>
+                                        <Tab>Returns</Tab>
+                                        <Tab>Activity</Tab>
+                                    </TabList>
+                                    <TabPanels>
+                                        <TabPanel key={1} px={0}>
+                                            <ReturnsGraph account={data} />
+                                            <PositionsTable account={data} />
+                                        </TabPanel>
+
+                                        <TabPanel key={2} px={0}>
+                                            <ActivityTable account={data} />
+                                        </TabPanel>
+                                    </TabPanels>
+                                </Tabs>
+                                </>
+                            }
                         </Box>
                     </Box>
                 </Box>
@@ -52,10 +93,5 @@ function Portfolio({ data }) {
         </div>
     )
 }
-
-// Page gets called at build time
-// export async function getStaticProps() {
-
-// }
 
 export default Portfolio

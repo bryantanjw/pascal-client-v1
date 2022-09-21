@@ -3,19 +3,19 @@ import {
     HStack,
     Input, InputGroup, InputLeftElement,
     Stack,
+    Text,
     Table, Thead, Tr, Th, Tbody, Td,
     useColorModeValue as mode,
     Box,
     Img,
     Badge,
+    Center,
 } from '@chakra-ui/react'
 import {
     Select as CustomSelect,
     chakraComponents,
 } from "chakra-react-select"
-import React from 'react'
 import { BsSearch } from 'react-icons/bs'
-import data from "../../pages/api/users.json"
 
 // Custom style config for CustomSelect
 // Documentation: https://github.com/csandman/chakra-react-select
@@ -51,26 +51,27 @@ const statusOptions = [
 
 interface MarketPositionProps {
     data: {
-      image: string
-      name: string
+        category: string
+        market: string
     }
 }
-  
+
 export const Position = (props: MarketPositionProps) => {
-    const { image, name } = props.data
+    const { category, market } = props.data
+    console.log("market", market)
     return (
         <Stack direction="row" spacing="4" align="center">
             <Box flexShrink={0} h="5" w="5">
                 <Img
                     filter={mode('invert(0%)', 'invert(100%)')}
                     objectFit="cover"
-                    src={image}
+                    src={`${category}.svg`}
                     alt=""
                 />
             </Box>
             <Box>
                 <Box fontSize="sm" fontWeight="medium">
-                    {name}
+                    {category}
                 </Box>
             </Box>
         </Stack>
@@ -82,57 +83,59 @@ export const badgeEnum: Record<string, string> = {
     resolving: 'orange',
     closed: 'gray',
 }
-  
-export const columns = [
-    {
-        Header: 'Market',
-        accessor: 'user',
-        Cell: function MarketCell(data: any) {
-            return <Position data={data} />
-        },
-    },
-    {
-        Header: 'Shares',
-    },
-    {
-        Header: 'Value',
-        accessor: 'earned',
-    },
-    {
-        Header: 'Net return',
-    },
-    {
-        Header: 'Tokens',
-        accessor: 'role',
-    },
-    {
-        Header: 'Status',
-        accessor: 'status',
-        Cell: function StatusCell(data: any) {
-            return (
-            <Badge variant={'subtle'} fontSize="xs" colorScheme={badgeEnum[data]}>
-                {data}
-            </Badge>
-            )
-        },
-    },
-]  
 
-export const TableContent = ({ columns, data }) => {
+export const TableContent = ({ account }, error) => {
+    const columns = [
+        // TODO: Add category icon to Market column. why tf is it not working??
+        {
+            Header: 'Market',
+            accessor: 'market',
+            // Cell: function MarketCell(data: any) {
+            //     return <Position data={data} />
+            // },
+        },
+        {
+            Header: 'Shares',
+            accessor: 'shares',
+        },
+        {
+            Header: 'Value',
+        },
+        {
+            Header: 'Net return',
+            accessor: 'unrealizedPnl'
+        },
+        {
+            Header: 'Tokens',
+            accessor: 'tokenBalance',
+        },
+        {
+            Header: 'Status',
+            accessor: 'status',
+            Cell: function StatusCell(data: any) {
+                return (
+                    <Badge variant={'subtle'} fontSize="xs" colorScheme={badgeEnum[data]}>
+                        {data}
+                    </Badge>
+                )
+            },
+        },
+    ]
+
     return (
         <Box my={4} rounded={'lg'} borderWidth="1px" overflowX={'auto'}>
             <Table fontSize="sm">
                 <Thead bg={mode('gray.50', 'gray.800')}>
                     <Tr>
                         {columns.map((column, index) => (
-                        <Th whiteSpace="nowrap" scope="col" key={index}>
-                            {column.Header}
-                        </Th>
+                            <Th whiteSpace="nowrap" scope="col" key={index}>
+                                {column.Header}
+                            </Th>
                         ))}
                     </Tr>
                 </Thead>
                 <Tbody>
-                    {data.map((row, index) => (
+                    {account && account[0].positions.map((row, index) => (
                         <Tr key={index}>
                             {columns.map((column, index) => {
                                 const cell = row[column.accessor as keyof typeof row]
@@ -144,9 +147,13 @@ export const TableContent = ({ columns, data }) => {
                                 )
                             })}
                         </Tr>
-                    ))}
+                    ))
+                    }
                 </Tbody>
             </Table>
+            {!account &&
+                    <Text color={mode('gray.600', 'gray.700')} p={6} textAlign={'center'}>No positions found</Text>
+            }
         </Box>
     )
 }
@@ -185,11 +192,11 @@ export const TableActions = () => {
     )
 }
   
-export const PositionsTable = () => {
+export const PositionsTable = ({ account }) => {
     return (
         <>
             <TableActions />
-            <TableContent columns={columns} data={data} />
+            <TableContent account={account} />
         </>
     )
 }

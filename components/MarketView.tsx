@@ -19,9 +19,11 @@ import { TradeForm } from './TradeForm'
 import WithSubnavigation from './TopBar'
 import MarketResolution from './MarketResolution'
 import OutcomeGraph from './OutcomeGraph'
+import { DiscussionForm, DiscussionList } from './DiscussionForm'
 import Layout from './Layout'
 import ChakraNextLink from './ChakraNextLink'
 import { useWallet } from '@solana/wallet-adapter-react'
+import data from "../pages/api/users.json"
 import styles from '../styles/Home.module.css'
 
 // Dynamically load ResearchGraph component on client side
@@ -107,7 +109,7 @@ const MarketView = ({ market }) => {
                     <Stack spacing={{ base: '8', md: '10' }} minW={'sm'} flex="2">
                         <Tabs colorScheme={'black'}>
                             <TabList>
-                                <Tab sx={tabListStyle}>Graph</Tab>
+                                <Tab sx={tabListStyle}>Outcomes</Tab>
                             </TabList>
 
                             <TabPanels>
@@ -154,6 +156,19 @@ const MarketView = ({ market }) => {
                                                 </HStack>
                                                 
                                                 <MarketResolution market={market} />
+                                            </Stack>
+
+                                            <Divider borderColor={dividerColor} />
+
+                                            {/* Discussion */}
+                                            <Stack py={3} direction={'column'}>
+                                                <HStack spacing={3}>
+                                                    <Image filter={iconColor} alt='Resolution' width={'18px'} src={`/Discussion.png`} />
+                                                    <Heading sx={sectionHeadingStyle}>Discussion</Heading>
+                                                </HStack>
+
+                                                {/* <DiscussionForm />
+                                                <DiscussionList /> */}
                                             </Stack>
                                         </Stack>
                                     </Flex>

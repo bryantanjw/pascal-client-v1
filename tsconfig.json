@@ -19,6 +19,9 @@
     "isolatedModules": true,
     "incremental": true,
     "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    },
     "strictNullChecks": true
   },
   "exclude": [
