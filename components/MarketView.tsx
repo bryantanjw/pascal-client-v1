@@ -18,12 +18,11 @@ import NewsList from './NewsList'
 import { TradeForm } from './TradeForm'
 import WithSubnavigation from './TopBar'
 import MarketResolution from './MarketResolution'
-import OutcomeGraph from './OutcomeGraph'
+import Outcomes from './Outcomes'
 import { DiscussionForm, DiscussionList } from './DiscussionForm'
 import Layout from './Layout'
 import ChakraNextLink from './ChakraNextLink'
 import { useWallet } from '@solana/wallet-adapter-react'
-import data from "../pages/api/users.json"
 import styles from '../styles/Home.module.css'
 
 // Dynamically load ResearchGraph component on client side
@@ -87,8 +86,8 @@ const MarketView = ({ market }) => {
                 px={{ base: '1', md: '8', lg: '12' }}
                 py={{ base: '6', md: '8', lg: '14' }}
             >
-                <ChakraNextLink href={'/'} scroll={false} _hover={{textDecoration: 'none'}}>
-                    <Stack mb={6} align={'center'} direction={'row'} width={{ 'base': '85%', 'md': 'full' }}>
+                <ChakraNextLink href={'/'} scroll={false} _hover={{textDecoration: 'none'}} display={'inline-block'}>
+                    <Stack mb={6} align={'center'} direction={'row'} width={{ 'base': 'full', 'md': 'full' }}>
                         <HStack className={styles.text_link} _before={{ bg: mode('black', 'white') }}>
                             <ArrowBackIcon mr={4}/>
                             <Heading _before={{ bg: mode('black', 'white') }}
@@ -114,7 +113,7 @@ const MarketView = ({ market }) => {
 
                             <TabPanels>
                                 <TabPanel key={0} px={0}>
-                                    <OutcomeGraph market={market} />
+                                    <Outcomes market={market} />
                                 </TabPanel>
                             </TabPanels>
                         </Tabs>
@@ -161,15 +160,15 @@ const MarketView = ({ market }) => {
                                             <Divider borderColor={dividerColor} />
 
                                             {/* Discussion */}
-                                            <Stack py={3} direction={'column'}>
+                                            {/* <Stack py={3} direction={'column'}>
                                                 <HStack spacing={3}>
-                                                    <Image filter={iconColor} alt='Resolution' width={'18px'} src={`/Discussion.png`} />
+                                                    <Image filter={iconColor} alt='Discussion' width={'18px'} src={`/Discussion.png`} />
                                                     <Heading sx={sectionHeadingStyle}>Discussion</Heading>
                                                 </HStack>
 
-                                                {/* <DiscussionForm />
-                                                <DiscussionList /> */}
-                                            </Stack>
+                                                <DiscussionForm />
+                                                <DiscussionList />
+                                            </Stack> */}
                                         </Stack>
                                     </Flex>
                                 </TabPanel>
@@ -187,7 +186,6 @@ const MarketView = ({ market }) => {
                     <Flex direction="column" align="center">
                         <TradeForm market={market} />
                     </Flex>
-
                 </Stack>
             </Box>
         </Layout>

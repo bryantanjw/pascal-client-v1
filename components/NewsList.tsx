@@ -108,7 +108,7 @@ export const Page = ({ search, index }) => {
     if (!data) return <Suspense fallback={<SkeletonText width={'full'}/>} />
     console.log(data)
     if (data) return ( 
-        data.articles.map((news, index) => (
+        data.articles?.map((news, index) => (
             <NewsListItem key={index} 
                 publication={news.source.name}
                 // Get time elapsed since each news published

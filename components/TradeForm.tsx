@@ -85,6 +85,25 @@ export const TradeForm = ({ market }) => {
       fontWeight: 'semibold'
     },
   }
+  const sellButtonStyle = {
+    p: 7,
+    width: 'full',
+    fontSize: 'xl',
+    textColor: mode('gray.500', 'whiteAlpha.700'),
+    borderColor: mode('gray.400', 'whiteAlpha.700'),
+    transition: 'all 0.3s ease',
+    _hover: {
+      textColor: mode('gray.800', 'white'),
+      borderColor: mode('gray.800', 'white')
+    }
+  }
+  const buyButtonStyle = {
+    p: 7,
+    width: 'full',
+    fontSize: 'xl',
+    textColor: mode('white', 353535),
+    bg: mode('#353535', 'gray.50'),
+  }
   // Styling config //
 
   const steps = [{ label: "" }, { label: "" }]
@@ -128,7 +147,7 @@ export const TradeForm = ({ market }) => {
 
         <TabPanels>
           {/* Swap Tab */}
-          <TabPanel px={0}>
+          <TabPanel px={0} pb={2}>
             {/* <Steps width={'45%'} orientation={'horizontal'} colorScheme={'gray'} activeStep={activeStep}>
               {steps.map(({ label }, index) => (
                 <Step label={label} key={index} />            
@@ -137,7 +156,7 @@ export const TradeForm = ({ market }) => {
 
             {
               activeStep === 0 && (
-                <Stack spacing={6}>
+                <Stack spacing={4}>
 
                   <Flex direction={'column'}>
                     <Text sx={headerTextStyle}>
@@ -149,34 +168,47 @@ export const TradeForm = ({ market }) => {
                     }
                   </Flex>
 
-                  <Stack spacing={8}>
-                    <Heading width={'90%'} fontSize={'2xl'} fontWeight={'semibold'}>
+                  <Stack spacing={6}>
+                    <Heading width={'90%'} fontSize={'2xl'} fontWeight={'semibold'} textColor={mode('gray.800', 'white')}>
                       Will {market.short} close above {market.target_value} on {month} {day}, {year}?
                     </Heading>
                     
-                    <ButtonGroup onClick={nextStep} justifyContent={'center'} size="lg" spacing='3'>
-                      <Button id="yes" p={7} width={'full'} colorScheme='purple'
-                        onClick={() => settingOutcome("yes")}
+                    <Stack>
+                      <Text color={mode('gray.700', 'gray.200')} fontWeight={'medium'} mb={2}>
+                        Select an outcome option on the left
+                      </Text>
+
+                      <ButtonGroup 
+                        justifyContent={'center'} size="lg" spacing='4'
+                        onClick={nextStep}
                       >
-                        Yes, it will
-                      </Button>
-                      
-                      <Button id="no" p={7} width={'full'} colorScheme='teal'
-                        onClick={() => settingOutcome("no")}
-                      >
-                        No, it won&apos;t
-                      </Button>
-                    </ButtonGroup>
+                        <Button id="buy" className={
+                          mode(styles.wallet_adapter_button_trigger_light_mode, 
+                            styles.wallet_adapter_button_trigger_dark_mode
+                          )}
+                          sx={buyButtonStyle}
+                          onClick={() => settingOutcome("yes")}
+                        >
+                          Buy
+                        </Button>
+                        
+                        <Button id="sell" sx={sellButtonStyle} variant={'outline'}
+                          onClick={() => settingOutcome("no")}
+                        >
+                          Sell
+                        </Button>
+                      </ButtonGroup>
+                    </Stack>
                   </Stack>
 
                 </Stack>
               )
               
               || activeStep === 1 && (
-                <Stack spacing={8}>
+                <Stack spacing={6}>
                   <Heading size="md">Swap Summary</Heading>
 
-                  <Stack spacing="4">
+                  <Stack spacing="3">
                     <TradeFormItem label="Price per contract" value={`${market.outcomes[0].probability}`} />
                     <TradeFormItem label="No. of contracts">
                       <NumberInput onChange={(e) => setNumberInput(e)} size={'sm'} width={'35%'} defaultValue={numberInput} min={1} max={100}>
@@ -207,8 +239,8 @@ export const TradeForm = ({ market }) => {
                   </Stack>
                   
                   <ButtonGroup justifyContent={'center'} size="lg" fontSize="md" spacing='3'>
-                    <Button onClick={prevStep} borderColor={mode('#353535', 'gray.100')} variant={'outline'}>
-                      <ArrowBackIcon color={mode('#353535', 'gray.50')} />
+                    <Button onClick={prevStep} variant={'ghost'}>
+                      <ArrowBackIcon />
                     </Button>
 
                     <Button type={'submit'} isDisabled={!publicKey}

@@ -11,9 +11,9 @@ const Home: NextPage = () => {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Pascal Finance</title>
+        <title>Pascal Protocol</title>
         <meta name="description" content="Trade directly on the outcome of events" />
-        <meta property="og:title" content="Pascal Finance" />
+        <meta property="og:title" content="Pascal Protocol" />
         <meta
           property="og:description"
           content="Trade directly on the outcome of events"
