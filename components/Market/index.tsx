@@ -16,14 +16,14 @@ import MarketProgress from './MarketProgress'
 import { Stat } from './Stat'
 import NewsList from './NewsList'
 import { TradeForm } from './TradeForm'
-import WithSubnavigation from './TopBar'
+import WithSubnavigation from '../TopBar'
 import MarketResolution from './MarketResolution'
 import Outcomes from './Outcomes'
 import { DiscussionForm, DiscussionList } from './DiscussionForm'
-import Layout from './Layout'
-import ChakraNextLink from './ChakraNextLink'
+import Layout from '../Layout'
+import ChakraNextLink from '../ChakraNextLink'
 import { useWallet } from '@solana/wallet-adapter-react'
-import styles from '../styles/Home.module.css'
+import styles from '../../styles/Home.module.css'
 
 // Dynamically load ResearchGraph component on client side
 const ResearchGraph = dynamic(import('./ResearchGraph'), {

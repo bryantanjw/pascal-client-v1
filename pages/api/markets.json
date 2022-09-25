@@ -24,7 +24,8 @@
         "search_term": "s%26p500",
         "resolution_source": "Pyth",
         "resolution_url": "https://pyth.network/",
-        "resolution_comment": "If the end-of-day S&P 500 index value"
+        "resolution_comment": "If the end-of-day S&P 500 index value",
+        "status": "open"
     },
     {
         "marketId": "2",
@@ -50,7 +51,8 @@
         "target_value": "$420.69",
         "search_term": "s%26p500",
         "resolution_source": "Pyth",
-        "resolution_comment": "If the end-of-day S&P 500 index value"
+        "resolution_comment": "If the end-of-day S&P 500 index value",
+        "status": "open"
     },
     {
         "marketId": "3",
@@ -77,7 +79,8 @@
         "search_term": "tesla",
         "resolution_source": "Pyth",
         "resolution_url": "https://pyth.network/",
-        "resolution_comment": "If the end-of-day TSLA value"
+        "resolution_comment": "If the end-of-day TSLA value",
+        "status": "open"
     },
     {
         "marketId": "4",
@@ -104,7 +107,8 @@
         "search_term": "inflation",
         "resolution_source": "Switchboard",
         "resolution_url": "https://switchboard.xyz/",
-        "resolution_comment": "If the Consumer Price Index (CPI) as reported by the BLS's monthly single-digit Consumer Price Index Summary Report increases by more than"
+        "resolution_comment": "If the Consumer Price Index (CPI) as reported by the BLS's monthly single-digit Consumer Price Index Summary Report increases by more than",
+        "status": "open"
     },
     {
         "marketId": "5",
@@ -131,7 +135,8 @@
         "search_term": "nyc temperature",
         "resolution_source": "Switchboard",
         "resolution_url": "https://switchboard.xyz/",
-        "resolution_comment": "If the highest temperature recorded in Central Park, New York"
+        "resolution_comment": "If the highest temperature recorded in Central Park, New York",
+        "status": "open"
     },
     {
         "marketId": "6",
@@ -142,11 +147,11 @@
         "outcomes": [
             {
                 "title": "Yes",
-                "probability": 0.5
+                "probability": 0.3
             },
             {
                 "title": "No",
-                "probability": 0.5
+                "probability": 0.7
             }
         ],
         "liquidity": 0.00,
@@ -158,7 +163,8 @@
         "search_term": "solana",
         "resolution_source": "Pyth",
         "resolution_url": "https://pyth.network/",
-        "resolution_comment":"If the end-of-day SOL value for"
+        "resolution_comment":"If the end-of-day SOL value for",
+        "status": "open"
     },
     {
         "marketId": "7",
@@ -185,6 +191,7 @@
         "search_term": "degodsnft",
         "resolution_source": "MagicEden",
         "resolution_url": "https://magiceden.io/",
-        "resolution_comment": "If the end-of-day DeGods NFT floor price"
+        "resolution_comment": "If the end-of-day DeGods NFT floor price",
+        "status": "open"
     }
 ]

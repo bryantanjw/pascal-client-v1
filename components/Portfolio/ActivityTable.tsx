@@ -26,7 +26,7 @@ const ActivityTable = ({ account }) => {
             },
             {
                 Header: 'Action',
-                accessor: 'side',
+                accessor: 'action',
             },
             {
                 Header: 'Time',

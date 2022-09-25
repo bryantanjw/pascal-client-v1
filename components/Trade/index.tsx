@@ -10,9 +10,9 @@ import {
     ScaleFade,
     Skeleton,
 } from '@chakra-ui/react'
-import styles from '../styles/Home.module.css'
+import styles from '../../styles/Home.module.css'
 import { FilterToggle } from './FilterToggle'
-import ChakraNextLink from './ChakraNextLink'
+import ChakraNextLink from '../ChakraNextLink'
 
 // Style config //
 const gradientBackgroundStyle = {
@@ -95,13 +95,12 @@ const List = () => {
     
     // FilterToggle state management is be ignored for the time being
     const { value, getCheckboxProps } = useCheckboxGroup({ defaultValue: [] })
-    console.log('Selection', value)
+
     useEffect(() => {
         fetch(`/api/fetchEvents`)
         .then(response => response.json())
         .then(data => {
             setMarkets(data);
-            console.log("markets", data);
         });
     }, []);
 

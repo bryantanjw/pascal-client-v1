@@ -2,7 +2,7 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import WithSubnavigation from 'components/TopBar'
-import List from 'components/List'
+import List from '@/components/Trade'
 import { Box, Stack, Heading, Text } from '@chakra-ui/react'
 import Layout from 'components/Layout'
 

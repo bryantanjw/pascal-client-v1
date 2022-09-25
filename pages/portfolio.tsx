@@ -12,12 +12,12 @@ import { PositionsTable } from "@/components/Portfolio/PositionsTable"
 import { ReturnsGraph } from "components/Portfolio/ReturnsGraph"
 import ActivityTable from "components/Portfolio/ActivityTable"
 import Layout from "components/Layout"
-import { useConnection, useWallet } from "@solana/wallet-adapter-react"
+import { useWallet } from "@solana/wallet-adapter-react"
 import fetch from 'unfetch'
 import useSWR from "swr"
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 
 import styles from '@/styles/Home.module.css'
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 
 export function blurChange(publicKey) {
     let blur
@@ -32,7 +32,6 @@ export function blurChange(publicKey) {
 const fetcher = url => fetch(url).then(r => r.json())
 
 const Portfolio = () => {
-    const { connection } = useConnection()
     const { publicKey } = useWallet()
 
     const { data, error } = useSWR(`../api/users?pubKey=${publicKey?.toString()}`, fetcher)

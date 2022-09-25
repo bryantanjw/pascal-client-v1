@@ -15,9 +15,9 @@ import { ArrowBackIcon, InfoOutlineIcon } from '@chakra-ui/icons'
 import Confetti from 'react-dom-confetti'
 import { Step, Steps, useSteps } from "chakra-ui-steps"
 import * as React from 'react'
-import { TokenSwapForm } from './TokenSwap'
-import styles from '../styles/Home.module.css'
-import { Airdrop } from './TokenSwap/AirdropForm'
+import { TokenSwapForm } from '../TokenSwap'
+import styles from '../../styles/Home.module.css'
+import { Airdrop } from '../TokenSwap/AirdropForm'
 import { useWallet } from '@solana/wallet-adapter-react'
 
 type TradeFormItemProps = {
@@ -163,8 +163,8 @@ export const TradeForm = ({ market }) => {
                       Market says
                     </Text>
                     {(market.outcomes[0].probability >= market.outcomes[1].probability)
-                      ? <Heading sx={colorSchemeYes}>Yes {market.outcomes[0].probability * 100}%</Heading>
-                      : <Heading sx={colorSchemeNo}>No {market.outcomes[1].probability * 100}%</Heading>
+                      ? <Heading sx={colorSchemeYes}>{market.outcomes[0].title} {market.outcomes[0].probability * 100}%</Heading>
+                      : <Heading sx={colorSchemeNo}>{market.outcomes[1].title} {market.outcomes[1].probability * 100}%</Heading>
                     }
                   </Flex>
 

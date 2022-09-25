@@ -58,7 +58,7 @@ interface MarketPositionProps {
 
 export const Position = (props: MarketPositionProps) => {
     const { category, market } = props.data
-    console.log("market", market)
+
     return (
         <Stack direction="row" spacing="4" align="center">
             <Box flexShrink={0} h="5" w="5">
