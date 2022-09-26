@@ -10,7 +10,7 @@ import {
     ScaleFade,
     Skeleton,
 } from '@chakra-ui/react'
-import styles from '../../styles/Home.module.css'
+import styles from '@/styles/Home.module.css'
 import { FilterToggle } from './FilterToggle'
 import ChakraNextLink from '../ChakraNextLink'
 

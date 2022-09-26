@@ -25,7 +25,7 @@ import {
 import {
     WalletMultiButton
 } from '@solana/wallet-adapter-react-ui'
-import styles from '../styles/Home.module.css'
+import styles from '@/styles/Home.module.css'
 
 export default function WithSubnavigation() {
     const { isOpen, onToggle } = useDisclosure();

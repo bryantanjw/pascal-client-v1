@@ -15,7 +15,7 @@ import {
 import { getColor, mode } from '@chakra-ui/theme-tools'
 import { mergeWith } from '@chakra-ui/utils'
 import { useSelect } from 'downshift'
-import { badgeEnum } from './Portfolio/PositionsTable'
+import { badgeEnum } from '../Portfolio/PositionsTable'
 import * as React from 'react'
 
 export const DefaultIcon = (props: React.ComponentProps<'svg'>) => (

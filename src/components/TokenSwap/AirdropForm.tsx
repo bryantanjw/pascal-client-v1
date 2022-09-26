@@ -10,13 +10,13 @@ import {
 import { FC, useState } from "react"
 import * as Web3 from "@solana/web3.js"
 import { useConnection, useWallet } from "@solana/wallet-adapter-react"
-import { AirdropSchema } from "../../models/Airdrop"
+import { AirdropSchema } from "@/models/Airdrop"
 import {
     kryptMint,
     ScroogeCoinMint,
     airdropPDA,
     airdropProgramId,
-} from "../../utils/constants"
+} from "@/utils/constants"
 import * as token from "@solana/spl-token"
 
 export const Airdrop: FC = () => {

@@ -11,7 +11,7 @@ import {
     Divider,
 } from "@chakra-ui/react"
 import { FaRegHeart } from "react-icons/fa"
-import { Discussion } from "models/Discussion"
+import { Discussion } from "@/src/models/Discussion"
 import * as web3 from '@solana/web3.js'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 

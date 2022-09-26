@@ -9,8 +9,11 @@ import {
 import fetch from 'unfetch'
 import useSWR from "swr"
 import { useWallet } from '@solana/wallet-adapter-react'
+import { useDispatch } from '@/store/store'
+import { setTitle } from '@/store/slices/outcomeSlice'
 
 // Style config //
+export const alternatingColorScheme = ['purple', 'teal', 'pink']
 const tableHeaderStyle = {
     pl: 0,
     fontSize: { 'base': '2xs', 'md': 'xs'}
@@ -35,7 +38,6 @@ const fetcher = async url => {
   
     return res.json()
 }
-    
 
 interface RadioOptionProps extends UseRadioProps, Omit<StackProps, 'onChange'> {
     index: number
@@ -45,7 +47,6 @@ interface RadioOptionProps extends UseRadioProps, Omit<StackProps, 'onChange'> {
 
 interface RadioGroupProps extends Omit<StackProps, 'onChange'> {
     market: any
-    onChange: (value: any) => void
 }
 
 const RadioOption = (props: RadioOptionProps) => {
@@ -55,10 +56,9 @@ const RadioOption = (props: RadioOptionProps) => {
     const { state, getInputProps, getCheckboxProps, getLabelProps } = useRadio(radioProps)
     const id = useId()
 
-    const alternatingColorScheme = ['purple', 'teal']
     const color = alternatingColorScheme[index % alternatingColorScheme.length]
 
-    const { data, error } = useSWR(publicKey ? `../api/users?pubKey=${publicKey?.toString()}` : null, fetcher)
+    const { data } = useSWR(publicKey ? `../api/users?pubKey=${publicKey?.toString()}` : null, fetcher)
     
     return (
         <Tr _hover={{ bg: mode('gray.100', 'gray.800') }} {...getCheckboxProps()}>
@@ -90,16 +90,19 @@ const RadioOption = (props: RadioOptionProps) => {
             <Td sx={tableCellStyle} isNumeric>
                 <chakra.label {...getLabelProps()} cursor={'pointer'}>
                     <input {...getInputProps()} aria-labelledby={id} />
-                    {data && data[0].positions.map((position, index) => {
-                        console.log(index)
-                        if (position.marketId === market.marketId && position.outcome === outcome.title) {
-                            console.log(index)
-                            return <Text key={index}>{position.shares}</Text>
-                        }
-                        if (index === data[0].positions.length - 1) {
-                            return <Text key={index}>0.00</Text>
-                        }
-                    })}
+                    {!publicKey && <Text>0.00</Text>}
+                    <Text>
+                        {data && data[0].positions.map((position, index) => {
+                            let found = false
+                            if (position.marketId === market.marketId && position.outcome === outcome.title) {
+                                found = true
+                                return position.shares
+                            }
+                            if (index == position.length - 1 && !found) {
+                                return 0.00
+                            }
+                        })}
+                    </Text>
                 </chakra.label>
             </Td>
         </Tr>
@@ -107,10 +110,17 @@ const RadioOption = (props: RadioOptionProps) => {
 }
 
 const RadioGroup = (props: RadioGroupProps) => {
-    const { market, onChange } = props
+    const { market } = props
+
+    const dispatch = useDispatch() // calling the reducer
+
+    const handleChange = (value) => {
+        dispatch(setTitle(value))
+    }
+
     const { getRootProps, getRadioProps } = useRadioGroup({
         defaultValue: market.outcomes[0].title,
-        onChange,
+        onChange: handleChange
     })
 
     return (
@@ -126,12 +136,16 @@ const RadioGroup = (props: RadioGroupProps) => {
                     </Tr>
                 </Thead>
                 <Tbody>
-                    {market.outcomes.map((outcome, index) => (
-                        <RadioOption key={index} 
-                            index={index} market={market} outcome={outcome}
-                            {...getRadioProps({ value: outcome.title })}
-                        />
-                    ))}
+                    {market.outcomes.map((outcome, index) => {
+                        return (
+                            <RadioOption key={index} 
+                                index={index} market={market} outcome={outcome}
+                                {...getRadioProps({ 
+                                    value: outcome.title,
+                                })}
+                            />
+                        )
+                    })}
                 </Tbody>
             </Table>
         </VStack>
@@ -141,7 +155,7 @@ const RadioGroup = (props: RadioGroupProps) => {
 const Outcomes = ({ market }) => {
     
     return (
-        <RadioGroup market={market} onChange={console.log} />
+        <RadioGroup market={market} />
     )
 }
 

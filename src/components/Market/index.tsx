@@ -19,11 +19,11 @@ import { TradeForm } from './TradeForm'
 import WithSubnavigation from '../TopBar'
 import MarketResolution from './MarketResolution'
 import Outcomes from './Outcomes'
-import { DiscussionForm, DiscussionList } from './DiscussionForm'
+import { DiscussionForm, DiscussionList } from './Discussion'
 import Layout from '../Layout'
 import ChakraNextLink from '../ChakraNextLink'
 import { useWallet } from '@solana/wallet-adapter-react'
-import styles from '../../styles/Home.module.css'
+import styles from '@/styles/Home.module.css'
 
 // Dynamically load ResearchGraph component on client side
 const ResearchGraph = dynamic(import('./ResearchGraph'), {

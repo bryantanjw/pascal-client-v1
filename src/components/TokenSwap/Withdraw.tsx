@@ -29,7 +29,7 @@ import { TokenSwap, TOKEN_SWAP_PROGRAM_ID } from "@solana/spl-token-swap"
 import * as token from "@solana/spl-token"
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token"
 import { MarketLiquidityInfo, CustomTooltip } from "./LiquidityInfo"
-import styles from '../../styles/Home.module.css'
+import styles from '@/styles/Home.module.css'
 
 export const WithdrawSingleTokenType: FC = (props: {
     onInputChange?: (val: number) => void

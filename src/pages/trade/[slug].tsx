@@ -1,21 +1,23 @@
-import type { InferGetStaticPropsType } from 'next';
-import { useRouter } from 'next/router';
-import MarketView from 'components/Market';
-import markets from "../api/markets.json";
+import type { InferGetStaticPropsType } from 'next'
+import { useRouter } from 'next/router'
+import MarketView from 'components/Market'
+import markets from "../api/markets.json"
+import { Provider } from 'react-redux'
+import { store } from '@/store/store'
 
 function getEvents() {
   const allEvents = markets.map((event) => {
 
-    const { ...props } = event;
+    const { ...props } = event
     return props
-  });
+  })
 
-  return allEvents;
+  return allEvents
 }
 
 // This gets called at build time
 export const getStaticPaths = async () => {
-  const allEvents= getEvents();
+  const allEvents= getEvents()
   return {
     // Get the paths to pre-render based on products at build time
     paths: allEvents.map((event: any) => `/trade/${event.marketId}`),
@@ -37,6 +39,8 @@ export default function Slug({ props }: InferGetStaticPropsType<typeof getStatic
   return router.isFallback ? (
     <h1>Loading...</h1>
   ) : (
-    <MarketView market={props} />
+    <Provider store={store}>
+      <MarketView market={props} />
+    </Provider>
   )
 }

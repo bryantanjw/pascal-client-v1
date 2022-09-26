@@ -20,7 +20,7 @@
         "realizedPnl": 3.39441714,
         "status": "active",
         "unrealizedPnl": 0,
-        "txId": "#"
+        "positionId": "#"
       },
       {
         "createdAt": "2019-03-05T09:56:55.728933+00:00",
@@ -35,27 +35,27 @@
         "realizedPnl": 3.39441714,
         "status": "active",
         "unrealizedPnl": 0,
-        "txId": "#"
+        "positionId": "#"
       },
       {
         "createdAt": "2019-03-05T09:56:55.728933+00:00",
         "market": "SOL weekly close price",
         "marketId": "6",
         "category": "Crypto",
-        "outcome": "Yes",
+        "outcome": "No",
         "size": 0.00,
-        "shares": 69.10,
+        "shares": 6.00,
         "tokenBalance": 0.00,
         "entryPrice": 138.22,
         "realizedPnl": 3.39441714,
         "status": "closed",
         "unrealizedPnl": 0,
-        "txId": "#"
+        "positionId": "#"
       }
     ]
   },
   {
-    "pubKey": "2VrBH5uKb2dFutvCT8ztpyRDnLxaGKZyzi3HYe9G6qt5",
+    "pubKey": "4nfoMrcHc5J1W8GZJzSAFyDTvB4JGduDHHJVNyJNNfVZ",
     "collateral": 3568181.02691129,
     "freeCollateral": 1786071.456884368,
     "totalAccountValue": 3568180.98341129,
@@ -69,13 +69,13 @@
         "category": "Financials",
         "outcome": "No",
         "size": 0.00,
-        "shares": 0.00,
+        "shares": 5.00,
         "tokenBalance": 0.00,
         "entryPrice": 138.22,
         "realizedPnl": 3.39441714,
         "status": "active",
         "unrealizedPnl": 0,
-        "txId": "#"
+        "positionId": "#"
       }
     ]
   }

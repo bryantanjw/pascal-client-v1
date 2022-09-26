@@ -153,7 +153,7 @@
     flex-direction: column;
   }
   .wallet_adapter_button_trigger_light_mode {
-    background-image: url('../public/wallet.png');
+    background-image: url('/wallet.png');
     background-size: 22px;
     color: invert(25%);
     background-color: transparent;
@@ -171,7 +171,7 @@
   }
 
   .wallet_adapter_button_trigger_dark_mode {
-    background-image: url('../public/wallet.png');
+    background-image: url('/wallet.png');
     background-size: 22px;
     filter: invert(90%);
     background-color: transparent;

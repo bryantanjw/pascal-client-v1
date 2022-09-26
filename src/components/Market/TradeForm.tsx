@@ -16,9 +16,12 @@ import Confetti from 'react-dom-confetti'
 import { Step, Steps, useSteps } from "chakra-ui-steps"
 import * as React from 'react'
 import { TokenSwapForm } from '../TokenSwap'
-import styles from '../../styles/Home.module.css'
+import styles from '@/styles/Home.module.css'
 import { Airdrop } from '../TokenSwap/AirdropForm'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { useSelector } from '@/store/store'
+import { getOutcomeState, setIndex, setTitle } from '@/store/slices/outcomeSlice'
+import { useDispatch } from 'react-redux'
 
 type TradeFormItemProps = {
   label: string | React.ReactNode
@@ -59,16 +62,6 @@ export const TradeForm = ({ market }) => {
     fontWeight: 'bold',
     fontSize: 'sm',
   }
-  const colorSchemeYes = {
-    textColor: mode('purple.500', 'purple.200'),
-    fontSize: '5xl',
-    fontWeight: 'semibold'
-  }
-  const colorSchemeNo = {
-    textColor: mode('#2C7C7C', '#81E6D9'),
-    fontSize: '5xl',
-    fontWeight: 'semibold'
-  }
   const tabListStyle = {
     color: 'blue.500',
     fontSize: 'sm',
@@ -104,6 +97,7 @@ export const TradeForm = ({ market }) => {
     textColor: mode('white', 353535),
     bg: mode('#353535', 'gray.50'),
   }
+  const alternatingColorScheme = [mode('purple.500', 'purple.200'), mode('#2C7C7C', '#81E6D9'), 'pink']
   // Styling config //
 
   const steps = [{ label: "" }, { label: "" }]
@@ -112,7 +106,10 @@ export const TradeForm = ({ market }) => {
   })
 
   const [numberInput, setNumberInput] = useState<any>(1)
-  const [outcome, setOutcome] = useState<"yes" | "no">()
+  const [outcome, setOutcome] = useState<any>()
+  
+  const dispatch = useDispatch()
+  const { title, index } = useSelector(getOutcomeState)
 
   const { publicKey } = useWallet()
   const isOwner = ( publicKey ? publicKey.toString() === process.env.NEXT_PUBLIC_OWNER_PUBLIC_KEY : false )
@@ -125,7 +122,7 @@ export const TradeForm = ({ market }) => {
   function settingOutcome(outcome) {
     setOutcome(outcome)
   }
-  
+
   return (
     <>
     {/* TODO: refine progress bar design */}
@@ -163,13 +160,26 @@ export const TradeForm = ({ market }) => {
                       Market says
                     </Text>
                     {(market.outcomes[0].probability >= market.outcomes[1].probability)
-                      ? <Heading sx={colorSchemeYes}>{market.outcomes[0].title} {market.outcomes[0].probability * 100}%</Heading>
-                      : <Heading sx={colorSchemeNo}>{market.outcomes[1].title} {market.outcomes[1].probability * 100}%</Heading>
+                      ? <Heading color={alternatingColorScheme[0 % alternatingColorScheme.length]} fontSize={'5xl'} fontWeight={'semibold'}>
+                          {market.outcomes[0].title} {market.outcomes[0].probability * 100}%
+                        </Heading>
+                      : <Heading color={alternatingColorScheme[1 % alternatingColorScheme.length]} fontSize={'5xl'} fontWeight={'semibold'}>
+                          {market.outcomes[1].title} {market.outcomes[1].probability * 100}%
+                        </Heading>
                     }
+                    {/* <Heading fontSize={'5xl'} fontWeight={'semibold'} color={alternatingColorScheme[index % alternatingColorScheme.length]}> */}
+                      {/* {title} 
+                      {market.outcomes.map((outcome, index) => {
+                        if (outcome.title === title) {
+                          dispatch(setIndex(index))
+                          return ` ${outcome.probability * 100}%`
+                        }
+                      })} */}
+                    {/* </Heading> */}
                   </Flex>
 
                   <Stack spacing={6}>
-                    <Heading width={'90%'} fontSize={'2xl'} fontWeight={'semibold'} textColor={mode('gray.800', 'white')}>
+                    <Heading width={'90%'} fontSize={'2xl'} fontWeight={'semibold'} textColor={mode('gray.800', 'gray.100')}>
                       Will {market.short} close above {market.target_value} on {month} {day}, {year}?
                     </Heading>
                     
@@ -181,6 +191,7 @@ export const TradeForm = ({ market }) => {
                       <ButtonGroup 
                         justifyContent={'center'} size="lg" spacing='4'
                         onClick={nextStep}
+                        isDisabled={!title}
                       >
                         <Button id="buy" className={
                           mode(styles.wallet_adapter_button_trigger_light_mode, 
