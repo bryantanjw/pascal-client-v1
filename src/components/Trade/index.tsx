@@ -31,7 +31,7 @@ const categories = ['Financials', 'Economics', 'Crypto', 'Climate']
 // TODO: 1. add createMarket button/modal for admin
 
 // TODO: add filter and search
-const List = () => {
+const MarketList = () => {
     const { data, error } = useSWR('/api/fetchEvents', fetcher)
     
     // FilterToggle state management is be ignored for the time being
@@ -102,4 +102,4 @@ const List = () => {
     );
 };
   
-export default List
+export default MarketList
