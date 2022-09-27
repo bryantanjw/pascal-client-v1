@@ -102,10 +102,7 @@ const List = () => {
     // FilterToggle state management is be ignored for the time being
     const { value, getCheckboxProps } = useCheckboxGroup({ defaultValue: [] })
 
-    let filteredEvents = []
-    if (data) {
-        filteredEvents = data.filter(({ category }) => value.includes(category))
-    }
+    if (!data) return <Suspense fallback={<SkeletonText width={'full'}/>} />
     if (error) {
         return (
             <Alert status='error' rounded={'lg'}>
@@ -113,6 +110,11 @@ const List = () => {
                 An error has occured loading the news feed.            
             </Alert>
         )
+    }
+
+    let filteredEvents = []
+    if (data) {
+        filteredEvents = data.filter(({ category }) => value.includes(category))
     }
 
     return (
