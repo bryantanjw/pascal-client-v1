@@ -31,7 +31,7 @@ const categories = ['Financials', 'Economics', 'Crypto', 'Climate']
 // TODO: 1. add createMarket button/modal for admin
 
 // TODO: add filter and search
-const MarketList = () => {
+const MarketList: any = () => {
     const { data, error } = useSWR('/api/fetchEvents', fetcher)
     
     // FilterToggle state management is be ignored for the time being
@@ -83,7 +83,7 @@ const MarketList = () => {
                     <Spinner/>
                 </Center>
             }>
-            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={5}>
+                <SimpleGrid columns={{ base: 1, md: 3 }} spacing={5}>
                     {filteredMarkets.length != 0 ?
                         (filteredMarkets.map((market: any) => (
                             <Stack key={market.marketId}>
@@ -96,8 +96,8 @@ const MarketList = () => {
                             </Stack>
                         )))
                     }
-            </SimpleGrid>
-                </Suspense>
+                </SimpleGrid>
+            </Suspense>
       </Box>
     );
 };

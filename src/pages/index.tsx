@@ -62,7 +62,7 @@ const Home: NextPage = () => {
               <Text color={'gray.500'} fontSize={{ base: 'xl', md: '2xl' }}>
                 A commodity derivative powered by automated market makers.
               </Text>
-
+              
             <MarketList />
 
           </Stack>
