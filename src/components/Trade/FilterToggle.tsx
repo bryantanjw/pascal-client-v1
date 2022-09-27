@@ -15,7 +15,7 @@ interface ToggleButtonProps extends UseCheckboxProps {
   title: string
 }
 
-export const ToggleButton = (props: BoxProps) => (
+const ToggleButton = (props: BoxProps) => (
   <Box
     borderWidth="1px"
     py={1}
@@ -67,4 +67,5 @@ export const FilterToggle = (props: ToggleButtonProps) => {
     </label>
   )
 }
-  
+
+export default FilterToggle
