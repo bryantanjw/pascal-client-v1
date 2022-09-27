@@ -108,6 +108,7 @@ export const TradeForm = ({ market }) => {
   const [numberInput, setNumberInput] = useState<any>(1)
   const [outcome, setOutcome] = useState<any>()
   
+  // TODO: Fix dispatch issues (i.e., initialState for title)
   const dispatch = useDispatch()
   const { title, index } = useSelector(getOutcomeState)
 
@@ -128,7 +129,6 @@ export const TradeForm = ({ market }) => {
     {/* TODO: refine progress bar design */}
     <Stack spacing="8" 
       rounded="xl" padding="6" borderWidth={'1px'} 
-      position={{ 'sm': 'relative', 'lg': 'fixed'}} left={{ 'sm': 'none', 'lg': '60%'}}
       width={{'base': 's', 'md': '340px'}}
       boxShadow={'sm'}
     >
@@ -167,6 +167,9 @@ export const TradeForm = ({ market }) => {
                           {market.outcomes[1].title} {market.outcomes[1].probability * 100}%
                         </Heading>
                     }
+                    {/* 
+                      *Change heading according to outcome chosen 
+                    */}
                     {/* <Heading fontSize={'5xl'} fontWeight={'semibold'} color={alternatingColorScheme[index % alternatingColorScheme.length]}> */}
                       {/* {title} 
                       {market.outcomes.map((outcome, index) => {

@@ -7,11 +7,9 @@ import {
   Stack,
   Flex,
   Skeleton, SkeletonText,
-  HStack,
   Link,
   Tooltip,
-  Button,
-  useColorModeValue as mode,
+  Alert, AlertIcon,
 } from '@chakra-ui/react'
 import { InfoOutlineIcon } from '@chakra-ui/icons'
 import useSWR from 'swr'
@@ -99,16 +97,30 @@ function timeElapsed(time) {
 }
 
 export const Page = ({ search, index }) => {
-    const { data, error } = useSWR(
-        `https://newsapi.org/v2/everything?q=${search}&sortBy=popularity&page=${index}&language=en&pageSize=4&apiKey=${process.env.NEXT_PUBLIC_NEWS_API_KEY}`,
+    const { data, error } = useSWR( // If in production, use NewsData.io API; else, use NewsAPI. This is due to the latter's API production constraint
+        process.env.NODE_ENV !== 'production'
+        ? `https://newsapi.org/v2/everything?&apiKey=${process.env.NEXT_PUBLIC_NEWS_API_KEY}&q=${search}&sortBy=popularity&page=${index}&language=en&pageSize=4`
+        : `https://newsdata.io/api/1/news?apikey=${process.env.NEXT_PUBLIC_NEWSDATA_API_KEY}&q=${search}&country=us&language=en`,
         fetcher
     )
     console.log("Is news data ready?", !!data)
-    if (error) return "An error has occured loading the news feed"
+
+    if (error) {
+        return (
+            <Alert status='error' rounded={'lg'}>
+                <AlertIcon mr={4} />
+                An error has occured loading the news feed.<br></br>
+                Please try again later as there may have been too many requests.
+            </Alert>
+        )
+    }
+
     if (!data) return <Suspense fallback={<SkeletonText width={'full'}/>} />
     console.log(data)
-    if (data) return ( 
-        data.articles?.map((news, index) => (
+
+    if (data) return (
+        process.env.NODE_ENV !== 'production'
+        ? data.articles?.map((news, index) => (
             <NewsListItem key={index} 
                 publication={news.source.name}
                 // Get time elapsed since each news published
@@ -118,6 +130,21 @@ export const Page = ({ search, index }) => {
                 url={news.url}
             />
         ))
+        : data.results?.map((news, index) => {
+            if (index <= 3) {
+                console.log("index", index)
+                return (
+                    <NewsListItem key={index} 
+                        publication={news.source_id}
+                        // Get time elapsed since each news published
+                        datePublished={`${timeElapsed(news.pubDate)} ago`}
+                        imageUrl={news?.image_url} 
+                        title={news.title}
+                        url={news.link}
+                    />
+                )
+            }
+        })
     )
 }
 
@@ -138,7 +165,9 @@ export const NewsList = ({ market }) => {
             </Flex>
 
             <Page index={pageIndex} search={market.search_term} />
-            <div style={{ display: 'none' }}><Page index={pageIndex + 1} search={market.search_term}/></div>
+
+            {/* Pagination */}
+            {/* <div style={{ display: 'none' }}><Page index={pageIndex + 1} search={market.search_term}/></div>
 
             {pageIndex == 1 ?
                 (
@@ -162,7 +191,7 @@ export const NewsList = ({ market }) => {
                         </Button>
                     </Flex>
                 )
-            }
+            } */}
         </Stack>
     )
 }

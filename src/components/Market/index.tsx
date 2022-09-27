@@ -80,7 +80,7 @@ const MarketView = ({ market }) => {
 
         <Layout>
             <Box
-                overflow={'hidden'}
+                overflow={{ 'base': 'hidden', 'lg': 'visible' }}
                 maxW={{ base: '3xl', lg: '5xl' }}
                 mx="auto"
                 px={{ base: '1', md: '8', lg: '12' }}
@@ -102,7 +102,6 @@ const MarketView = ({ market }) => {
                 <Stack
                     direction={{ base: 'column', lg: 'row' }}
                     align={{ lg: 'flex-start' }}
-                    width={{ 'base': 'full', 'lg': '64%' }}
                     spacing={5}
                 >
                     <Stack spacing={{ base: '8', md: '10' }} minW={'sm'} flex="2">
@@ -183,7 +182,10 @@ const MarketView = ({ market }) => {
                         </Tabs>
                     </Stack>
 
-                    <Flex direction="column" align="center">
+                    <Flex direction="column" align={'center'}
+                        position={{ 'sm': 'relative', 'lg': 'sticky'}} 
+                        top={{ 'base': 'none', 'lg': '20' }}
+                    >
                         <TradeForm market={market} />
                     </Flex>
                 </Stack>

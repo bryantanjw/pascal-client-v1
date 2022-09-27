@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from 'react'
+import React, { Suspense } from 'react'
 import {
     Flex, 
     Stack, HStack, 
@@ -8,11 +8,13 @@ import {
     Box,
     useCheckboxGroup,
     ScaleFade,
-    Skeleton,
+    Skeleton, SkeletonText,
+    Alert, AlertIcon,
 } from '@chakra-ui/react'
 import styles from '@/styles/Home.module.css'
 import { FilterToggle } from './FilterToggle'
 import ChakraNextLink from '../ChakraNextLink'
+import useSWR from 'swr'
 
 // Style config //
 const gradientBackgroundStyle = {
@@ -28,6 +30,8 @@ const statStyle = {
     filter: 'invert(40%)'
 }
 // Style config //
+
+const fetcher = (url) => fetch(url).then((res) => res.json());
 
 const categories = ['Financials', 'Economics', 'Crypto', 'Climate']
 
@@ -56,12 +60,14 @@ function EventCard({ event }) {
                     <Suspense fallback={<Skeleton width={'full'} height={'full'} />}>
                         {/* Set event's category icon */}
                         <Image filter={iconColor} src={`/${event.category}.svg`} alt={event.category} width={25} height={25}/>
+                    </Suspense>
                         
+                    <Suspense fallback={<SkeletonText width={{ 'base': '80%', 'md': 'full' }}/>}>
                         <Stack spacing={1}>
                             <Heading size={'md'}>{event.title}</Heading>
                             <h3>on {dt.toLocaleString('default', { month: 'long' })} {dt.getDate()}</h3>
                         </Stack>
-                        
+                    
                         <Flex fontWeight={'semibold'} justify={'space-between'}>
                             <Text>&gt; {event.target_value}</Text>
                             <Stack direction={'row'} spacing={3}>
@@ -91,20 +97,23 @@ function EventCard({ event }) {
 
 // TODO: add filter and search
 const List = () => {
-    const [markets, setMarkets] = useState([]);
+    const { data, error } = useSWR('/api/fetchEvents', fetcher)
     
     // FilterToggle state management is be ignored for the time being
     const { value, getCheckboxProps } = useCheckboxGroup({ defaultValue: [] })
 
-    useEffect(() => {
-        fetch(`/api/fetchEvents`)
-        .then(response => response.json())
-        .then(data => {
-            setMarkets(data);
-        });
-    }, []);
-
-    const filteredEvents = markets.filter(({ category }) => value.includes(category))
+    let filteredEvents = []
+    if (data) {
+        filteredEvents = data.filter(({ category }) => value.includes(category))
+    }
+    if (error) {
+        return (
+            <Alert status='error' rounded={'lg'}>
+                <AlertIcon mr={4} />
+                An error has occured loading the news feed.            
+            </Alert>
+        )
+    }
 
     return (
         <Box>
@@ -121,10 +130,12 @@ const List = () => {
             </HStack>
 
             <Image sx={gradientBackgroundStyle} src={'gradient-bg.png'}
+                // eslint-disable-next-line react-hooks/rules-of-hooks
                 alt={'background'} right={'100px'} top={'100px'} transform={'rotate(180deg)'} visibility={useColorModeValue('visible', 'hidden')}
             />
-
-            <Image sx={gradientBackgroundStyle} src={'gradient-bg.png'} visibility={useColorModeValue('visible', 'hidden')}
+            <Image sx={gradientBackgroundStyle} src={'gradient-bg.png'} 
+                // eslint-disable-next-line react-hooks/rules-of-hooks
+                visibility={useColorModeValue('visible', 'hidden')}
                 alt={'background'} right={'100px'} bottom={'0px'} transform={'rotate(300deg)'} 
             />
 
@@ -135,7 +146,7 @@ const List = () => {
                             <EventCard event={event} />
                         </Stack>
                     )))
-                    : (markets.map((event: any) => (
+                    : (data && data.map((event: any) => (
                         <Stack key={event.marketId}>
                             <EventCard event={event} />
                         </Stack>
