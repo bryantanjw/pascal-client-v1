@@ -150,7 +150,9 @@ const List = () => {
                     )))
                     : (data && data.map((event: any) => (
                         <Stack key={event.marketId}>
-                            <EventCard event={event} />
+                            <Suspense fallback={<Skeleton width={"full"}/>}>
+                                <EventCard event={event} />
+                            </Suspense>
                         </Stack>
                     )))
                 }
