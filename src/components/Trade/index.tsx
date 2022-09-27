@@ -42,7 +42,7 @@ const MarketList: any = () => {
         return (
             <Alert status='error' rounded={'lg'}>
                 <AlertIcon mr={4} />
-                An error has occured loading the news feed.            
+                An error has occured loading markets.            
             </Alert>
         )
     }
