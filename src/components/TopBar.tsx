@@ -33,15 +33,13 @@ export default function WithSubnavigation() {
     return (
         <Box>
             <Flex
-                bg={useColorModeValue('#F9FAFB', 'gray.900')}
+                bg={'transaparent'}
                 color={useColorModeValue('gray.600', 'white')}
-                minH={'70px'}
-                py={{ base: 2 }}
+                mt={8}
+                py={{ base: 3 }}
                 px={{ base: 4 }}
-                borderBottom={1}
-                borderStyle={'solid'}
-                borderColor={useColorModeValue('gray.200', 'gray.800')}
-                align={'center'}
+                minH={'70px'}
+                alignSelf={'center'}
             >
                 <Flex
                     flex={{ base: 1, md: 'auto' }}
@@ -101,46 +99,60 @@ export default function WithSubnavigation() {
 const DesktopNav = () => {
     const linkColor = useColorModeValue('gray.500', 'gray.500');
     const linkHoverColor = useColorModeValue('gray.800', 'white');
-    const popoverContentBgColor = useColorModeValue('#F9FAFB', 'gray.900');
+    const popoverContentBgColor = useColorModeValue('#F9FAFB', 'gray.800');
   
     return (
-        <Stack direction={'row'} spacing={8}>
+        <Stack direction={'row'} spacing={2} rounded={'full'} px={2} py={4} 
+            boxShadow={'xl'} border={useColorModeValue('1px solid #CFDAE1', '1px solid transparent')}
+            bg={useColorModeValue('#F9FAFB', 'gray.800')}
+        >
             {NAV_ITEMS.map((navItem) => (
-            <Box key={navItem.label}>
-                <Popover trigger={'hover'} placement={'bottom-start'}>
-                <PopoverTrigger>
-                    <ChakraNextLink
-                        p={2}
-                        href={navItem.href ?? '#'}
-                        fontSize={'sm'}
-                        fontWeight={500}
-                        color={linkColor}
-                        isExternal={navItem.isExternal}
-                        _hover={{
-                            textDecoration: 'none',
-                            color: linkHoverColor,
-                        }}>
-                        {navItem.label}
-                    </ChakraNextLink>
-                </PopoverTrigger>
-    
-                {navItem.children && (
-                    <PopoverContent
-                        border={0}
-                        boxShadow={'xl'}
-                        bg={popoverContentBgColor}
-                        p={4}
-                        rounded={'xl'}
-                        minW={'xs'}>
-                    <Stack>
-                        {navItem.children.map((child) => (
-                        <DesktopSubNav key={child.label} {...child} />
-                        ))}
-                    </Stack>
-                    </PopoverContent>
-                )}
-                </Popover>
-            </Box>
+                <Box key={navItem.label}>
+                    <Popover trigger={'hover'} placement={'bottom-start'}>
+                        <PopoverTrigger>
+                            <ChakraNextLink to={navItem.href ?? '/#'}
+                                py={3}
+                                px={7}
+                                rounded={'full'}
+                                fontSize={'sm'}
+                                fontWeight={500}
+                                color={linkColor}
+                                isExternal={navItem.isExternal}
+                                transition={'all .2s ease'}
+                                _hover={{
+                                    textDecoration: 'none',
+                                    color: linkHoverColor,
+                                }}
+                                activeProps={{
+                                    fontWeight:'bold',
+                                    // eslint-disable-next-line react-hooks/rules-of-hooks
+                                    bg: useColorModeValue('gray.100', 'gray.700'),
+                                }}
+                            >
+                                {navItem.label}
+                            </ChakraNextLink>
+                        </PopoverTrigger>
+            
+                        {navItem.children && (
+                            <PopoverContent
+                                border={0}
+                                boxShadow={'xl'}
+                                bg={popoverContentBgColor}
+                                p={4}
+                                mt={2}
+                                rounded={'xl'}
+                                minW={'xs'}
+                                zIndex={99}
+                            >
+                                <Stack>
+                                    {navItem.children.map((child) => (
+                                        <DesktopSubNav key={child.label} {...child} />
+                                    ))}
+                                </Stack>
+                            </PopoverContent>
+                        )}
+                    </Popover>
+                </Box>
             ))}
         </Stack>
     );
@@ -154,27 +166,28 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
             display={'block'}
             p={2}
             rounded={'md'}
-            _hover={{ bg: useColorModeValue('blue.50', 'gray.900') }}>
+            _hover={{ bg: useColorModeValue('blue.50', 'gray.900') }}
+        >
             <Stack direction={'row'} align={'center'}>
-            <Box>
-                <Text
-                transition={'all .1s ease'}
-                _groupHover={{ color: 'blue.400' }}
-                fontWeight={500}>
-                {label}
-                </Text>
-                <Text fontSize={'sm'}>{subLabel}</Text>
-            </Box>
-            <Flex
-                transition={'all .1s ease'}
-                transform={'translateX(-10px)'}
-                opacity={0}
-                _groupHover={{ opacity: '100%', transform: 'translateX(0)' }}
-                justify={'flex-end'}
-                align={'center'}
-                flex={1}>
-                <Icon color={'blue.400'} w={5} h={5} as={ChevronRightIcon} />
-            </Flex>
+                <Box>
+                    <Text
+                        transition={'all .1s ease'}
+                        _groupHover={{ color: 'blue.400' }}
+                        fontWeight={500}>
+                        {label}
+                    </Text>
+                    <Text fontSize={'sm'}>{subLabel}</Text>
+                </Box>
+                <Flex
+                    transition={'all .1s ease'}
+                    transform={'translateX(-10px)'}
+                    opacity={0}
+                    _groupHover={{ opacity: '100%', transform: 'translateX(0)' }}
+                    justify={'flex-end'}
+                    align={'center'}
+                    flex={1}>
+                    <Icon color={'blue.400'} w={5} h={5} as={ChevronRightIcon} />
+                </Flex>
             </Stack>
         </ChakraLink>
     );

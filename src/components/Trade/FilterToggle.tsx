@@ -26,7 +26,7 @@ const ToggleButton = (props: BoxProps) => (
     bg={useColorModeValue('gray.100', 'gray.700')}
     _hover={{
       borderColor: useColorModeValue('black', 'white'),
-      bg: useColorModeValue('white', 'gray.800')
+      bg: 'transparent'
     }}
     _focus={{ shadow: 'outline', boxShadow: 'none' }}
     _checked={{

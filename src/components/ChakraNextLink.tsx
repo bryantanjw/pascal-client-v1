@@ -1,21 +1,41 @@
-import Link, { LinkProps } from "next/link";
-import {
-  Link as ChakraLink,
-  LinkProps as ChakraLinkProps,
-} from "@chakra-ui/react";
-import React from "react";
+import { Link as ChakraLink, LinkProps, useColorModeValue, forwardRef } from '@chakra-ui/react'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import React from 'react'
 
-type ChakraLinkAndNextProps = ChakraLinkProps & LinkProps;
+interface NavLinkProps extends LinkProps {
+  children?: string | React.ReactNode
+  to: string
+  activeProps?: LinkProps
+}
 
-// eslint-disable-next-line react/display-name
-const ChakraNextLink = React.forwardRef(({ href, children, ...props } : ChakraLinkAndNextProps, ref : any) => {
+const ChakraNextLink = forwardRef<NavLinkProps, 'div'>((props, ref) => {
+  const { to, activeProps, children, ...rest } = props
+  const router = useRouter()
+  const isActive = router.pathname === to
+  const color = useColorModeValue('black', 'selected')
+
+  if (isActive) {
+    return (
+      <Link href={to} scroll={false}>
+        <ChakraLink ref={ref}
+          {...rest}
+          {...activeProps}
+          color={color}
+        >
+          {children}
+        </ChakraLink>
+      </Link>
+    )
+  }
+
   return (
-    <Link href={href} passHref>
-      <ChakraLink ref={ref} {...props}>
+    <Link href={to} scroll={false}>
+      <ChakraLink ref={ref} {...rest}>
         {children}
       </ChakraLink>
     </Link>
-  );
-});
+  )
+})
 
-export default ChakraNextLink;
+export default ChakraNextLink

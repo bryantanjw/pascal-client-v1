@@ -86,7 +86,7 @@ const MarketView = ({ market }) => {
                 px={{ base: '1', md: '8', lg: '12' }}
                 py={{ base: '6', md: '8', lg: '14' }}
             >
-                <ChakraNextLink href={'/'} scroll={false} _hover={{textDecoration: 'none'}} display={'inline-block'}>
+                <ChakraNextLink to={'/'} _hover={{textDecoration: 'none'}} display={'inline-block'}>
                     <Stack mb={6} align={'center'} direction={'row'} width={{ 'base': 'full', 'md': 'full' }}>
                         <HStack className={styles.text_link} _before={{ bg: mode('black', 'white') }}>
                             <ArrowBackIcon mr={4}/>

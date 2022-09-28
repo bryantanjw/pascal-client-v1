@@ -6,7 +6,7 @@ import {
     Image,
     Box,
     useCheckboxGroup,
-    Skeleton, SkeletonText,
+    Skeleton,
     Alert, AlertIcon, Spinner, Center,
 } from '@chakra-ui/react'
 import useSWR from 'swr'
@@ -70,7 +70,8 @@ const MarketList: any = () => {
 
             <Image sx={gradientBackgroundStyle} src={'gradient-bg.png'}
                 // eslint-disable-next-line react-hooks/rules-of-hooks
-                alt={'background'} right={'100px'} top={'100px'} transform={'rotate(180deg)'} visibility={useColorModeValue('visible', 'hidden')}
+                visibility={useColorModeValue('visible', 'hidden')}
+                alt={'background'} right={'100px'} top={'100px'} transform={'rotate(180deg)'} 
             />
             <Image sx={gradientBackgroundStyle} src={'gradient-bg.png'} 
                 // eslint-disable-next-line react-hooks/rules-of-hooks

@@ -31,6 +31,7 @@ const Home: NextPage = () => {
         <Box maxW={{ base: '3xl', lg: '5xl' }}
           mx="auto"
           py={{ base: '10', md: '10', lg: '12' }}
+          zIndex={1}
         >
           <Stack spacing={{ base: 8, md: 10 }}>
 

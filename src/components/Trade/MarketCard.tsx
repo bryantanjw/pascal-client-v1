@@ -24,7 +24,7 @@ const MarketCard = ({ market }) => {
     const dt = new Date(market.closing_date)
 
     return (
-        <ChakraNextLink href={`/trade/${market.marketId}`} scroll={false} _hover={{ textDecoration:'none'}}>
+        <ChakraNextLink to={`/trade/${market.marketId}`} _hover={{ textDecoration:'none'}}>
             <ScaleFade initialScale={0.9} in={true}>
                 <Stack spacing={4} p={5}
                     borderColor={useColorModeValue('#CFDAE1', '#696969')} borderWidth={1}
@@ -51,7 +51,7 @@ const MarketCard = ({ market }) => {
                         </Stack>
                     </Suspense>
                     
-                        <Flex fontWeight={'semibold'} justify={'space-between'}>
+                        <Flex fontWeight={'semibold'} justify={'space-between'} direction={{ 'base': 'row', 'md': 'column', 'lg': 'row' }}>
                             <Text>&gt; {market.target_value}</Text>
                             <Stack direction={'row'} spacing={3}>
                                 <Text color={'purple.500'}>Yes ${market.outcomes[0].probability}</Text>
