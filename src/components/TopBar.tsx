@@ -140,6 +140,7 @@ const DesktopNav = () => {
                                 bg={popoverContentBgColor}
                                 p={4}
                                 mt={2}
+                                fontSize={'sm'}
                                 rounded={'xl'}
                                 minW={'xs'}
                                 zIndex={99}

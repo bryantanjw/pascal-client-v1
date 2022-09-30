@@ -1,5 +1,3 @@
-//  useSWR for real time and fast data fetching (client-side rendering)
-//  https://swr.vercel.app/
 import React from 'react'
 import useSWR from 'swr'
 import { 
@@ -10,6 +8,7 @@ import {
 import {
   Stack,
   Text, Heading, useColorModeValue,
+  Alert, AlertIcon,
 } from '@chakra-ui/react'
 
 const data = [
@@ -63,7 +62,21 @@ const CustomLegend = ({ active, payload, label }) => {
   return null
 }
 
+const fetcher = (url) => fetch(url)
+
 const ResearchGraph = ({ market }) => {
+  const { data, error } = useSWR(`/api/fetchPrice`, fetcher)
+  if (error) {
+    console.log("Error fetchPrice ", error)
+    return (
+      <Alert status='error' rounded={'lg'}>
+          <AlertIcon mr={4} />
+          An error has occured loading chart.            
+      </Alert>
+    )
+  }
+  if (!data) return <div>Loading data...</div>
+  if (data) console.log("fetchPrice", data.body)
 
   return (
     <Stack spacing={5}>
@@ -87,7 +100,10 @@ const ResearchGraph = ({ market }) => {
           orientation='right' tickCount={6} width={50} tickLine={false} 
           axisLine={false} fontSize={'11px'} />
 
-        <CartesianGrid opacity={useColorModeValue('50%', '20%')} vertical={false} />
+        <CartesianGrid vertical={false}
+          // eslint-disable-next-line react-hooks/rules-of-hooks
+          opacity={useColorModeValue('50%', '20%')}
+        />
         <Tooltip content={<CustomTooltip active payload label/>} />
         
         <Area type="monotone" dataKey="value" stroke={'#3182CE'} fillOpacity={1} fill="url(#colorvalue)" />

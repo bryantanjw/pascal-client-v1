@@ -36,7 +36,7 @@ const MarketView = ({ market }) => {
     const { publicKey } = useWallet()
     const isOwner = ( publicKey ? publicKey.toString() === process.env.NEXT_PUBLIC_OWNER_PUBLIC_KEY : false )
 
-    // Style config
+    // Styling config
     const dividerColor = mode('gray.300', '#464A54')
     const iconColor = mode('invert(0%)', 'invert(100%)')
     const tabListStyle = {
@@ -53,6 +53,14 @@ const MarketView = ({ market }) => {
         fontSize: 'lg',
         fontWeight: 'bold'
     }
+    const gradientBackgroundStyle = {
+        filter: 'blur(110px)',
+        position: 'absolute',
+        zIndex: -1,
+        opacity: '50%',
+        width: '40%'
+    }
+    // Styling config
     const stats = [
         { label: 'Liquidity', value: market.liquidity },
         { label: 'Total Volume', value: market.volume },
@@ -188,6 +196,11 @@ const MarketView = ({ market }) => {
                     >
                         <TradeForm market={market} />
                     </Flex>
+
+                    <Image sx={gradientBackgroundStyle} src={'/gradient-bg.png'} 
+                        // eslint-disable-next-line react-hooks/rules-of-hooks
+                        alt={'background'} right={'0px'} transform={'rotate(300deg)'} 
+                    />
                 </Stack>
             </Box>
         </Layout>

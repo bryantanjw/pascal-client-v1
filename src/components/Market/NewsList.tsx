@@ -138,7 +138,7 @@ export const Page = ({ search, index }) => {
                         publication={news.source_id}
                         // Get time elapsed since each news published
                         datePublished={`${timeElapsed(news.pubDate)} ago`}
-                        imageUrl={news?.image_url} 
+                        imageUrl={news.image_url ?? ''} 
                         title={news.title}
                         url={news.link}
                     />
@@ -164,7 +164,7 @@ export const NewsList = ({ market }) => {
                 </Tooltip>
             </Flex>
 
-            <Page index={pageIndex} search={market.search_term} />
+            {/* <Page index={pageIndex} search={market.search_term} /> */}
 
             {/* Pagination */}
             {/* <div style={{ display: 'none' }}><Page index={pageIndex + 1} search={market.search_term}/></div>

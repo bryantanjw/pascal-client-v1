@@ -11,8 +11,8 @@ import {
 } from '@chakra-ui/react'
 import useSWR from 'swr'
 
-const FilterToggle = React.lazy(() => import('./FilterToggle'));
-const MarketCard = React.lazy(() => import('./MarketCard'));
+const FilterToggle = React.lazy(() => import('./FilterToggle'))
+const MarketCard = React.lazy(() => import('./MarketCard'))
 
 // Style config //
 const gradientBackgroundStyle = {
@@ -24,15 +24,15 @@ const gradientBackgroundStyle = {
 }
 // Style config //
 
-const fetcher = (url) => fetch(url).then((res) => res.json());
+const fetcher = (url) => fetch(url).then((res) => res.json())
 
 const categories = ['Financials', 'Economics', 'Crypto', 'Climate']
 
 // TODO: 1. add createMarket button/modal for admin
+//  2. Search bar
 
-// TODO: add filter and search
 const MarketList: any = () => {
-    const { data, error } = useSWR('/api/fetchEvents', fetcher)
+    const { data, error } = useSWR('/api/fetchMarkets', fetcher)
     
     // FilterToggle state management is be ignored for the time being
     const { value, getCheckboxProps } = useCheckboxGroup({ defaultValue: [] })
@@ -70,12 +70,10 @@ const MarketList: any = () => {
 
             <Image sx={gradientBackgroundStyle} src={'gradient-bg.png'}
                 // eslint-disable-next-line react-hooks/rules-of-hooks
-                visibility={useColorModeValue('visible', 'hidden')}
                 alt={'background'} right={'100px'} top={'100px'} transform={'rotate(180deg)'} 
             />
             <Image sx={gradientBackgroundStyle} src={'gradient-bg.png'} 
                 // eslint-disable-next-line react-hooks/rules-of-hooks
-                visibility={useColorModeValue('visible', 'hidden')}
                 alt={'background'} right={'100px'} bottom={'0px'} transform={'rotate(300deg)'} 
             />
 

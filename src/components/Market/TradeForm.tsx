@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Button, ButtonGroup,
   Flex,
@@ -9,7 +9,7 @@ import {
   Text,
   useColorModeValue as mode,
   Tooltip,
-  Tabs, TabList, TabPanels, Tab, TabPanel, HStack,
+  Tabs, TabList, TabPanels, Tab, TabPanel, HStack, useDisclosure,
 } from '@chakra-ui/react'
 import { ArrowBackIcon, InfoOutlineIcon } from '@chakra-ui/icons'
 import Confetti from 'react-dom-confetti'
@@ -100,13 +100,13 @@ export const TradeForm = ({ market }) => {
   const alternatingColorScheme = [mode('purple.500', 'purple.200'), mode('#2C7C7C', '#81E6D9'), 'pink']
   // Styling config //
 
+  
   const steps = [{ label: "" }, { label: "" }]
   const { nextStep, prevStep, reset, activeStep } = useSteps({
     initialStep: 0,
   })
 
   const [numberInput, setNumberInput] = useState<any>(1)
-  const [outcome, setOutcome] = useState<any>()
   
   // TODO: Fix dispatch issues (i.e., initialState for title)
   const dispatch = useDispatch()
@@ -120,17 +120,21 @@ export const TradeForm = ({ market }) => {
   const month = dt.toLocaleString('default', { month: 'long' })
   const year = dt.getFullYear().toString()
 
-  function settingOutcome(outcome) {
-    setOutcome(outcome)
-  }
+  // Call useEffect once to display first outcome
+  useEffect(() => {
+    dispatch(setTitle(market.outcomes[0].title))
+  }, [])
+  
 
   return (
     <>
     {/* TODO: refine progress bar design */}
     <Stack spacing="8" 
       rounded="xl" padding="6" borderWidth={'1px'} 
-      width={{'base': 's', 'md': '340px'}}
-      boxShadow={'sm'}
+      maxW={{'base': 's', 'md': 'full', 'lg': '340px'}}
+      boxShadow={'md'}
+      background={mode('whiteAlpha.700', 'rgba(23, 25, 35, 0.2)')}
+      className={mode('', styles.glassmorphism)}
     >
       
       <Tabs variant={'unstyled'}>
@@ -159,26 +163,15 @@ export const TradeForm = ({ market }) => {
                     <Text sx={headerTextStyle}>
                       Market says
                     </Text>
-                    {(market.outcomes[0].probability >= market.outcomes[1].probability)
-                      ? <Heading color={alternatingColorScheme[0 % alternatingColorScheme.length]} fontSize={'5xl'} fontWeight={'semibold'}>
-                          {market.outcomes[0].title} {market.outcomes[0].probability * 100}%
-                        </Heading>
-                      : <Heading color={alternatingColorScheme[1 % alternatingColorScheme.length]} fontSize={'5xl'} fontWeight={'semibold'}>
-                          {market.outcomes[1].title} {market.outcomes[1].probability * 100}%
-                        </Heading>
-                    }
-                    {/* 
-                      *Change heading according to outcome chosen 
-                    */}
-                    {/* <Heading fontSize={'5xl'} fontWeight={'semibold'} color={alternatingColorScheme[index % alternatingColorScheme.length]}> */}
-                      {/* {title} 
+                    <Heading fontSize={'5xl'} fontWeight={'semibold'} color={alternatingColorScheme[index % alternatingColorScheme.length]}>
+                      {title} 
                       {market.outcomes.map((outcome, index) => {
                         if (outcome.title === title) {
                           dispatch(setIndex(index))
                           return ` ${outcome.probability * 100}%`
                         }
-                      })} */}
-                    {/* </Heading> */}
+                      })}
+                    </Heading>
                   </Flex>
 
                   <Stack spacing={6}>
@@ -201,13 +194,11 @@ export const TradeForm = ({ market }) => {
                             styles.wallet_adapter_button_trigger_dark_mode
                           )}
                           sx={buyButtonStyle}
-                          onClick={() => settingOutcome("yes")}
                         >
                           Buy
                         </Button>
                         
                         <Button id="sell" sx={sellButtonStyle} variant={'outline'}
-                          onClick={() => settingOutcome("no")}
                         >
                           Sell
                         </Button>
