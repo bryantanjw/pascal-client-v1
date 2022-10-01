@@ -187,7 +187,7 @@ export const TradeForm = ({ market }) => {
                       <ButtonGroup 
                         justifyContent={'center'} size="lg" spacing='4'
                         onClick={nextStep}
-                        isDisabled={!title}
+                        isDisabled={!title || !publicKey}
                       >
                         <Button id="buy" className={
                           mode(styles.wallet_adapter_button_trigger_light_mode, 

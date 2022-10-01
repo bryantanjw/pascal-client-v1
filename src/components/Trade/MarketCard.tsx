@@ -3,7 +3,7 @@ import React, { Suspense } from 'react'
 import {
     Flex, 
     Stack, HStack, 
-    useColorModeValue, 
+    useColorModeValue as mode, 
     Image, Text, Heading,
     ScaleFade,
     Skeleton, SkeletonText,
@@ -19,7 +19,7 @@ const statStyle = {
 // Style config //
 
 const MarketCard = ({ market }) => {
-    const iconColor = useColorModeValue('invert(0%)', 'invert(100%)')
+    const iconColor = mode('invert(0%)', 'invert(100%)')
     
     const dt = new Date(market.closing_date)
 
@@ -27,16 +27,16 @@ const MarketCard = ({ market }) => {
         <ChakraNextLink to={`/trade/${market.marketId}`} _hover={{ textDecoration:'none'}}>
             <ScaleFade initialScale={0.9} in={true}>
                 <Stack spacing={4} p={5}
-                    borderColor={useColorModeValue('#CFDAE1', '#696969')} borderWidth={1}
-                    backdropFilter={'blur(50px)'}
+                    borderColor={mode('#CFDAE1', '#696969')} borderWidth={1} rounded={'10px'}
+                    className={mode('', styles.glassmorphism)}
+                    bg={mode('whiteAlpha.700', 'rgba(23, 25, 35, 0.2)')}
                     _hover={{
-                        // borderColor: useColorModeValue('gray.400', 'white'),
+                        // borderColor: mode('gray.400', 'white'),
                         boxShadow: '2xl',
                         transition: 'all .3s ease',
-                        borderColor: useColorModeValue('white', 'gray.700'),
-                        background: useColorModeValue('white', 'gray.700')
+                        borderColor: mode('white', 'white'),
+                        background: mode('white', ''),
                     }}
-                    className={styles.card}
                 >
                         {/* Set market's category icon */}
                         <Image filter={iconColor} src={`/${market.category}.svg`} alt={market.category} 

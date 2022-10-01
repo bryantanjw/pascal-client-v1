@@ -58,7 +58,7 @@ const MarketView = ({ market }) => {
         position: 'absolute',
         zIndex: -1,
         opacity: '50%',
-        width: '40%'
+        width: '40%',
     }
     // Styling config
     const stats = [
@@ -197,9 +197,9 @@ const MarketView = ({ market }) => {
                         <TradeForm market={market} />
                     </Flex>
 
-                    <Image sx={gradientBackgroundStyle} src={'/gradient-bg.png'} 
+                    <Image sx={gradientBackgroundStyle} src={'/gradient-bg.png'}
                         // eslint-disable-next-line react-hooks/rules-of-hooks
-                        alt={'background'} right={'0px'} transform={'rotate(300deg)'} 
+                        alt={'background'} right={'100px'} transform={'rotate(300deg)'} 
                     />
                 </Stack>
             </Box>
