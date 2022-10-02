@@ -133,7 +133,7 @@ export const TradeForm = ({ market }) => {
       rounded="xl" padding="6" borderWidth={'1px'} 
       maxW={{'base': 's', 'md': 'full', 'lg': '340px'}}
       boxShadow={'md'}
-      background={mode('whiteAlpha.700', 'rgba(23, 25, 35, 0.2)')}
+      background={mode('whiteAlpha.800', 'rgba(23, 25, 35, 0.2)')}
       className={mode('', styles.glassmorphism)}
     >
       

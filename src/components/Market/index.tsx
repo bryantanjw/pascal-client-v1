@@ -182,7 +182,7 @@ const MarketView = ({ market }) => {
 
                                 <TabPanel key={1} px={0}>
                                     <Stack marginTop={5}>
-                                        <ResearchGraph market={market} />
+                                        {(market.category === "Financials") && <ResearchGraph market={market} />}
                                         <NewsList market={market} />
                                     </Stack>
                                 </TabPanel>
@@ -197,9 +197,9 @@ const MarketView = ({ market }) => {
                         <TradeForm market={market} />
                     </Flex>
 
-                    <Image sx={gradientBackgroundStyle} src={'/gradient-bg.png'}
+                    <Image sx={gradientBackgroundStyle} src={'/gradient-bg1.png'}
                         // eslint-disable-next-line react-hooks/rules-of-hooks
-                        alt={'background'} right={'100px'} transform={'rotate(300deg)'} 
+                        alt={'background'} right={'100px'} transform={'rotate(280deg)'} 
                     />
                 </Stack>
             </Box>

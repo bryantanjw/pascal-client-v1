@@ -1,40 +1,16 @@
-import React, { Suspense, useEffect, useState } from 'react'
+import React from 'react'
+import moment from 'moment'
 import useSWR from 'swr'
 import { 
   AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, 
-  Legend,
   ResponsiveContainer,
 } from 'recharts';
 import {
   Stack,
   Text, Heading, useColorModeValue,
-  Alert, AlertIcon, Spinner,
+  Alert, AlertIcon, Spinner, HStack,
 } from '@chakra-ui/react'
-
-const CustomTooltip = ({ active, payload, label }) => {
-  if (active && payload && payload.length) {
-    return (
-      <Stack fontSize={'sm'} textColor={'black.400'}>
-        <Text top={0}>{label}</Text>
-        <Heading fontSize={'sm'} color={'purple.400'}>{payload[0].value}</Heading>
-      </Stack>
-    )
-  }
-
-  return null
-}
-
-const CustomLegend = ({ active, payload, label }) => {
-  if (active && payload && payload.length) {
-    console.log(payload)
-    return (
-      <Heading fontSize={'sm'} color={'purple.400'}>{payload[0].value}</Heading>
-    )
-  }
-
-  return null
-}
 
 const fetcher = async url => {
   const res = await fetch(url)
@@ -44,17 +20,19 @@ const fetcher = async url => {
 
     error.info = await res.json()
     error.status = res.status
-    console.log("fetchPrice", error)
+    console.log("fetchFinancialData", error)
     throw error
   }
   return res.json()
 }
 
 const ResearchGraph = ({ market }) => {
-  const { data, error } = useSWR(`/api/fetchPrice`, fetcher)
+  const { short, ticker } = market
+  const { data, error } = useSWR(`/api/fetchFinancialData?name=${ticker}`, fetcher)
+  console.log("data", data)
 
   if (error) {
-    console.log("fetchPrice Error", error)
+    console.log("fetchFinancialData Error", error)
     return (
       <Alert status='error' rounded={'lg'}>
         <AlertIcon mr={4} />
@@ -64,46 +42,54 @@ const ResearchGraph = ({ market }) => {
   }
   if (!data) {
     return (
-      <Spinner />
+      <Stack minW={{ 'md': '568px' }}>
+        <Spinner ml={"25%"} />
+      </Stack>
     )
   }
 
   const { indicators, meta, timestamp } = data
 
+  // Array to store unique timestamps
+  const timestamps: number[] = []
+  let day1 = 0
+
   const chartData = timestamp.map((timestamp, value) => {
-    var date = new Date(timestamp * 1000)
+    let day2 = new Date(timestamp * 1000).getDate()
+    if (day1 !== day2) {
+      timestamps.push(timestamp)
+      day1 = day2
+    }
+
     return { 
-      timestamp: date.toDateString(), 
-      value: indicators.adjclose[0].adjclose[value].toFixed(2) 
+      timestamp: timestamp, 
+      value: indicators.quote[0].close[value].toFixed(2) 
     }
   })
   console.log("chartData", chartData)
 
-  const mockData = [
-    {
-      timestamp: 'Page A',
-      value: 2400,
-    },
-    {
-      timestamp: 'Page B',
-      value: 1398,
-    },
-  ]
+  const priceChange = ((chartData[chartData.length -1].value - chartData[0].value) / chartData[0].value) * 100
 
   return (
-    <Stack spacing={5} width={{ 'base': '87%', 'md': 'full' }} height={'100%'}>
-      
-      {/* TODO: add price change indicator */}
-
+    <Stack spacing={5} width={{ 'base': '87%', 'md': 'full' }} mb={4}>
       {data && (
         <>
-        <Heading fontSize={'2xl'} color={"#3182CE"}>${meta.chartPreviousClose}</Heading>
+        <Stack>
+          <Heading fontSize={'xl'} fontWeight={'extrabold'}>{short}</Heading>
+          <HStack spacing={3}>
+            <Text fontSize={'md'} fontWeight={'bold'}>
+              {chartData[chartData.length -1].value}
+            </Text>
+            <Text fontSize={'sm'} fontWeight={'semibold'}
+              color={priceChange < 0 ? 'red.400' : 'green.400'}
+            >
+              {priceChange.toFixed(2)}%
+            </Text>
+          </HStack>
+        </Stack>
 
-        <ResponsiveContainer width="95%" aspect={2.5}>
-          <AreaChart data={chartData} 
-            margin={{ top: 10, right: 0, left: 0, bottom: 0 }}
-          >
-
+        <ResponsiveContainer width="100%" aspect={2.2}>
+          <AreaChart data={chartData} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="colorvalue" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor={'#3182CE'} stopOpacity={0.8}/>
@@ -111,12 +97,15 @@ const ResearchGraph = ({ market }) => {
               </linearGradient>
             </defs>
             
-            <XAxis dataKey="timestamp" 
-              tickCount={5} tickLine={false} axisLine={false} 
-              fontSize={'11px'} padding={{ right: 50 }}  
+            <XAxis dataKey="timestamp"
+              domain={[timestamp[0], timestamp[-1]]}
+              tickFormatter={(tick) => moment(tick * 1000).format('DD')}
+              tickLine={false} axisLine={false}
+              ticks={timestamps}
+              fontSize={'11px'}
             />
-            <YAxis type={'number'} domain={[dataMin => (dataMin), dataMax => (dataMax)]}
-              orientation='right' tickCount={6} width={50} tickLine={false} 
+            <YAxis type={'number'} domain={['auto', 'auto']}
+              orientation='right' tickCount={4} tickLine={false} 
               axisLine={false} fontSize={'11px'} 
             />
 
@@ -133,6 +122,19 @@ const ResearchGraph = ({ market }) => {
       )}
     </Stack>
   );
+}
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <Stack fontSize={'sm'} spacing={0}>
+        <Text fontWeight={'semibold'}>{moment(label * 1000).format('DD MMM YYYY')} at {moment(label * 1000).format('HH:mm')}</Text>
+        <Text fontWeight={'bold'} color={'blue.400'}>{payload[0].value}</Text>
+      </Stack>
+    )
+  }
+
+  return null
 }
 
 export default ResearchGraph

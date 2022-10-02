@@ -5,6 +5,8 @@ import {
     Center,
     Tabs, TabList, TabPanels, Tab, TabPanel,
     useColorModeValue,
+    Alert, AlertIcon,
+    Spinner,
 } from "@chakra-ui/react"
 import WithSubnavigation from "components/TopBar"
 import { Stats } from "components/Portfolio/Stat"
@@ -34,7 +36,7 @@ const fetcher = url => fetch(url).then(r => r.json())
 const Portfolio = () => {
     const { publicKey } = useWallet()
 
-    const { data, error } = useSWR(`../api/users?pubKey=${publicKey?.toString()}`, fetcher)
+    const { data } = useSWR(`../api/users?pubKey=${publicKey?.toString()}`, fetcher)
 
     return (
         <div className={styles.container}>

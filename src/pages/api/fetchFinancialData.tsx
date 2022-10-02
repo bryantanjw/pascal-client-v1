@@ -5,9 +5,10 @@ import cors from "cors"
 const handler = nc<NextApiRequest, NextApiResponse>()
     .use(cors())
     .get(async (req, res) => {
+        var ticker = req.query.name || ""
         const response = await(await fetch(
             // Doc: https://syncwith.com/yahoo-finance/yahoo-finance-api
-            `https://query1.finance.yahoo.com/v8/finance/chart/tsla?metrics=high?&interval=1d&range=5d`
+            `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?metrics=high?&interval=15m&range=5d`
         )).json()
         const { chart } = response
         res.status(200).json(chart.result[0])

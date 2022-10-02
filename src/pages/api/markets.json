@@ -2,6 +2,7 @@
     {
         "marketId": "1",
         "short": "S&P500",
+        "ticker": "SPY",
         "title": "S&P500 daily close price",
         "recurrence": "Daily",
         "category": "Financials",
@@ -30,6 +31,7 @@
     {
         "marketId": "2",
         "short": "S&P500",
+        "ticker": "SPY",
         "title": "S&P500 weekly close price",
         "recurrence": "Weekly",
         "category": "Financials",
@@ -56,7 +58,8 @@
     },
     {
         "marketId": "3",
-        "short": "TSLA stock value",
+        "short": "TSLA",
+        "ticker": "TSLA",
         "title": "TSLA daily close price",
         "recurrence": "Daily",
         "category": "Financials",

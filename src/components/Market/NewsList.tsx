@@ -153,7 +153,7 @@ export const NewsList = ({ market }) => {
     const [pageIndex, setPageIndex] = useState(1)
 
     return (
-        <Stack paddingTop={16}>
+        <Stack paddingTop={4}>
             <Flex justify={'space-between'}>
                 <Heading fontSize={'2xl'} paddingBottom={2}>In the news</Heading>
                 <Tooltip label='This news feed is served by Google News.' 
@@ -164,7 +164,7 @@ export const NewsList = ({ market }) => {
                 </Tooltip>
             </Flex>
 
-            {/* <Page index={pageIndex} search={market.search_term} /> */}
+            <Page index={pageIndex} search={market.search_term} />
 
             {/* Pagination */}
             {/* <div style={{ display: 'none' }}><Page index={pageIndex + 1} search={market.search_term}/></div>
