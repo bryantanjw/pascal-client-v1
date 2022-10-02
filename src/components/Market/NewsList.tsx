@@ -9,7 +9,8 @@ import {
   Skeleton, SkeletonText,
   Link,
   Tooltip,
-  Alert, AlertIcon,
+  Alert, AlertIcon, 
+  Spinner, Center,
 } from '@chakra-ui/react'
 import { InfoOutlineIcon } from '@chakra-ui/icons'
 import useSWR from 'swr'
@@ -31,71 +32,6 @@ interface NewsListItemProp {
     url: string,
 }
 
-// TODO: change client-side to server-side and add caching
-const NewsListItem = (props: NewsListItemProp) => {
-    const { publication, title, imageUrl, datePublished, url } = props
-
-    return (
-        <Link href={url} isExternal _hover={{ textDecoration: 'none' }}>
-            <Box borderWidth={'1px'} p={{ 'base': 4, 'md': 5 }} rounded={'lg'}
-                width={{ 'base': '80%', 'md': 'full' }}
-                height={{ 'base': '150px', 'md': 'full' }}
-                marginTop={1}
-                display="flex"
-                justifyContent="space-between"
-                transition={'border-color 0.1s linear'}
-                _hover={{ borderColor:'gray.400' }}
-            >
-                
-                <Flex>
-                    <Image width={{ 'base': '110px', 'md':'150px' }} height={{ 'base': 'fit', 'md': '100px' }}
-                        borderRadius="md"
-                        src={imageUrl}
-                        alt={title}
-                        objectFit="cover"
-                        fallback={<Skeleton width={{ 'base': '110px', 'md':'150px' }} height={{ 'base': 'fit', 'md': '100px' }} />}
-                    />
-                </Flex>
-            
-                <Stack
-                    display="flex"
-                    flex="1"
-                    flexDirection="column"
-                    px={2}
-                    ml={4}>
-                    <Suspense fallback={<SkeletonText width={{ 'base': '80%', 'md': 'full' }}/>}>
-                        <Stack spacing={{ 'base': 1, 'md': '3' }} direction={{ 'base': 'column', 'md': 'row' }}>
-                            <Heading fontSize={{ 'base': 'sm', 'md': 'md' }}>{publication}</Heading>
-                            <Text fontSize={{ 'base': 'xs', 'md': 'sm' }} fontWeight={'semibold'} color='gray'>{datePublished}</Text>
-                        </Stack>
-                    </Suspense>
-
-                    <Suspense fallback={<SkeletonText width={{ 'base': '80%', 'md': 'full' }} />}>
-                        <Text fontSize={{ 'base': 'sm', 'md': 'md' }} marginTop="1" overflow={'hidden'} textOverflow={'ellipsis'}>
-                            {title}
-                        </Text>
-                    </Suspense>
-                </Stack>
-
-            </Box>
-        </Link>
-    )
-}
-
-function timeElapsed(time) {
-    const now = new Date()
-    const publishedTime = new Date(time)
-    const timeDiff = (now.getTime() - publishedTime.getTime()) / (1000 * 60) // minutes
-
-    if (timeDiff >= 60 && timeDiff < 1440) {
-        return `${Math.floor(timeDiff / 60)} hours`
-    } else if (timeDiff >= 1440) {
-        return `${Math.floor(timeDiff / (60 * 24))} days`
-    }
-
-    return `${Math.floor(timeDiff)} minutes`
-}
-
 export const Page = ({ search, index }) => {
     const { data, error } = useSWR( // If in production, use NewsData.io API; else, use NewsAPI. This is due to the latter's API production constraint
         process.env.NODE_ENV !== 'production'
@@ -115,37 +51,62 @@ export const Page = ({ search, index }) => {
         )
     }
 
-    if (!data) return <Suspense fallback={<SkeletonText width={'full'}/>} />
-    console.log(data)
+    if (!data) {
+        return (
+            <Center minW={{ 'md': '568px' }}>
+                <Spinner ml={"25%"} />
+            </Center>
+        )
+    }
+    console.log("NewsList data", data)
+
+    function timeElapsed(time) {
+        const now = new Date()
+        const publishedTime = new Date(time)
+        const timeDiff = (now.getTime() - publishedTime.getTime()) / (1000 * 60) // minutes
+    
+        if (timeDiff >= 60 && timeDiff < 1440) {
+            return `${Math.floor(timeDiff / 60)} hours`
+        } else if (timeDiff >= 1440) {
+            return `${Math.floor(timeDiff / (60 * 24))} days`
+        }
+    
+        return `${Math.floor(timeDiff)} minutes`
+    }
 
     if (data) return (
         process.env.NODE_ENV !== 'production'
-        ? data.articles?.map((news, index) => (
-            <NewsListItem key={index} 
-                publication={news.source.name}
-                // Get time elapsed since each news published
-                datePublished={`${timeElapsed(news.publishedAt)} ago`}
-                imageUrl={news?.urlToImage} 
-                title={news.title}
-                url={news.url}
-            />
-        ))
-        : data.results?.map((news, index) => {
-            if (index <= 3) {
-                console.log("index", index)
-                return (
-                    <NewsListItem key={index} 
-                        publication={news.source_id}
-                        // Get time elapsed since each news published
-                        datePublished={`${timeElapsed(news.pubDate)} ago`}
-                        imageUrl={news.image_url ?? ''} 
-                        title={news.title}
-                        url={news.link}
-                    />
-                )
-            }
-        })
+        ? (data.articles.length === 0 ? <div>No news feed fetched 🍃</div> : 
+            data.articles?.map((news, index) => (
+                <NewsListItem key={index} 
+                    publication={news.source.name}
+                    // Get time elapsed since each news published
+                    datePublished={`${timeElapsed(news.publishedAt)} ago`}
+                    imageUrl={news?.urlToImage} 
+                    title={news.title}
+                    url={news.url}
+                />
+            ))
+        )
+        : (data.results.length === 0 ? <div>No news feed fetched 🍃</div> :
+            data.results?.map((news, index) => {
+                if (index <= 3) {
+                    console.log("index", index)
+                    return (
+                        <NewsListItem key={index} 
+                            publication={news.source_id}
+                            // Get time elapsed since each news published
+                            datePublished={`${timeElapsed(news.pubDate)} ago`}
+                            imageUrl={news.image_url} 
+                            title={news.title}
+                            url={news.link}
+                        />
+                    )
+                }
+            })
+        )
     )
+
 }
 
 // TODO: add page numbers for pagination buttons
@@ -193,6 +154,56 @@ export const NewsList = ({ market }) => {
                 )
             } */}
         </Stack>
+    )
+}
+
+const NewsListItem = (props: NewsListItemProp) => {
+    const { publication, title, imageUrl, datePublished, url } = props
+
+    return (
+        <Link href={url} isExternal _hover={{ textDecoration: 'none' }}>
+            <Box borderWidth={'1px'} p={{ 'base': 4, 'md': 5 }} rounded={'lg'}
+                width={{ 'base': '80%', 'md': 'full' }}
+                height={{ 'base': '150px', 'md': 'full' }}
+                marginTop={1}
+                display="flex"
+                justifyContent="space-between"
+                transition={'border-color 0.1s linear'}
+                _hover={{ borderColor:'gray.400' }}
+            >
+                
+                <Flex>
+                    <Image width={{ 'base': '110px', 'md':'150px' }} height={{ 'base': 'fit', 'md': '100px' }}
+                        borderRadius="md"
+                        src={imageUrl}
+                        alt={title}
+                        objectFit="cover"
+                        fallback={<Skeleton width={{ 'base': '110px', 'md':'150px' }} height={{ 'base': 'fit', 'md': '100px' }} />}
+                    />
+                </Flex>
+            
+                <Stack
+                    display="flex"
+                    flex="1"
+                    flexDirection="column"
+                    px={2}
+                    ml={4}>
+                    <Suspense fallback={<SkeletonText width={{ 'base': '80%', 'md': 'full' }}/>}>
+                        <Stack spacing={{ 'base': 1, 'md': '3' }} direction={{ 'base': 'column', 'md': 'row' }}>
+                            <Heading fontSize={{ 'base': 'sm', 'md': 'md' }}>{publication}</Heading>
+                            <Text fontSize={{ 'base': 'xs', 'md': 'sm' }} fontWeight={'semibold'} color='gray'>{datePublished}</Text>
+                        </Stack>
+                    </Suspense>
+
+                    <Suspense fallback={<SkeletonText width={{ 'base': '80%', 'md': 'full' }} />}>
+                        <Text fontSize={{ 'base': 'sm', 'md': 'md' }} marginTop="1" overflow={'hidden'} textOverflow={'ellipsis'}>
+                            {title}
+                        </Text>
+                    </Suspense>
+                </Stack>
+
+            </Box>
+        </Link>
     )
 }
 

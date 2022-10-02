@@ -29,7 +29,6 @@ const fetcher = async url => {
 const ResearchGraph = ({ market }) => {
   const { short, ticker } = market
   const { data, error } = useSWR(`/api/fetchFinancialData?name=${ticker}`, fetcher)
-  console.log("data", data)
 
   if (error) {
     console.log("fetchFinancialData Error", error)
@@ -48,7 +47,7 @@ const ResearchGraph = ({ market }) => {
     )
   }
 
-  const { indicators, meta, timestamp } = data
+  const { indicators, timestamp } = data
 
   // Array to store unique timestamps
   const timestamps: number[] = []
@@ -66,7 +65,6 @@ const ResearchGraph = ({ market }) => {
       value: indicators.quote[0].close[value].toFixed(2) 
     }
   })
-  console.log("chartData", chartData)
 
   const priceChange = ((chartData[chartData.length -1].value - chartData[0].value) / chartData[0].value) * 100
 
@@ -105,7 +103,7 @@ const ResearchGraph = ({ market }) => {
               fontSize={'11px'}
             />
             <YAxis type={'number'} domain={['auto', 'auto']}
-              orientation='right' tickCount={4} tickLine={false} 
+              orientation='right' tickCount={5} tickLine={false} 
               axisLine={false} fontSize={'11px'} 
             />
 
@@ -128,7 +126,12 @@ const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
       <Stack fontSize={'sm'} spacing={0}>
-        <Text fontWeight={'semibold'}>{moment(label * 1000).format('DD MMM YYYY')} at {moment(label * 1000).format('HH:mm')}</Text>
+        <Text fontWeight={'semibold'}
+          // eslint-disable-next-line react-hooks/rules-of-hooks
+          color={useColorModeValue('gray.700', 'gray.200')}
+        >
+          {moment(label * 1000).format('DD MMM YYYY')} at {moment(label * 1000).format('HH:mm')}
+        </Text>
         <Text fontWeight={'bold'} color={'blue.400'}>{payload[0].value}</Text>
       </Stack>
     )
