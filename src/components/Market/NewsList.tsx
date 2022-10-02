@@ -10,7 +10,6 @@ import {
   Link,
   Tooltip,
   Alert, AlertIcon, 
-  Spinner, Center,
 } from '@chakra-ui/react'
 import { InfoOutlineIcon } from '@chakra-ui/icons'
 import useSWR from 'swr'
@@ -39,7 +38,6 @@ export const Page = ({ search, index }) => {
         : `https://newsdata.io/api/1/news?apikey=${process.env.NEXT_PUBLIC_NEWSDATA_API_KEY}&q=${search}&country=us&language=en`,
         fetcher
     )
-    console.log("Is news data ready?", !!data)
 
     if (error) {
         return (
@@ -53,12 +51,9 @@ export const Page = ({ search, index }) => {
 
     if (!data) {
         return (
-            <Center minW={{ 'md': '568px' }}>
-                <Spinner ml={"25%"} />
-            </Center>
+            <SkeletonText width={"100%"} />
         )
     }
-    console.log("NewsList data", data)
 
     function timeElapsed(time) {
         const now = new Date()
@@ -91,7 +86,6 @@ export const Page = ({ search, index }) => {
         : (data.results.length === 0 ? <div>No news feed fetched 🍃</div> :
             data.results?.map((news, index) => {
                 if (index <= 3) {
-                    console.log("index", index)
                     return (
                         <NewsListItem key={index} 
                             publication={news.source_id}

@@ -144,6 +144,7 @@
     {
         "marketId": "6",
         "short": "SOL",
+        "ticker": "solana",
         "title": "SOL weekly close price",
         "recurrence": "Weekly",
         "category": "Crypto",
