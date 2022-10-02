@@ -22,6 +22,7 @@ const paginationStyle = {
     justifyContent: 'space-between',
     py: 2,
 }
+// Style config
 
 interface NewsListItemProp {
     publication: string,
@@ -167,13 +168,16 @@ const NewsListItem = (props: NewsListItemProp) => {
             >
                 
                 <Flex>
-                    <Image width={{ 'base': '110px', 'md':'150px' }} height={{ 'base': 'fit', 'md': '100px' }}
-                        borderRadius="md"
-                        src={imageUrl}
-                        alt={title}
-                        objectFit="cover"
-                        fallback={<Skeleton width={{ 'base': '110px', 'md':'150px' }} height={{ 'base': 'fit', 'md': '100px' }} />}
-                    />
+                    {imageUrl ?
+                        <Image width={{ 'base': '110px', 'md':'150px' }} height={{ 'base': 'fit', 'md': '100px' }}
+                            borderRadius="md"
+                            src={imageUrl}
+                            alt={title}
+                            objectFit="cover"
+                            fallback={<Skeleton width={{ 'base': '110px', 'md':'150px' }} height={{ 'base': 'fit', 'md': '100px' }} />}
+                        />
+                        : ''
+                    }
                 </Flex>
             
                 <Stack

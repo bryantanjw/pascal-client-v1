@@ -43,7 +43,7 @@ const TradeFormItem = (props: TradeFormItemProps) => {
 }
 
 export const TradeForm = ({ market }) => {
-  // Styling config //
+  // Style config //
   const confettiConfig = {
     angle: 90,
     spread: 360,
@@ -98,7 +98,7 @@ export const TradeForm = ({ market }) => {
     bg: mode('#353535', 'gray.50'),
   }
   const alternatingColorScheme = [mode('purple.500', 'purple.200'), mode('#2C7C7C', '#81E6D9'), 'pink']
-  // Styling config //
+  // Style config //
 
   
   const steps = [{ label: "" }, { label: "" }]

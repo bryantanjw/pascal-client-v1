@@ -36,7 +36,7 @@ const MarketView = ({ market }) => {
     const { publicKey } = useWallet()
     const isOwner = ( publicKey ? publicKey.toString() === process.env.NEXT_PUBLIC_OWNER_PUBLIC_KEY : false )
 
-    // Styling config
+    // Style config
     const dividerColor = mode('gray.300', '#464A54')
     const iconColor = mode('invert(0%)', 'invert(100%)')
     const tabListStyle = {
@@ -60,7 +60,7 @@ const MarketView = ({ market }) => {
         opacity: '50%',
         width: '40%',
     }
-    // Styling config
+    // Style config
     const stats = [
         { label: 'Liquidity', value: market.liquidity },
         { label: 'Total Volume', value: market.volume },
