@@ -131,7 +131,7 @@ export const TradeForm = ({ market }) => {
     {/* TODO: refine progress bar design */}
     <Stack spacing="8" 
       rounded="xl" padding="6" borderWidth={'1px'} 
-      maxW={{'base': 's', 'md': 'full', 'lg': '340px'}}
+      w={{'base': 'full', 'lg': '340px'}}
       boxShadow={'md'}
       background={mode('whiteAlpha.800', 'rgba(23, 25, 35, 0.2)')}
       className={mode('', styles.glassmorphism)}
@@ -271,9 +271,17 @@ export const TradeForm = ({ market }) => {
                 <Heading size={'md'}>
                   Woohoo! Your order has been placed!
                 </Heading>
-                <ButtonGroup justifyContent={'center'} colorScheme={'purple'} size="lg" fontSize="md" spacing='3'>
-                  <Button onClick={reset} width={'full'}>Done</Button>
-                </ButtonGroup>
+                  <Button onClick={reset}
+                    size="lg" mt={5} textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')}
+                    boxShadow={'xl'}
+                    className={
+                      mode(styles.wallet_adapter_button_trigger_light_mode, 
+                          styles.wallet_adapter_button_trigger_dark_mode
+                      )
+                    }
+                  >
+                    Done
+                  </Button>
               </Stack>
               )
             }

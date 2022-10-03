@@ -3,7 +3,7 @@ import Head from 'next/head'
 import styles from '@/styles/Home.module.css'
 import WithSubnavigation from 'components/TopBar'
 import MarketList from '@/components/Trade'
-import { Box, Stack, Heading, Text } from '@chakra-ui/react'
+import { Box, Stack, Heading, Text, useColorModeValue as mode } from '@chakra-ui/react'
 import Layout from 'components/Layout'
 
 const Home: NextPage = () => {
@@ -60,7 +60,7 @@ const Home: NextPage = () => {
                   &nbsp;events.
                 </Text>
               </Heading>
-              <Text color={'gray.500'} fontSize={{ base: 'xl', md: '2xl' }}>
+              <Text color={mode('gray.500', 'gray.200')} fontSize={{ base: 'xl', md: '2xl' }}>
                 A commodity derivative powered by automated market makers.
               </Text>
               

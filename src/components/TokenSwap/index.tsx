@@ -124,7 +124,7 @@ export const TokenSwapForm = () => {
                     <Tab sx={tabStyle}>Withdraw</Tab>
                 </TabList>
 
-                <TabPanels minWidth={{ 'base': '300px', 'md': 'full' }}>
+                <TabPanels >
                     {/* Deposit Liquidity */}
                     <TabPanel px={0} pb={0}>
                         <DepositSingleTokenType />

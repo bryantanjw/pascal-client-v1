@@ -179,8 +179,8 @@ export const DepositSingleTokenType: FC = (props: {
                         />
                         
                         <Alert bg={mode('blue.50', 'blue.900')} fontSize={'xs'} rounded={'md'} 
-                            px={4} flexDirection={'column'}>
-                            <WarningTwoIcon alignSelf={'start'} mb={2}/>
+                            px={4} flexDirection={{ 'base': 'row', 'lg': 'column' }}>
+                            <WarningTwoIcon alignSelf={'start'} mb={2} mr={4}/>
                             Providing liquidity is risky. 
                             It is important to withdraw liquidity before the event occurs.
                         </Alert>
@@ -193,7 +193,7 @@ export const DepositSingleTokenType: FC = (props: {
                                     )
                                 } 
                                 size="lg" mt={5} textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')} 
-                                width={'full'}
+                                width={'100%'}
                                 boxShadow={'xl'}
                             >
                                 <ScaleFade initialScale={0.5} in={true}>

@@ -123,7 +123,7 @@ export const CustomTooltip = (props) => {
     const { publicKey, label, children } = props
 
     return (
-        <Tooltip hasArrow label={label} shouldWrapChildren 
+        <Tooltip hasArrow label={label} 
             isDisabled={publicKey ? true : false}
             p={3} rounded={'md'} placement={'auto'}
         >
