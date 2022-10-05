@@ -2,7 +2,6 @@ import React, { Suspense } from 'react'
 import {
     Stack, HStack, 
     SimpleGrid, 
-    useColorModeValue, 
     Image,
     Box,
     useCheckboxGroup,

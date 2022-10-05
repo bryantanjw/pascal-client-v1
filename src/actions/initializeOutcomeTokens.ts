@@ -14,6 +14,9 @@ import {
   createUpdateMetadataAccountV2Instruction
 } from "@metaplex-foundation/mpl-token-metadata"
 import * as fs from "fs"
+import useSWR from "swr"
+
+const fetcher = (url) => fetch(url).then((res) => res.json())
 
 async function main() {
   const connection = new web3.Connection(web3.clusterApiUrl("devnet"))
@@ -83,6 +86,8 @@ async function main() {
     mint
   )
 
+  // Updata token meta data //
+
   // const mint = new web3.PublicKey(
   //   "2ai3sr8eQWZct9KGJyMb9mJsXt49ov1jD8HirxQdWjsk"
   // )
@@ -97,6 +102,8 @@ async function main() {
   //   "assets/eye.png",
   //   "eye.png"
   // )
+
+  // Updata token meta data //
 }
 
 main()

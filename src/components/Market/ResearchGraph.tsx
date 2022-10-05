@@ -1,15 +1,17 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import moment from 'moment'
 import useSWR from 'swr'
 import { 
   AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, 
   ResponsiveContainer,
+  LineChart, Line,
+  ComposedChart
 } from 'recharts';
 import {
   Stack,
   Text, Heading, useColorModeValue,
-  Alert, AlertIcon, Spinner, HStack, Skeleton,
+  Alert, AlertIcon, HStack, Skeleton,
 } from '@chakra-ui/react'
 
 const fetcher = async url => {
@@ -30,13 +32,14 @@ const ResearchGraph = ({ market }) => {
   switch(market.category) {
     case 'Financials': return <FinancialsChart market={market} />
     case 'Crypto': return <CoinChart market={market} />
+    case 'Economics': return <EconomicsChart market={market} />
     default: return null
   }
 }
 
 const FinancialsChart = ({ market }) => {
   const { short, ticker } = market
-  const { data, error } = useSWR(`/api/research/fetchFinancialData?name=${ticker}`, fetcher)
+  const { data, error } = useSWR(`/api/research/fetchFinancialData?ticker=${ticker}`, fetcher)
 
   if (error) {
     console.log("fetchFinancialData Error", error)
@@ -49,7 +52,7 @@ const FinancialsChart = ({ market }) => {
   }
   if (!data) {
     return (
-      <Skeleton minW={{ 'md': '500px' }} minH={{ 'md': '200px' }} rounded={'xl'}/>
+      <Skeleton minW={{ 'md': '500px' }} minH={{ 'md': '200px' }} rounded={'lg'}/>
     )
   }
 
@@ -116,7 +119,7 @@ const FinancialsChart = ({ market }) => {
               // eslint-disable-next-line react-hooks/rules-of-hooks
               opacity={useColorModeValue('50%', '20%')}
             />
-            <Tooltip content={<CustomTooltip active payload label />} />
+            <Tooltip content={<TooltipMinute active payload label />} />
             
             <Area type="monotone" dataKey="value" stroke={'#3182CE'} fillOpacity={1} fill="url(#colorvalue)" />
           </AreaChart>
@@ -130,7 +133,7 @@ const FinancialsChart = ({ market }) => {
 const CoinChart = ({ market }) => {
   const { short, ticker } = market
   const { data, error } = useSWR(
-    `https://api.coingecko.com/api/v3/coins/${ticker}/market_chart?vs_currency=usd&days=5`, 
+    `https://api.coingecko.com/api/v3/coins/${ticker}/market_chart?vs_currency=usd&days=6`, 
     fetcher
   )
 
@@ -145,7 +148,7 @@ const CoinChart = ({ market }) => {
   }
   if (!data) {
     return (
-      <Skeleton minW={{ 'md': '500px' }} minH={{ 'md': '200px' }} rounded={'xl'}/>
+      <Skeleton minW={{ 'md': '500px' }} minH={{ 'md': '200px' }} rounded={'lg'}/>
     )
   }
 
@@ -212,7 +215,7 @@ const CoinChart = ({ market }) => {
               // eslint-disable-next-line react-hooks/rules-of-hooks
               opacity={useColorModeValue('50%', '20%')}
             />
-            <Tooltip content={<CustomTooltip active payload label />} />
+            <Tooltip content={<TooltipMinute active payload label />} />
             
             <Area type="monotone" dataKey="value" stroke={'#3182CE'} fillOpacity={1} fill="url(#colorvalue)" />
           </AreaChart>
@@ -223,7 +226,129 @@ const CoinChart = ({ market }) => {
   );
 }
 
-const CustomTooltip = ({ active, payload, label }) => {
+const EconomicsChart = ({ market }) => {
+  const { short, ticker } = market
+  const thisYear = new Date().getFullYear()
+
+  const { data, error } = useSWR(`/api/research/fetchEconomicData?ticker=${ticker}&year=${thisYear}`, fetcher)
+  
+  if (error) {
+    console.log("Error fetching data from BLS", error)
+    return (
+      <Alert status='error' rounded={'lg'}>
+        <AlertIcon mr={4} />
+        An error has occured loading chart.            
+      </Alert>
+    )
+  }
+  if (!data) {
+    return (
+      <Skeleton minW={{ 'md': '500px' }} minH={{ 'md': '200px' }} rounded={'lg'}/>
+    )
+  }
+  console.log(data)
+
+  // Sort dict by year, periodName(month) keys
+  const headlineInflation = data[0].data.sort(function(a, b) {
+    function getMonthNumberFromName(monthName) {
+      const date = new Date(`${monthName} 1, 2022`);
+      return date.getMonth() + 1;
+    }
+
+    return a.year - b.year ||
+      (getMonthNumberFromName(a.periodName) - getMonthNumberFromName(b.periodName))
+  })
+  const coreInflation = data[1].data.sort(function(a, b) {
+    function getMonthNumberFromName(monthName) {
+      const date = new Date(`${monthName} 1, 2022`);
+      return date.getMonth() + 1;
+    }
+
+    return a.year - b.year ||
+      (getMonthNumberFromName(a.periodName) - getMonthNumberFromName(b.periodName))
+  })
+
+  headlineInflation.forEach(headline => {
+    coreInflation.filter(
+      core => core.year == headline.year && core.periodName == headline.periodName
+    ).forEach(
+      core => {
+        headline["coreInflationCalculations"] = core.calculations
+      }
+    )
+  })
+
+  console.log("headlineInflation", headlineInflation)
+
+  const TooltipInflation = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <Stack fontSize={'sm'} spacing={0} p={2}>
+          <Text fontWeight={'semibold'}
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            color={useColorModeValue('gray.700', 'gray.200')}
+          >
+            {payload[0].payload.periodName} {payload[0].payload.year}
+          </Text>
+          <Text fontWeight={'bold'} color={'blue.400'}>{payload[0].value}%</Text>
+          <Text fontWeight={'bold'} 
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            color={useColorModeValue('gray.800', 'gray.300')}
+          >
+            {payload[1].value}%
+          </Text>
+        </Stack>
+      )
+    }
+  
+    return null
+  }
+
+  return (
+    <Stack spacing={5} width={{ 'base': '87%', 'md': 'full' }} mb={4}>
+      {data && (
+        <>
+        <Stack>
+          <Heading fontSize={'xl'} fontWeight={'extrabold'}>{short}</Heading>
+          <HStack spacing={3}>
+            <Text fontSize={'md'} fontWeight={'bold'}>
+              CPI - Year over year change
+            </Text>
+          </HStack>
+        </Stack>
+
+        <ResponsiveContainer width="100%" aspect={2.2}>
+          <ComposedChart data={headlineInflation} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
+            
+            <XAxis dataKey="year"
+              tickLine={false} axisLine={false}
+              fontSize={'11px'} padding={{ right: 30 }}
+            />
+            <YAxis type={'number'} domain={['auto', 'auto']}
+              orientation='right' tickLine={false} 
+              axisLine={false} fontSize={'11px'}
+            />
+
+            <CartesianGrid vertical={false}
+              // eslint-disable-next-line react-hooks/rules-of-hooks
+              opacity={useColorModeValue('50%', '20%')}
+            />
+            <Tooltip content={<TooltipInflation active payload label />} />
+            
+            <Line dataKey="calculations.pct_changes.12" stroke={'#3182CE'} fillOpacity={1} dot={false} />
+            <Line dataKey="coreInflationCalculations.pct_changes.12" fillOpacity={1} dot={false} 
+              // eslint-disable-next-line react-hooks/rules-of-hooks
+              stroke={useColorModeValue('#292929', '#DFDFDF')}
+            />
+          </ComposedChart>
+        </ResponsiveContainer>
+        </>
+      )}
+    </Stack>
+  )
+}
+
+const TooltipMinute = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
       <Stack fontSize={'sm'} spacing={0} backdropFilter={'blur(1px)'} p={2}>

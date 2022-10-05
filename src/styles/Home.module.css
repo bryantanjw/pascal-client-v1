@@ -111,7 +111,7 @@
   transition: 0.3s;
   border: 1px solid #353535;
 } .wallet_adapter_button_trigger_light_mode:hover {
-  background: #F9FAFB !important;
+  background: transparent !important;
   color: #353535;
 } .wallet_adapter_button_trigger_light_mode:hover:disabled {
   background: #3d3d3d !important;
@@ -131,7 +131,7 @@
   transition: 0.3s;
   border: 1px solid rgb(237, 237, 237);
 }.wallet_adapter_button_trigger_dark_mode:hover {
-  background-color: #171923 !important;
+  background-color: transparent !important;
   color: white;
 } .wallet_adapter_button_trigger_dark_mode:hover:disabled {
   background: #ebecf0 !important;

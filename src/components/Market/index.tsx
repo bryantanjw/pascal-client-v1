@@ -181,8 +181,8 @@ const MarketView = ({ market }) => {
                                 </TabPanel>
 
                                 <TabPanel key={1} px={0}>
-                                    <Stack marginTop={5}>
-                                        {(market.category === "Financials" || market.category === "Crypto") 
+                                    <Stack marginTop={2}>
+                                        {(market.category === "Financials" || market.category === "Crypto" || market.category === "Economics") 
                                             && <ResearchGraph market={market} 
                                         />}
                                         <NewsList market={market} />

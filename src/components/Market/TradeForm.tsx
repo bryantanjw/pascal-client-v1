@@ -187,7 +187,7 @@ export const TradeForm = ({ market }) => {
                       <ButtonGroup 
                         justifyContent={'center'} size="lg" spacing='4'
                         onClick={nextStep}
-                        isDisabled={!title || !publicKey}
+                        isDisabled={!title}
                       >
                         <Button id="buy" className={
                           mode(styles.wallet_adapter_button_trigger_light_mode, 
@@ -244,7 +244,7 @@ export const TradeForm = ({ market }) => {
                   </Stack>
                   
                   <ButtonGroup justifyContent={'center'} size="lg" fontSize="md" spacing='3'>
-                    <Button onClick={prevStep} variant={'ghost'}>
+                    <Button onClick={prevStep} variant={'ghost'} transition={'all 0.3s ease'}>
                       <ArrowBackIcon />
                     </Button>
 
