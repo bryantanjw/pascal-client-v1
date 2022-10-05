@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import moment from 'moment'
 import useSWR from 'swr'
 import { 
@@ -7,13 +7,13 @@ import {
   ResponsiveContainer,
   Line,
   ComposedChart,
-} from 'recharts';
+} from 'recharts'
 import {
   Stack,
   Text, Heading, useColorModeValue as mode,
   Alert, AlertIcon, HStack, Skeleton,
 } from '@chakra-ui/react'
-import { FaSquare } from 'react-icons/fa';
+import { FaSquare } from 'react-icons/fa'
 
 const fetcher = async url => {
   const res = await fetch(url)
