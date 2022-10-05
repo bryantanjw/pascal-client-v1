@@ -291,7 +291,7 @@ const EconomicsChart = ({ market }) => {
     if (active && payload && payload.length) {
       return (
         <Stack fontSize={'sm'} spacing={0} p={2}>
-          <Text fontWeight={'semibold'}
+          <Text fontWeight={'bold'}
             // eslint-disable-next-line react-hooks/rules-of-hooks
             color={mode('gray.700', 'gray.200')}
           >
@@ -300,7 +300,7 @@ const EconomicsChart = ({ market }) => {
           <Text fontWeight={'bold'} color={'blue.400'}>{payload[0].value}%</Text>
           <Text fontWeight={'bold'} 
             // eslint-disable-next-line react-hooks/rules-of-hooks
-            color={mode('gray.800', 'gray.300')}
+            color={mode('gray.600', 'gray.300')}
           >
             {payload[1].value}%
           </Text>
@@ -314,8 +314,8 @@ const EconomicsChart = ({ market }) => {
   const renderLegend = (props) => {
     const { payload } = props
     return (
-      <Stack fontSize={'sm'} textColor={mode('gray.400', 'whiteAlpha.600')} direction={'row'} spacing={6} 
-        justifyContent={'center'} pr={4} pt={2}
+      <Stack fontSize={'sm'} textColor={mode('blackAlpha.700', 'whiteAlpha.600')} direction={'row'} spacing={6} 
+        justifyContent={'center'} pr={4} pt={2} mb={-4}
       >
         <HStack>
           <FaSquare color={mode('#3182CE', '#44A3FB')} />
@@ -347,7 +347,7 @@ const EconomicsChart = ({ market }) => {
           </HStack>
         </Stack>
 
-        <ResponsiveContainer width="100%" aspect={1.9}>
+        <ResponsiveContainer width="100%" aspect={2}>
           <ComposedChart data={headlineInflation} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
             
             <XAxis dataKey="year"
