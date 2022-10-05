@@ -3,16 +3,17 @@ import moment from 'moment'
 import useSWR from 'swr'
 import { 
   AreaChart, Area,
-  XAxis, YAxis, CartesianGrid, Tooltip, 
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   ResponsiveContainer,
-  LineChart, Line,
-  ComposedChart
+  Line,
+  ComposedChart,
 } from 'recharts';
 import {
   Stack,
-  Text, Heading, useColorModeValue,
+  Text, Heading, useColorModeValue as mode,
   Alert, AlertIcon, HStack, Skeleton,
 } from '@chakra-ui/react'
+import { FaSquare } from 'react-icons/fa';
 
 const fetcher = async url => {
   const res = await fetch(url)
@@ -117,11 +118,14 @@ const FinancialsChart = ({ market }) => {
 
             <CartesianGrid vertical={false}
               // eslint-disable-next-line react-hooks/rules-of-hooks
-              opacity={useColorModeValue('50%', '20%')}
+              opacity={mode('50%', '20%')}
             />
             <Tooltip content={<TooltipMinute active payload label />} />
             
-            <Area type="monotone" dataKey="value" stroke={'#3182CE'} fillOpacity={1} fill="url(#colorvalue)" />
+            <Area type="monotone" dataKey="value" fillOpacity={1} fill="url(#colorvalue)" 
+              // eslint-disable-next-line react-hooks/rules-of-hooks
+              stroke={mode('#3182CE', '#44A3FB')}
+            />
           </AreaChart>
         </ResponsiveContainer>
         </>
@@ -213,11 +217,14 @@ const CoinChart = ({ market }) => {
 
             <CartesianGrid vertical={false}
               // eslint-disable-next-line react-hooks/rules-of-hooks
-              opacity={useColorModeValue('50%', '20%')}
+              opacity={mode('50%', '20%')}
             />
             <Tooltip content={<TooltipMinute active payload label />} />
             
-            <Area type="monotone" dataKey="value" stroke={'#3182CE'} fillOpacity={1} fill="url(#colorvalue)" />
+            <Area type="monotone" dataKey="value" fillOpacity={1} fill="url(#colorvalue)" 
+              // eslint-disable-next-line react-hooks/rules-of-hooks
+              stroke={mode('#3182CE', '#44A3FB')}
+            />
           </AreaChart>
         </ResponsiveContainer>
         </>
@@ -286,14 +293,14 @@ const EconomicsChart = ({ market }) => {
         <Stack fontSize={'sm'} spacing={0} p={2}>
           <Text fontWeight={'semibold'}
             // eslint-disable-next-line react-hooks/rules-of-hooks
-            color={useColorModeValue('gray.700', 'gray.200')}
+            color={mode('gray.700', 'gray.200')}
           >
             {payload[0].payload.periodName} {payload[0].payload.year}
           </Text>
           <Text fontWeight={'bold'} color={'blue.400'}>{payload[0].value}%</Text>
           <Text fontWeight={'bold'} 
             // eslint-disable-next-line react-hooks/rules-of-hooks
-            color={useColorModeValue('gray.800', 'gray.300')}
+            color={mode('gray.800', 'gray.300')}
           >
             {payload[1].value}%
           </Text>
@@ -303,6 +310,29 @@ const EconomicsChart = ({ market }) => {
   
     return null
   }
+
+  const renderLegend = (props) => {
+    const { payload } = props
+    return (
+      <Stack fontSize={'sm'} textColor={mode('gray.400', 'whiteAlpha.600')} direction={'row'} spacing={6} 
+        justifyContent={'center'} pr={4} pt={2}
+      >
+        <HStack>
+          <FaSquare color={mode('#3182CE', '#44A3FB')} />
+          <Text>
+            {payload[0].value}
+          </Text>
+         </HStack>
+
+        <HStack>
+          <FaSquare color={mode('#292929', '#DFDFDF')} />
+          <Text>
+            {payload[1].value}
+          </Text>
+        </HStack>
+      </Stack>
+    )
+  }  
 
   return (
     <Stack spacing={5} width={{ 'base': '87%', 'md': 'full' }} mb={4}>
@@ -317,7 +347,7 @@ const EconomicsChart = ({ market }) => {
           </HStack>
         </Stack>
 
-        <ResponsiveContainer width="100%" aspect={2.2}>
+        <ResponsiveContainer width="100%" aspect={1.9}>
           <ComposedChart data={headlineInflation} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
             
             <XAxis dataKey="year"
@@ -331,14 +361,18 @@ const EconomicsChart = ({ market }) => {
 
             <CartesianGrid vertical={false}
               // eslint-disable-next-line react-hooks/rules-of-hooks
-              opacity={useColorModeValue('50%', '20%')}
+              opacity={mode('50%', '20%')}
             />
             <Tooltip content={<TooltipInflation active payload label />} />
+            <Legend content={renderLegend} />
             
-            <Line dataKey="calculations.pct_changes.12" stroke={'#3182CE'} fillOpacity={1} dot={false} />
-            <Line dataKey="coreInflationCalculations.pct_changes.12" fillOpacity={1} dot={false} 
+            <Line name='Headline' dataKey="calculations.pct_changes.12" fillOpacity={1} dot={false} 
               // eslint-disable-next-line react-hooks/rules-of-hooks
-              stroke={useColorModeValue('#292929', '#DFDFDF')}
+              stroke={mode('#3182CE', '#44A3FB')}
+            />
+            <Line name='Core' dataKey="coreInflationCalculations.pct_changes.12" fillOpacity={1} dot={false} 
+              // eslint-disable-next-line react-hooks/rules-of-hooks
+              stroke={mode('#292929', '#DFDFDF')}
             />
           </ComposedChart>
         </ResponsiveContainer>
@@ -354,7 +388,7 @@ const TooltipMinute = ({ active, payload, label }) => {
       <Stack fontSize={'sm'} spacing={0} backdropFilter={'blur(1px)'} p={2}>
         <Text fontWeight={'semibold'}
           // eslint-disable-next-line react-hooks/rules-of-hooks
-          color={useColorModeValue('gray.700', 'gray.200')}
+          color={mode('gray.700', 'gray.200')}
         >
           {moment(label).format('DD MMM YYYY')} at {moment(label).format('HH:mm')}
         </Text>
