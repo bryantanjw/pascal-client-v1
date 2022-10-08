@@ -59,7 +59,7 @@ export const TokenSwapForm = () => {
         mx: '2px',
         fontWeight: 'medium',
         transition: 'all .2s ease',
-        _hover : { bg: mode('blackAlpha.50', 'whiteAlpha.100')},
+        _hover : { bg: mode('blackAlpha.50', 'whiteAlpha.50')},
         _selected: {
             // bg: mode('gray.600', 'gray.600'),
             // color: 'white',
@@ -100,16 +100,16 @@ export const TokenSwapForm = () => {
     }, [connection, publicKey])
 
     return (
-        <Stack spacing={7}>
+        <Stack spacing={5}>
             <CustomTooltip publicKey={publicKey} label={'Connect wallet to view liquidity'}>
                 <Stack spacing={2} transition={'all .2s ease'} cursor={publicKey ? 'auto': 'not-allowed'}>
                     <Flex justify={'space-between'}>
-                        <Text sx={textStyle} color={mode('gray.600', 'gray.400')}>My Liquidity</Text>
+                        <Text sx={textStyle} color={mode('gray.600', 'gray.400')}>Your Liquidity</Text>
                         <Text sx={textStyle}>{accountLiquidity} LP</Text>
                     </Flex>
 
                     <Flex justify={'space-between'}>
-                        <Text sx={textStyle} color={mode('gray.600', 'gray.400')}>My Earnings</Text>
+                        <Text sx={textStyle} color={mode('gray.600', 'gray.400')}>Your Earnings</Text>
                         <Text sx={textStyle}>0 USD</Text>
                     </Flex>
 

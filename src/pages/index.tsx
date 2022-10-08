@@ -3,7 +3,7 @@ import Head from 'next/head'
 import styles from '@/styles/Home.module.css'
 import WithSubnavigation from 'components/TopBar'
 import MarketList from '@/components/Trade'
-import { Box, Stack, Heading, Text, useColorModeValue as mode } from '@chakra-ui/react'
+import { Box, Stack, Heading, Text, useColorModeValue as mode, Image } from '@chakra-ui/react'
 import Layout from 'components/Layout'
 
 const Home: NextPage = () => {
@@ -27,7 +27,7 @@ const Home: NextPage = () => {
       
       <WithSubnavigation />
 
-      <Layout>
+    <Layout>
         <Box maxW={{ base: '3xl', lg: '5xl' }}
           mx="auto"
           py={{ base: '10', md: '10', lg: '12' }}

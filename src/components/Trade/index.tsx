@@ -9,6 +9,7 @@ import {
     Alert, AlertIcon, Spinner, Center,
 } from '@chakra-ui/react'
 import useSWR from 'swr'
+import styles from '@/styles/Home.module.css'
 
 const FilterToggle = React.lazy(() => import('./FilterToggle'))
 const MarketCard = React.lazy(() => import('./MarketCard'))

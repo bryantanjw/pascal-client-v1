@@ -29,7 +29,7 @@ const MarketCard = ({ market }) => {
                 <Stack spacing={4} p={5}
                     borderColor={mode('#CFDAE1', '#696969')} borderWidth={1} rounded={'10px'}
                     className={mode('', styles.glassmorphism)}
-                    backdropFilter={'blur(5px)'} // <-- Somehow improves page transition latency in light mode
+                    backdropFilter={'blur(0px)'} // <-- Somehow improves page transition latency in light mode
                     bg={mode('transparent', 'rgba(23, 25, 35, 0.2)')}
                     _hover={{
                         boxShadow: '2xl',
