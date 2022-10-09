@@ -27,14 +27,13 @@ const Home: NextPage = () => {
       
       <WithSubnavigation />
 
-    <Layout>
+      <Layout>
         <Box maxW={{ base: '3xl', lg: '5xl' }}
           mx="auto"
           py={{ base: '10', md: '10', lg: '12' }}
           zIndex={1}
         >
           <Stack spacing={{ base: 8, md: 10 }}>
-
             <Heading
                 lineHeight={1.1}
                 fontWeight={600}
@@ -65,7 +64,6 @@ const Home: NextPage = () => {
               </Text>
               
             <MarketList />
-
           </Stack>
         </Box>
       </Layout>

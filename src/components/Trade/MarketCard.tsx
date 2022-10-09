@@ -29,7 +29,7 @@ const MarketCard = ({ market }) => {
                 <Stack spacing={4} p={5}
                     borderColor={mode('#CFDAE1', '#696969')} borderWidth={1} rounded={'10px'}
                     className={mode('', styles.glassmorphism)}
-                    backdropFilter={'blur(0px)'} // <-- Somehow improves page transition latency in light mode
+                    backdropFilter={{ 'base': 'none', 'md': 'blur(0px)' }} // <-- Somehow improves page transition latency
                     bg={mode('transparent', 'rgba(23, 25, 35, 0.2)')}
                     _hover={{
                         boxShadow: '2xl',
@@ -38,11 +38,10 @@ const MarketCard = ({ market }) => {
                         background: mode('white', ''),
                     }}
                 >
-                        {/* Set market's category icon */}
-                        <Image filter={iconColor} src={`/${market.category}.svg`} alt={market.category} 
-                            width={25} height={25}
-                            fallback={<Skeleton width={25} height={25} />}
-                        />
+                    <Image filter={iconColor} src={`/${market.category}.svg`} alt={market.category} 
+                        width={25} height={25}
+                        fallback={<Skeleton width={25} height={25} />}
+                    />
                         
                     <Suspense fallback={<SkeletonText width={{ 'base': '80%', 'md': '100px' }}/>}>
                         <Stack spacing={1}>

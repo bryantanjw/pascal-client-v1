@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react'
 import { motion } from 'framer-motion'
-import { Stack, useColorModeValue } from '@chakra-ui/react'
+import { Flex, useColorModeValue as mode } from '@chakra-ui/react'
 
 type Props = {
     children: ReactNode
@@ -14,12 +14,11 @@ const variants = {
 
 const Layout = ({ children }: Props): JSX.Element => (
     <div>
-        <Stack zIndex={-1} backgroundImage={'https://s3-us-west-2.amazonaws.com/s.cdpn.io/1295275/background-noise.png'} 
+        <Flex zIndex={-1} backgroundImage={'https://s3-us-west-2.amazonaws.com/s.cdpn.io/1295275/background-noise.png'} 
             position={'absolute'} backgroundRepeat={'repeat'}
-            top={-10} left={0}
-            overflow={'hidden'}
-            width={'110%'} height={'110%'}
-            opacity={useColorModeValue('100%', '60%')}
+            left={0} top={-10}
+            width={'full'} height={{ 'base': 'full', 'md': '115%' }}
+            opacity={mode('100%', '60%')}
         />
         
         <motion.main

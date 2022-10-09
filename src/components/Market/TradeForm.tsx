@@ -134,7 +134,6 @@ export const TradeForm = ({ market }) => {
       w={{'base': 'full', 'lg': '340px'}}
       boxShadow={'md'}
       background={mode('whiteAlpha.800', 'rgba(23, 25, 35, 0.2)')}
-      className={mode('', styles.glassmorphism)}
     >
       
       <Tabs variant={'unstyled'}>

@@ -5,8 +5,7 @@ import {
     Center,
     Tabs, TabList, TabPanels, Tab, TabPanel,
     useColorModeValue,
-    Alert, AlertIcon,
-    Spinner,
+    Flex,
 } from "@chakra-ui/react"
 import WithSubnavigation from "components/TopBar"
 import { Stats } from "components/Portfolio/Stat"

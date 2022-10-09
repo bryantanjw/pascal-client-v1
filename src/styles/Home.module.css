@@ -1,15 +1,6 @@
 .container {
   padding: 0 2rem;
-}
-
-.main {
-  min-height: 80vh;
-  padding: 4rem 0;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  min-height: 86vh;
 }
 
 .footer {
@@ -145,7 +136,6 @@
   .wallet_adapter_button_trigger_light_mode {
     background-image: url('/wallet.png');
     background-size: 22px;
-    color: invert(25%);
     background-color: transparent;
     border: none;
     font-size: 0;
@@ -163,7 +153,6 @@
   .wallet_adapter_button_trigger_dark_mode {
     background-image: url('/wallet.png');
     background-size: 22px;
-    filter: invert(90%);
     background-color: transparent;
     border: none;
     font-size: 0;
@@ -203,6 +192,6 @@
 .glassmorphism {
   /* From https://css.glass */
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
+  /* backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px); */
 }

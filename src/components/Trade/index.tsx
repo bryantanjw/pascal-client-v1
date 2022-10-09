@@ -9,7 +9,6 @@ import {
     Alert, AlertIcon, Spinner, Center,
 } from '@chakra-ui/react'
 import useSWR from 'swr'
-import styles from '@/styles/Home.module.css'
 
 const FilterToggle = React.lazy(() => import('./FilterToggle'))
 const MarketCard = React.lazy(() => import('./MarketCard'))
@@ -20,7 +19,6 @@ const gradientBackgroundStyle = {
     position: 'absolute',
     zIndex: -1,
     opacity: '50%',
-    width: '40%'
 }
 // Style config //
 
@@ -68,15 +66,6 @@ const MarketList: any = () => {
                 ))}
             </HStack>
 
-            <Image sx={gradientBackgroundStyle} src={'gradient-bg.png'}
-                // eslint-disable-next-line react-hooks/rules-of-hooks
-                alt={'background'} right={'100px'} top={'100px'} transform={'rotate(180deg)'} 
-            />
-            <Image sx={gradientBackgroundStyle} src={'gradient-bg.png'} 
-                // eslint-disable-next-line react-hooks/rules-of-hooks
-                alt={'background'} right={'100px'} bottom={'0px'} transform={'rotate(300deg)'} 
-            />
-
             <Suspense fallback={
                 <Center mt={"200px"}>
                     <Spinner/>
@@ -97,6 +86,15 @@ const MarketList: any = () => {
                     }
                 </SimpleGrid>
             </Suspense>
+
+            <Image sx={gradientBackgroundStyle} src={'gradient-bg.png'}
+                // eslint-disable-next-line react-hooks/rules-of-hooks
+                alt={'background'} right={'100px'} top={'100px'} transform={'rotate(180deg)'} 
+            />
+            <Image sx={gradientBackgroundStyle} src={'gradient-bg.png'} 
+                // eslint-disable-next-line react-hooks/rules-of-hooks
+                alt={'background'} right={'100px'} bottom={'0px'} transform={'rotate(300deg)'} 
+            />
       </Box>
     );
 };

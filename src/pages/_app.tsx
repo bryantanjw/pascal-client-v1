@@ -1,6 +1,6 @@
 import '@/styles/globals.css'
 import type { AppProps } from 'next/app'
-import { ChakraProvider, Stack } from '@chakra-ui/react'
+import { ChakraProvider, Flex, useColorModeValue } from '@chakra-ui/react'
 import { mode } from '@chakra-ui/theme-tools'
 import { StepsStyleConfig as Steps } from 'chakra-ui-steps'
 import { extendTheme } from '@chakra-ui/react'
