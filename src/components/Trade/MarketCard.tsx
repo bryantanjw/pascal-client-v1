@@ -28,7 +28,6 @@ const MarketCard = ({ market }) => {
             <ScaleFade initialScale={0.9} in={true}>
                 <Stack spacing={4} p={5}
                     borderColor={mode('#CFDAE1', '#696969')} borderWidth={1} rounded={'10px'}
-                    className={mode('', styles.glassmorphism)}
                     backdropFilter={{ 'base': 'none', 'md': 'blur(0px)' }} // <-- Somehow improves page transition latency
                     bg={mode('transparent', 'rgba(23, 25, 35, 0.2)')}
                     _hover={{

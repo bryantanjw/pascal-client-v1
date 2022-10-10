@@ -74,7 +74,7 @@ const RadioOption = (props: RadioOptionProps) => {
                             </HStack>
                             <Progress value={outcome.probability * 100}
                                 size={'sm'} rounded={'xl'} 
-                                opacity={state.isChecked ? '100%' : '40%'} transition={'all 0.3s ease'}
+                                opacity={state.isChecked ? '100%' : '40%'} transition={'all 0.2s ease'}
                                 colorScheme={color}
                             />
                         </Stack>

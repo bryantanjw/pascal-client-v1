@@ -17,7 +17,7 @@ const Layout = ({ children }: Props): JSX.Element => (
         <Flex zIndex={-1} backgroundImage={'https://s3-us-west-2.amazonaws.com/s.cdpn.io/1295275/background-noise.png'} 
             position={'absolute'} backgroundRepeat={'repeat'}
             left={0} top={-10}
-            width={'full'} height={{ 'base': 'full', 'md': '115%' }}
+            width={'full'} height={{ 'base': 'full', 'md': '116%' }}
             opacity={mode('100%', '60%')}
         />
         

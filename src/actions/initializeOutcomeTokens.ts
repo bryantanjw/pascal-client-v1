@@ -1,4 +1,4 @@
-import { initializeKeypair } from "./initializeKeypair"
+import { initializeKeypair, airdropSolIfNeeded } from "./initializeKeypair"
 import * as web3 from "@solana/web3.js"
 import * as token from "@solana/spl-token"
 import {
@@ -43,11 +43,11 @@ async function main() {
     metaplex,
     mint,
     user,
-    "Outcome Token",
-    "OUTCOME",
+    "CPI-22OCT30-0.4 (NO)",
+    "CPI-OCT-2",
     "An outcome token",
-    "assets/eye.png",
-    "eye.png"
+    "public/tokenSymbol.png",
+    "tokenSymbol.png",
   )
 
   const tokenAccount = await createTokenAccount(
@@ -83,7 +83,7 @@ async function main() {
     mint
   )
 
-  // Updata token meta data //
+  // Update token meta data //
 
   // const mint = new web3.PublicKey(
   //   "2ai3sr8eQWZct9KGJyMb9mJsXt49ov1jD8HirxQdWjsk"
@@ -112,89 +112,6 @@ main()
     console.log(error)
     process.exit(1)
 })
-
-async function createNewMint(
-  connection: web3.Connection,
-  payer: web3.Keypair,
-  mintAuthority: web3.PublicKey,
-  freezeAuthority: web3.PublicKey,
-  decimals: number
-) {
-  const tokenMint = await token.createMint(
-    connection,
-    payer,
-    mintAuthority,
-    freezeAuthority,
-    decimals
-  )
-
-  console.log(`Token Mint: https://solana.fm/address/${tokenMint}?cluster=devnet-solana \n`)
-
-  return tokenMint
-}
-
-async function createTokenAccount(
-  connection: web3.Connection,
-  payer: web3.Keypair,
-  mint: web3.PublicKey,
-  owner: web3.PublicKey
-) {
-  const tokenAccount = await token.getOrCreateAssociatedTokenAccount(
-    connection,
-    payer,
-    mint,
-    owner
-  )
-
-  console.log(`Token Account: https://solana.fm/address/${tokenAccount.address}?cluster=devnet-solana \n`)
-
-  return tokenAccount
-}
-
-async function mintTokens(
-  connection: web3.Connection,
-  payer: web3.Keypair,
-  mint: web3.PublicKey,
-  destination: web3.PublicKey,
-  authority: web3.Keypair,
-  amount: number
-) {
-  const mintInfo = await token.getMint(connection, mint)
-
-  const transactionSignature = await token.mintTo(
-    connection,
-    payer,
-    mint,
-    destination,
-    authority,
-    amount * 10 ** mintInfo.decimals
-  )
-
-  console.log(`Mint Token Transaction: https://solana.fm/tx/${transactionSignature}?cluster=devnet-solana \n`)
-}
-
-async function transferTokens(
-  connection: web3.Connection,
-  payer: web3.Keypair,
-  source: web3.PublicKey,
-  destination: web3.PublicKey,
-  owner: web3.Keypair,
-  amount: number,
-  mint: web3.PublicKey
-) {
-  const mintInfo = await token.getMint(connection, mint)
-
-  const transactionSignature = await token.transfer(
-    connection,
-    payer,
-    source,
-    destination,
-    owner,
-    amount * 10 ** mintInfo.decimals
-  )
-
-  console.log(`Transfer Transaction: https://solana.fm/tx/${transactionSignature}?cluster=devnet-solana \n`)
-}
 
 async function createMetadata(
   connection: web3.Connection,
@@ -258,6 +175,89 @@ async function createMetadata(
   
   const transactionSignature = await web3.sendAndConfirmTransaction(connection, transaction, [user])
   console.log(`Create Metadata Account: https://solana.fm/tx/${transactionSignature}?cluster=devnet-solana \n`)
+}
+
+async function createNewMint(
+  connection: web3.Connection,
+  payer: web3.Keypair,
+  mintAuthority: web3.PublicKey,
+  freezeAuthority: web3.PublicKey,
+  decimals: number
+) {
+  const tokenMint = await token.createMint(
+    connection,
+    payer,
+    mintAuthority,
+    freezeAuthority,
+    decimals
+  )
+
+  console.log(`Token Mint: https://solana.fm/address/${tokenMint}?cluster=devnet-solana \n`)
+
+  return tokenMint
+}
+
+export async function createTokenAccount(
+  connection: web3.Connection,
+  payer: web3.Keypair,
+  mint: web3.PublicKey,
+  owner: web3.PublicKey
+) {
+  const tokenAccount = await token.getOrCreateAssociatedTokenAccount(
+    connection,
+    payer,
+    mint,
+    owner
+  )
+
+  console.log(`Token Account: https://solana.fm/address/${tokenAccount.address}?cluster=devnet-solana \n`)
+
+  return tokenAccount
+}
+
+export async function mintTokens(
+  connection: web3.Connection,
+  payer: web3.Keypair,
+  mint: web3.PublicKey,
+  destination: web3.PublicKey,
+  authority: web3.Keypair,
+  amount: number
+) {
+  const mintInfo = await token.getMint(connection, mint)
+
+  const transactionSignature = await token.mintTo(
+    connection,
+    payer,
+    mint,
+    destination,
+    authority,
+    amount * 10 ** mintInfo.decimals
+  )
+
+  console.log(`Mint Token Transaction: https://solana.fm/tx/${transactionSignature}?cluster=devnet-solana \n`)
+}
+
+export async function transferTokens(
+  connection: web3.Connection,
+  payer: web3.Keypair,
+  source: web3.PublicKey,
+  destination: web3.PublicKey,
+  owner: web3.Keypair,
+  amount: number,
+  mint: web3.PublicKey
+) {
+  const mintInfo = await token.getMint(connection, mint)
+
+  const transactionSignature = await token.transfer(
+    connection,
+    payer,
+    source,
+    destination,
+    owner,
+    amount * 10 ** mintInfo.decimals
+  )
+
+  console.log(`Transfer Transaction: https://solana.fm/tx/${transactionSignature}?cluster=devnet-solana \n`)
 }
 
 async function updateTokenMetadata(

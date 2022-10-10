@@ -104,7 +104,6 @@ export const Page = ({ search, index }) => {
 
 }
 
-// TODO: add page numbers for pagination buttons
 export const NewsList = ({ market }) => {    
     const [pageIndex, setPageIndex] = useState(1)
 

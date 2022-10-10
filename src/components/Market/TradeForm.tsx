@@ -1,5 +1,8 @@
-/* eslint-disable react-hooks/rules-of-hooks */
+import * as React from 'react'
+import { getOutcomeState, setIndex, setTitle } from '@/store/slices/outcomeSlice'
 import { useState, useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import { useSelector } from '@/store/store'
 import {
   Button, ButtonGroup,
   Flex,
@@ -10,18 +13,21 @@ import {
   useColorModeValue as mode,
   Tooltip,
   Tabs, TabList, TabPanels, Tab, TabPanel, HStack, useDisclosure,
+  useToast,
+  Link,
+  FormControl,
 } from '@chakra-ui/react'
-import { ArrowBackIcon, InfoOutlineIcon } from '@chakra-ui/icons'
+import { ArrowBackIcon, InfoOutlineIcon, ExternalLinkIcon } from '@chakra-ui/icons'
+import * as web3 from "@solana/web3.js"
+import * as token from "@solana/spl-token"
+import { useWallet } from '@solana/wallet-adapter-react'
+import { Field, Formik } from 'formik'
 import Confetti from 'react-dom-confetti'
 import { Step, Steps, useSteps } from "chakra-ui-steps"
-import * as React from 'react'
 import { TokenSwapForm } from '../TokenSwap'
-import styles from '@/styles/Home.module.css'
 import { Airdrop } from '../TokenSwap/AirdropForm'
-import { useWallet } from '@solana/wallet-adapter-react'
-import { useSelector } from '@/store/store'
-import { getOutcomeState, setIndex, setTitle } from '@/store/slices/outcomeSlice'
-import { useDispatch } from 'react-redux'
+import { createTokenAccount } from '@/actions/initializeOutcomeTokens'
+import styles from '@/styles/Home.module.css'
 
 type TradeFormItemProps = {
   label: string | React.ReactNode
@@ -101,39 +107,114 @@ export const TradeForm = ({ market }) => {
   // Style config //
 
   
+  const { closing_date, outcomes, short, target_value, token_info } = market
+
+  // States
+  const [orderSide, setOrderSide] = useState<String>('')
+  const [isLoading, setLoading] = useState(false)
+  const [isSuccess, setSuccess] = useState(false)
+  const [isSubmitted, setSubmitted] = useState(false)
+  
+  const dispatch = useDispatch()
+  const { title, index } = useSelector(getOutcomeState)
+
+  const connection = new web3.Connection(web3.clusterApiUrl("devnet"))
+  const { publicKey, sendTransaction } = useWallet()
+  const isOwner = ( publicKey ? publicKey.toString() === process.env.NEXT_PUBLIC_OWNER_PUBLIC_KEY : false )
+
+  const toast = useToast()
   const steps = [{ label: "" }, { label: "" }]
   const { nextStep, prevStep, reset, activeStep } = useSteps({
     initialStep: 0,
   })
 
-  const [numberInput, setNumberInput] = useState<any>(1)
-  
-  // TODO: Fix dispatch issues (i.e., initialState for title)
-  const dispatch = useDispatch()
-  const { title, index } = useSelector(getOutcomeState)
-
-  const { publicKey } = useWallet()
-  const isOwner = ( publicKey ? publicKey.toString() === process.env.NEXT_PUBLIC_OWNER_PUBLIC_KEY : false )
-
-  const dt = new Date(market.closing_date)
+  const dt = new Date(closing_date)
   const day = dt.getDate().toString()
   const month = dt.toLocaleString('default', { month: 'long' })
   const year = dt.getFullYear().toString()
 
   // Call useEffect once to display first outcome
   useEffect(() => {
-    dispatch(setTitle(market.outcomes[0].title))
+    dispatch(setTitle(outcomes[0].title))
   }, [])
   
+  const handleTransactionSubmit = async (contractAmount) => {
+    if (!publicKey) {
+      alert("Please connect your wallet!")
+      return
+    }
+
+    const tokenAccount = await token.getAssociatedTokenAddress(
+      token_info.mintAddress,
+      publicKey
+    )
+  
+    const transaction = new web3.Transaction()
+  
+    let account = await connection.getAccountInfo(tokenAccount)
+  
+    if (account == null) {
+      const createATAInstruction =
+        token.createAssociatedTokenAccountInstruction(
+            publicKey,
+            tokenAccount,
+            publicKey,
+            token_info.mintAddress
+        )
+      transaction.add(createATAInstruction)
+    }
+    
+    try {
+      setLoading(true)
+      let txid = await sendTransaction(transaction, connection)
+      
+      console.log(
+          `Transaction submitted: https://solscan.io/tx/${txid}?cluster=devnet`
+      )
+      toast({
+          title: "Transaction submitted",
+          description: 
+              <Link href={`https://solscan.io/tx/${txid}?cluster=devnet`} isExternal>
+                  <HStack>
+                      <Text>View transaction</Text>
+                      <ExternalLinkIcon />
+                  </HStack>
+              </Link>,
+          position: "top",
+          isClosable: true,
+          duration: 8000,
+          status: 'success',
+          variant: 'subtle',
+          containerStyle: { marginTop: '75px', marginBottom: '-65px'},
+      })
+      setSuccess(true)
+    } catch (e) {
+        setSuccess(false)
+        toast({
+          title: 'Transaction failed',
+          description: JSON.stringify(e.message).replace(/^"(.*)"$/, '$1'),
+          position: "top",
+          isClosable: true,
+          duration: 8000,
+          status: 'error',
+          variant: 'subtle',
+          containerStyle: { marginTop: '75px', marginBottom: '-65px'},
+        })
+      console.log(JSON.stringify(e))
+    }
+    setLoading(false)
+    setSubmitted(true)
+  }
 
   return (
     <>
     {/* TODO: refine progress bar design */}
     <Stack spacing="8" 
-      rounded="xl" padding="6" borderWidth={'1px'} 
+      rounded="xl" padding="6" borderWidth={'1px'} borderColor={mode('whiteAlpha.800', '')}
       w={{'base': 'full', 'lg': '340px'}}
-      boxShadow={'md'}
+      boxShadow={'0 4px 30px rgba(0, 0, 0, 0.1)'}
       background={mode('whiteAlpha.800', 'rgba(23, 25, 35, 0.2)')}
+      backdropFilter={{ 'md': 'blur(5px)' }}
     >
       
       <Tabs variant={'unstyled'}>
@@ -154,8 +235,8 @@ export const TradeForm = ({ market }) => {
               ))}
             </Steps> */}
 
-            {
-              activeStep === 0 && (
+            {activeStep === 0 && 
+              (
                 <Stack spacing={4}>
 
                   <Flex direction={'column'}>
@@ -164,7 +245,7 @@ export const TradeForm = ({ market }) => {
                     </Text>
                     <Heading fontSize={'5xl'} fontWeight={'semibold'} color={alternatingColorScheme[index % alternatingColorScheme.length]}>
                       {title} 
-                      {market.outcomes.map((outcome, index) => {
+                      {outcomes.map((outcome, index) => {
                         if (outcome.title === title) {
                           dispatch(setIndex(index))
                           return ` ${outcome.probability * 100}%`
@@ -175,11 +256,11 @@ export const TradeForm = ({ market }) => {
 
                   <Stack spacing={6}>
                     <Heading width={'90%'} fontSize={'2xl'} fontWeight={'semibold'} textColor={mode('gray.800', 'gray.100')}>
-                      Will {market.short} close above {market.target_value} on {month} {day}, {year}?
+                      Will {short} close above {target_value} on {month} {day}, {year}?
                     </Heading>
                     
                     <Stack>
-                      <Text color={mode('gray.700', 'gray.200')} fontWeight={'medium'} mb={2}>
+                      <Text color={mode('gray.700', 'gray.200')} fontWeight={'medium'} mb={1}>
                         Select an outcome option on the left
                       </Text>
 
@@ -188,84 +269,113 @@ export const TradeForm = ({ market }) => {
                         onClick={nextStep}
                         isDisabled={!title}
                       >
-                        <Button id="buy" className={
-                          mode(styles.wallet_adapter_button_trigger_light_mode, 
-                            styles.wallet_adapter_button_trigger_dark_mode
-                          )}
-                          sx={buyButtonStyle}
+                        <Button id="buy" sx={buyButtonStyle}
+                          className={
+                            mode(styles.wallet_adapter_button_trigger_light_mode, styles.wallet_adapter_button_trigger_dark_mode)
+                          }
+                          onClick={() => setOrderSide("buy")}
                         >
                           Buy
                         </Button>
                         
                         <Button id="sell" sx={sellButtonStyle} variant={'outline'}
+                          onClick={() => setOrderSide("buy")}
                         >
                           Sell
                         </Button>
                       </ButtonGroup>
                     </Stack>
                   </Stack>
-
                 </Stack>
               )
               
               || activeStep === 1 && (
-                <Stack spacing={6}>
-                  <Heading size="md">Swap Summary</Heading>
+                <Formik 
+                  initialValues={{ contractAmount: 2 }}
+                  onSubmit={(values) => {
+                      handleTransactionSubmit(values.contractAmount);
+                      setTimeout(() => {
+                          setSuccess(false);
+                      }, 6000);
+                  }}
+                >
+                  {({
+                      values,
+                      errors,
+                      handleChange,
+                      handleSubmit,
+                  }) => (
+                    <form onSubmit={handleSubmit}>
+                      <Stack spacing={6}>
+                        <Heading size="md">Swap summary</Heading>
+                        
+                        <Stack spacing="3">
+                          <TradeFormItem label="Price per contract" value={`${outcomes[0].probability}`} />
+                          <TradeFormItem label="No. of contracts">
+                            <Field name="contractAmount">
+                              {({ field, form }) => (
+                                <NumberInput
+                                  name="contractAmount"
+                                  onChange={val=>form.setFieldValue(field.name, val)}
+                                  onKeyPress={e => { e.which === 13 && e.preventDefault() }}
+                                  size={'sm'} width={'35%'} 
+                                  min={0} max={100}
+                                  value={values.contractAmount}
+                                >
+                                  <NumberInputField fontSize={'sm'} textAlign={'end'} rounded={'md'} />
+                                  <NumberInputStepper><NumberIncrementStepper/><NumberDecrementStepper /></NumberInputStepper>
+                                </NumberInput>
+                              )}
+                            </Field>
+                          </TradeFormItem>
+                          <TradeFormItem 
+                            label={
+                              <HStack>
+                                <Text>Fees</Text>
+                                <Tooltip label={"A 2% fee goes to liquidity providers"} p={3}>
+                                  <InfoOutlineIcon cursor={'help'} />
+                                </Tooltip>
+                              </HStack>
+                            }
+                          >
+                            1%
+                          </TradeFormItem>
+                          <Flex justify="space-between">
+                            <Text fontSize="lg" fontWeight="semibold">
+                              Total
+                            </Text>
+                            <Text fontSize="xl" fontWeight="extrabold">
+                              {values.contractAmount * outcomes[0].probability} SOL
+                            </Text>
+                          </Flex>
+                        </Stack>
+                        
+                        <ButtonGroup justifyContent={'center'} size="lg" fontSize="md" spacing='3'>
+                          <Button onClick={prevStep} variant={'ghost'} transition={'all 0.3s ease'} 
+                            _hover={{ bg: mode('gray.200', 'gray.700') }}>
+                            <ArrowBackIcon />
+                          </Button>
 
-                  <Stack spacing="3">
-                    <TradeFormItem label="Price per contract" value={`${market.outcomes[0].probability}`} />
-                    <TradeFormItem label="No. of contracts">
-                      <NumberInput onChange={(e) => setNumberInput(e)} size={'sm'} width={'35%'} defaultValue={numberInput} min={1} max={100}>
-                        <NumberInputField fontSize={'sm'} textAlign={'end'} />
-                        <NumberInputStepper><NumberIncrementStepper/><NumberDecrementStepper /></NumberInputStepper>
-                      </NumberInput>
-                    </TradeFormItem>
-                    <TradeFormItem 
-                      label={
-                        <HStack>
-                          <Text>Fees</Text>
-                          <Tooltip label={"A 2% fee goes to liquidity providers"} p={3}>
-                            <InfoOutlineIcon cursor={'help'} />
-                          </Tooltip>
-                        </HStack>
-                      }
-                    >
-                      1%
-                    </TradeFormItem>
-                    <Flex justify="space-between">
-                      <Text fontSize="lg" fontWeight="semibold">
-                        Total
-                      </Text>
-                      <Text fontSize="xl" fontWeight="extrabold">
-                        {numberInput * market.outcomes[0].probability} SOL
-                      </Text>
-                    </Flex>
-                  </Stack>
-                  
-                  <ButtonGroup justifyContent={'center'} size="lg" fontSize="md" spacing='3'>
-                    <Button onClick={prevStep} variant={'ghost'} transition={'all 0.3s ease'}>
-                      <ArrowBackIcon />
-                    </Button>
-
-                    <Button type={'submit'} isDisabled={!publicKey}
-                      className={
-                        mode(styles.wallet_adapter_button_trigger_light_mode, 
-                          styles.wallet_adapter_button_trigger_dark_mode
-                        )
-                      }
-                      textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')} 
-                      boxShadow={'xl'} width={'full'}
-                      onClick={nextStep}
-                    >
-                      Place Order
-                    </Button>
-                  </ButtonGroup>
-                </Stack>
+                          <Button type={'submit'} 
+                            className={
+                              mode(styles.wallet_adapter_button_trigger_light_mode, styles.wallet_adapter_button_trigger_dark_mode)
+                            }
+                            isDisabled={!publicKey || values.contractAmount == 0}
+                            textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')} 
+                            boxShadow={'xl'} width={'full'}
+                            onClick={nextStep}
+                          >
+                            Place Order
+                          </Button>
+                        </ButtonGroup>
+                      </Stack>
+                    </form>
+                  )}
+                </Formik>
               )
             }
           
-            {
-              activeStep === steps.length && (
+            {activeStep === steps.length && (
               <Stack spacing={8}>
                 <Heading size={'md'}>
                   Woohoo! Your order has been placed!
@@ -274,16 +384,13 @@ export const TradeForm = ({ market }) => {
                     size="lg" mt={5} textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')}
                     boxShadow={'xl'}
                     className={
-                      mode(styles.wallet_adapter_button_trigger_light_mode, 
-                          styles.wallet_adapter_button_trigger_dark_mode
-                      )
+                      mode(styles.wallet_adapter_button_trigger_light_mode, styles.wallet_adapter_button_trigger_dark_mode)
                     }
                   >
                     Done
                   </Button>
               </Stack>
-              )
-            }
+            )}
           </TabPanel>
 
 

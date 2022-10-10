@@ -28,7 +28,6 @@ export const getStaticPaths = async () => {
 // should not call an internal API route inside getStaticProps
 export const getStaticProps = async ({ params: { slug } }) => {
   const event = markets.filter((item) => item.marketId === slug)[0]
-  console.log("Event", event)
   const { ...props } = event
   return { props: { props } }
 }

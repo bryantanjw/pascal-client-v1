@@ -8,6 +8,7 @@ import {
     Tab, Tabs, TabList, TabPanels, TabPanel, 
     useColorModeValue as mode,
     Image,
+    IconButton,
 } from '@chakra-ui/react'
 import { ArrowBackIcon } from '@chakra-ui/icons'
 import { useRouter } from 'next/router'
@@ -92,12 +93,14 @@ const MarketView = ({ market }) => {
                 maxW={{ base: '3xl', lg: '5xl' }}
                 mx="auto"
                 px={{ base: '1', md: '8', lg: '12' }}
-                py={{ base: '6', md: '8', lg: '14' }}
+                py={{ base: '6', md: '8', lg: '12' }}
             >
                 <ChakraNextLink to={'/'} _hover={{textDecoration: 'none'}} display={'inline-block'}>
-                    <Stack mb={6} align={'center'} direction={'row'} width={{ 'base': 'full', 'md': 'full' }}>
-                        <HStack className={styles.text_link} _before={{ bg: mode('black', 'white') }}>
-                            <ArrowBackIcon mr={4}/>
+                    <Stack mb={3} align={'center'} direction={'row'} width={{ 'base': 'full', 'md': 'full' }}>
+                        <HStack _hover={{ bg: mode('gray.200', 'gray.700') }} rounded={'lg'} pr={4} py={1} transition={'all 0.2s ease'}>
+                            <IconButton aria-label='back' size={'lg'}
+                                icon={<ArrowBackIcon />} variant={'unstyled'}
+                            />
                             <Heading _before={{ bg: mode('black', 'white') }}
                                 fontSize={{ 'base': 'xl', 'md': '2xl' }} fontWeight="extrabold"
                             >
@@ -112,7 +115,7 @@ const MarketView = ({ market }) => {
                     align={{ lg: 'flex-start' }}
                     spacing={5}
                 >
-                    <Stack spacing={{ base: '8', md: '10' }} minW={'sm'} flex="2">
+                    <Stack spacing={4} minW={'sm'} flex="2">
                         <Tabs colorScheme={'black'}>
                             <TabList>
                                 <Tab sx={tabListStyle}>Outcomes</Tab>

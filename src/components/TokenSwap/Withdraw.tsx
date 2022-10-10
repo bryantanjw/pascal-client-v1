@@ -161,7 +161,7 @@ export const WithdrawSingleTokenType: FC = (props: {
                 }) => (
                     <form onSubmit={handleSubmit}>
                         <Input
-                            type="withdrawAmount"
+                            type="number"
                             name="withdrawAmount"
                             onChange={handleChange}
                             onBlur={handleBlur}

@@ -160,7 +160,7 @@ export const DepositSingleTokenType: FC = (props: {
                 }) => (
                     <form onSubmit={handleSubmit}>
                         <Input
-                            type="depositAmount"
+                            type="number"
                             name="depositAmount"
                             onChange={handleChange}
                             onBlur={handleBlur}
@@ -179,7 +179,8 @@ export const DepositSingleTokenType: FC = (props: {
                         />
                         
                         <Alert bg={mode('blue.50', 'blue.900')} fontSize={'xs'} rounded={'md'} 
-                            px={4} flexDirection={{ 'base': 'row', 'lg': 'column' }}>
+                            px={4} flexDirection={{ 'base': 'row', 'lg': 'column' }}
+                        >
                             <WarningTwoIcon alignSelf={'start'} mb={2} mr={4}/>
                             Providing liquidity is risky. 
                             It is important to withdraw liquidity before the event occurs.
@@ -188,9 +189,7 @@ export const DepositSingleTokenType: FC = (props: {
                         <CustomTooltip publicKey={publicKey} label={'Connect wallet to deposit'}>
                             <Button type={'submit'} isLoading={isLoading} isDisabled={!publicKey || !values.depositAmount}
                                 className={
-                                    mode(styles.wallet_adapter_button_trigger_light_mode, 
-                                        styles.wallet_adapter_button_trigger_dark_mode
-                                    )
+                                    mode(styles.wallet_adapter_button_trigger_light_mode, styles.wallet_adapter_button_trigger_dark_mode)
                                 } 
                                 size="lg" mt={5} textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')} 
                                 width={'100%'}
@@ -198,9 +197,9 @@ export const DepositSingleTokenType: FC = (props: {
                             >
                                 <ScaleFade initialScale={0.5} in={true}>
                                     {isSuccess ? <CheckIcon /> : 
-                                    <ScaleFade initialScale={0.5} in={true}>
-                                        Add liquidity
-                                    </ScaleFade>
+                                        <ScaleFade initialScale={0.5} in={true}>
+                                            Add liquidity
+                                        </ScaleFade>
                                     }
                                 </ScaleFade>
                             </Button>

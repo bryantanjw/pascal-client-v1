@@ -1,6 +1,6 @@
 [
     {
-        "marketId": "1",
+        "marketId": "SPY-22OCT30-412",
         "short": "S&P500",
         "ticker": "SPY",
         "title": "S&P500 daily close price",
@@ -18,10 +18,10 @@
         ],
         "liquidity": 0.00,
         "volume": 0.00,
-        "market_opened_date": "2022-08-29T09:30:00-0400",
-        "closing_date": "2022-09-30T09:30:00-0400",
+        "market_opened_date": "2022-09-29T09:30:00-0400",
+        "closing_date": "2022-10-30T09:30:00-0400",
         "oracle_symbol": "Equity.US.SPY/USD",
-        "target_value": "$412.09",
+        "target_value": "$412",
         "search_term": "s%26p500",
         "resolution_source": "Pyth",
         "resolution_url": "https://pyth.network/",
@@ -29,7 +29,7 @@
         "status": "open"
     },
     {
-        "marketId": "2",
+        "marketId": "SPY-22OCT30-420.69",
         "short": "S&P500",
         "ticker": "SPY",
         "title": "S&P500 weekly close price",
@@ -48,7 +48,7 @@
         "liquidity": 0.00,
         "volume": 0.00,
         "market_opened_date": "2022-08-29T09:30:00-0400",
-        "closing_date": "2022-09-30T09:30:00-0400",
+        "closing_date": "2022-10-30T09:30:00-0400",
         "oracle_symbol": "Equity.US.SPY/USD",
         "target_value": "$420.69",
         "search_term": "s%26p500",
@@ -57,7 +57,7 @@
         "status": "open"
     },
     {
-        "marketId": "3",
+        "marketId": "TSLA-22OCT30-870",
         "short": "TSLA",
         "ticker": "TSLA",
         "title": "TSLA daily close price",
@@ -76,9 +76,9 @@
         "liquidity": 0.00,
         "volume": 0.00,
         "market_opened_date": "2022-08-29T09:30:00-0400",
-        "closing_date": "2022-09-30T09:30:00-0400",
+        "closing_date": "2022-10-30T09:30:00-0400",
         "oracle_symbol": "Equity.US.TSLA/USD",
-        "target_value": "$870.99",
+        "target_value": "$870",
         "search_term": "tesla",
         "resolution_source": "Pyth",
         "resolution_url": "https://pyth.network/",
@@ -86,7 +86,7 @@
         "status": "open"
     },
     {
-        "marketId": "4",
+        "marketId": "CPI-22OCT30-0.4",
         "short": "",
         "ticker": [
             "CUUR0000SA0",
@@ -108,17 +108,20 @@
         "liquidity": 0.00,
         "volume": 0.00,
         "market_opened_date": "2022-08-29T09:30:00-0400",
-        "closing_date": "2022-09-30T09:30:00-0400",
+        "closing_date": "2022-10-30T09:30:00-0400",
         "oracle_symbol": "",
         "target_value": "0.4%",
         "search_term": "us inflation cpi",
         "resolution_source": "U.S. Bureau of Labor Statistics",
         "resolution_url": "https://www.bls.gov/data/",
         "resolution_comment": "If the Consumer Price Index (CPI) as reported by the BLS's monthly single-digit Consumer Price Index Summary Report increases by more than",
-        "status": "open"
+        "status": "open",
+        "token_info": {
+            "mintAddress": "46dnFrLnLj28PDkpwNHvjKRp5V76J9ZL5qXomcwUsDc6"
+        }
     },
     {
-        "marketId": "5",
+        "marketId": "HIGHNYC-22OCT30-27",
         "short": "NYC temp",
         "title": "NYC high temp",
         "recurrence": "Monthly",
@@ -136,7 +139,7 @@
         "liquidity": 0.00,
         "volume": 0.00,
         "market_opened_date": "2022-08-29T09:30:00-0400",
-        "closing_date": "2022-09-30T09:30:00-0400",
+        "closing_date": "2022-10-30T09:30:00-0400",
         "oracle_symbol": "",
         "target_value": "27°C",
         "search_term": "nyc temperature",
@@ -146,7 +149,7 @@
         "status": "open"
     },
     {
-        "marketId": "6",
+        "marketId": "SOL-22OCT30-36",
         "short": "SOL",
         "ticker": "solana",
         "title": "SOL weekly close price",
@@ -165,7 +168,7 @@
         "liquidity": 0.00,
         "volume": 0.00,
         "market_opened_date": "2022-08-29T09:30:00-0400",
-        "closing_date": "2022-09-30T09:30:00-0400",
+        "closing_date": "2022-10-30T09:30:00-0400",
         "oracle_symbol": "Crypto.SOL/USD",
         "target_value": "$36",
         "search_term": "solana",
@@ -175,7 +178,7 @@
         "status": "open"
     },
     {
-        "marketId": "7",
+        "marketId": "DEGODS-22OCT30-400",
         "short": "DeGods' floor price",
         "title": "DeGods NFT weekly close floor price",
         "recurrence": "Weekly",
@@ -193,7 +196,7 @@
         "liquidity": 0.00,
         "volume": 0.00,
         "market_opened_date": "2022-08-29T09:30:00-0400",
-        "closing_date": "2022-09-30T09:30:00-0400",
+        "closing_date": "2022-10-30T09:30:00-0400",
         "oracle_symbol": "",
         "target_value": "400 SOL",
         "search_term": "degodsnft",
