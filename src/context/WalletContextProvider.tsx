@@ -9,7 +9,7 @@ import React, { useMemo } from 'react'
 // Use require instead of import since order matters
 require('@solana/wallet-adapter-react-ui/styles.css')
 
-const WalletContectProvider = ({ children }) => {
+const WalletContextProvider = ({ children }) => {
     // Can be set to 'devnet', 'testnet', or 'mainnet-beta'
     const network = WalletAdapterNetwork.Devnet
 
@@ -35,4 +35,4 @@ const WalletContectProvider = ({ children }) => {
     )
 }
 
-export default WalletContectProvider
+export default WalletContextProvider

@@ -94,7 +94,7 @@ export const MarketLiquidityInfo = (props) => {
     }, [connection, poolAccountA, poolAccountB, publicKey, tokenAccountPool, isSubmitted])
 
     return (
-        <Stack my={3} spacing={3} p={4} borderWidth={"1px"} rounded={'md'}>
+        <Stack my={3} spacing={3} p={4} borderWidth={"1px"} rounded={'xl'}>
             <LiquidityInfo label={'Pool Liquidity (YES)'} value={`${poolBalanceA} YES`} />
             <LiquidityInfo label={'Pool Liquidity (NO)'} value={`${poolBalanceB} NO`} />
             <LiquidityInfo label={'LP Supply'} value={`${poolBalanceLP} LP`} />

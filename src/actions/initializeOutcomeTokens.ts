@@ -1,4 +1,4 @@
-import { initializeKeypair, airdropSolIfNeeded } from "./initializeKeypair"
+import { initializeKeypair } from "./initializeKeypair"
 import * as web3 from "@solana/web3.js"
 import * as token from "@solana/spl-token"
 import {
@@ -26,7 +26,7 @@ async function main() {
     user,
     user.publicKey,
     user.publicKey,
-    2
+    6
   )
 
   const metaplex = Metaplex.make(connection)
@@ -43,7 +43,7 @@ async function main() {
     metaplex,
     mint,
     user,
-    "CPI-22OCT30-0.4 (NO)",
+    "CPI-22OCT30-0.4 (YES)",
     "CPI-OCT-2",
     "An outcome token",
     "public/tokenSymbol.png",
@@ -63,24 +63,7 @@ async function main() {
     mint,
     tokenAccount.address,
     user,
-    100
-  )
-
-  const recipientTokenAccount = await token.getOrCreateAssociatedTokenAccount(
-    connection,
-    user,
-    mint,
-    new web3.PublicKey("G3ZEAY19iDMjF7P57dgFUZiC4bpeFvMPKShenugL7E2Y")
-  )
-
-  await transferTokens(
-    connection,
-    user,
-    tokenAccount.address,
-    recipientTokenAccount.address,
-    user,
-    50,
-    mint
+    1000
   )
 
   // Update token meta data //
@@ -235,29 +218,6 @@ export async function mintTokens(
   )
 
   console.log(`Mint Token Transaction: https://solana.fm/tx/${transactionSignature}?cluster=devnet-solana \n`)
-}
-
-export async function transferTokens(
-  connection: web3.Connection,
-  payer: web3.Keypair,
-  source: web3.PublicKey,
-  destination: web3.PublicKey,
-  owner: web3.Keypair,
-  amount: number,
-  mint: web3.PublicKey
-) {
-  const mintInfo = await token.getMint(connection, mint)
-
-  const transactionSignature = await token.transfer(
-    connection,
-    payer,
-    source,
-    destination,
-    owner,
-    amount * 10 ** mintInfo.decimals
-  )
-
-  console.log(`Transfer Transaction: https://solana.fm/tx/${transactionSignature}?cluster=devnet-solana \n`)
 }
 
 async function updateTokenMetadata(

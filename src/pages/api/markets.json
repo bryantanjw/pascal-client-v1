@@ -117,7 +117,8 @@
         "resolution_comment": "If the Consumer Price Index (CPI) as reported by the BLS's monthly single-digit Consumer Price Index Summary Report increases by more than",
         "status": "open",
         "token_info": {
-            "mintAddress": "46dnFrLnLj28PDkpwNHvjKRp5V76J9ZL5qXomcwUsDc6"
+            "mintAddress": "BvJq7xsnB33xAFRNcipeaADUe6TdZJvmpiFzhWJTrumd",
+            "mintAuthorityAddress": "5e8cWn55tnaAPVwnUqp8RwHPZ4sqRHMJxQRhnxNLx78C"
         }
     },
     {

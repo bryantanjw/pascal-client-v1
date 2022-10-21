@@ -1,8 +1,6 @@
 import * as React from 'react'
-import { getOutcomeState, setIndex, setTitle } from '@/store/slices/outcomeSlice'
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { useSelector } from '@/store/store'
 import {
   Button, ButtonGroup,
   Flex,
@@ -12,21 +10,23 @@ import {
   Text,
   useColorModeValue as mode,
   Tooltip,
-  Tabs, TabList, TabPanels, Tab, TabPanel, HStack, useDisclosure,
+  Tabs, TabList, TabPanels, Tab, TabPanel, HStack,
   useToast,
   Link,
-  FormControl,
 } from '@chakra-ui/react'
 import { ArrowBackIcon, InfoOutlineIcon, ExternalLinkIcon } from '@chakra-ui/icons'
 import * as web3 from "@solana/web3.js"
-import * as token from "@solana/spl-token"
-import { useWallet } from '@solana/wallet-adapter-react'
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import * as token from '@solana/spl-token'
 import { Field, Formik } from 'formik'
 import Confetti from 'react-dom-confetti'
 import { Step, Steps, useSteps } from "chakra-ui-steps"
+
+import { getOutcomeState, setIndex, setTitle } from '@/store/slices/outcomeSlice'
+import { useSelector } from '@/store/store'
 import { TokenSwapForm } from '../TokenSwap'
 import { Airdrop } from '../TokenSwap/AirdropForm'
-import { createTokenAccount } from '@/actions/initializeOutcomeTokens'
+
 import styles from '@/styles/Home.module.css'
 
 type TradeFormItemProps = {
@@ -72,7 +72,7 @@ export const TradeForm = ({ market }) => {
     color: 'blue.500',
     fontSize: 'sm',
     fontWeight: 'medium',
-    rounded: 'lg',
+    rounded: 'xl',
     px: '3',
     transition: 'all .2s ease',
     _hover: {bg: mode('blue.50', 'blue.900')},
@@ -118,8 +118,8 @@ export const TradeForm = ({ market }) => {
   const dispatch = useDispatch()
   const { title, index } = useSelector(getOutcomeState)
 
-  const connection = new web3.Connection(web3.clusterApiUrl("devnet"))
-  const { publicKey, sendTransaction } = useWallet()
+  const { connection } = useConnection()
+  const { publicKey } = useWallet()
   const isOwner = ( publicKey ? publicKey.toString() === process.env.NEXT_PUBLIC_OWNER_PUBLIC_KEY : false )
 
   const toast = useToast()
@@ -137,44 +137,57 @@ export const TradeForm = ({ market }) => {
   useEffect(() => {
     dispatch(setTitle(outcomes[0].title))
   }, [])
-  
-  const handleTransactionSubmit = async (contractAmount) => {
-    if (!publicKey) {
-      alert("Please connect your wallet!")
-      return
-    }
 
-    const tokenAccount = await token.getAssociatedTokenAddress(
-      token_info.mintAddress,
-      publicKey
-    )
-  
-    const transaction = new web3.Transaction()
-  
-    let account = await connection.getAccountInfo(tokenAccount)
-  
-    if (account == null) {
-      const createATAInstruction =
-        token.createAssociatedTokenAccountInstruction(
-            publicKey,
-            tokenAccount,
-            publicKey,
-            token_info.mintAddress
-        )
-      transaction.add(createATAInstruction)
-    }
-    
+  const transferTo = async (contractAmount) => {
     try {
       setLoading(true)
-      let txid = await sendTransaction(transaction, connection)
-      
+
+      if (!connection || !publicKey) {
+        return
+      }
+
+      const mintPubKey = new web3.PublicKey(token_info.mintAddress)
+  
+      const secret = JSON.parse(process.env.NEXT_PUBLIC_USER_PRIVATE_KEY ?? "") as number[]
+      const secretKey = Uint8Array.from(secret)
+      const ownerKeypair = web3.Keypair.fromSecretKey(secretKey)
+      console.log("ownerTokenAccount", ownerKeypair.publicKey.toBase58())
+    
+      const ownerTokenAccount = await token.getOrCreateAssociatedTokenAccount(
+        connection,
+        ownerKeypair,
+        mintPubKey,
+        ownerKeypair.publicKey
+      )
+      console.log("ownerTokenAccount", ownerTokenAccount.address.toBase58())
+  
+      const recipientTokenAccount = await token.getOrCreateAssociatedTokenAccount(
+        connection,
+        ownerKeypair,
+        mintPubKey,
+        publicKey
+      )
+      console.log("recipientTokenAccount", recipientTokenAccount)
+  
+      const mintInfo = await token.getMint(connection, mintPubKey)
+      const tx = new web3.Transaction()
+      tx.add(token.createTransferInstruction(
+        ownerTokenAccount.address,
+        recipientTokenAccount.address,
+        ownerKeypair.publicKey,
+        contractAmount * 10 ** mintInfo.decimals
+      ))
+      let latestBlockHash = await connection.getLatestBlockhash('confirmed');
+      tx.recentBlockhash = await latestBlockHash.blockhash;      
+      let signature = await web3.sendAndConfirmTransaction(connection, tx, [ownerKeypair])
+
       console.log(
-          `Transaction submitted: https://solscan.io/tx/${txid}?cluster=devnet`
+          `Transaction submitted: https://solana.fm/tx/${signature}?cluster=devnet`
       )
       toast({
           title: "Transaction submitted",
           description: 
-              <Link href={`https://solscan.io/tx/${txid}?cluster=devnet`} isExternal>
+              <Link href={`https://solana.fm/tx/${signature}?cluster=devnet`} isExternal>
                   <HStack>
                       <Text>View transaction</Text>
                       <ExternalLinkIcon />
@@ -182,7 +195,7 @@ export const TradeForm = ({ market }) => {
               </Link>,
           position: "top",
           isClosable: true,
-          duration: 8000,
+          duration: 10000,
           status: 'success',
           variant: 'subtle',
           containerStyle: { marginTop: '75px', marginBottom: '-65px'},
@@ -195,7 +208,7 @@ export const TradeForm = ({ market }) => {
           description: JSON.stringify(e.message).replace(/^"(.*)"$/, '$1'),
           position: "top",
           isClosable: true,
-          duration: 8000,
+          duration: 10000,
           status: 'error',
           variant: 'subtle',
           containerStyle: { marginTop: '75px', marginBottom: '-65px'},
@@ -210,10 +223,10 @@ export const TradeForm = ({ market }) => {
     <>
     {/* TODO: refine progress bar design */}
     <Stack spacing="8" 
-      rounded="xl" padding="6" borderWidth={'1px'} borderColor={mode('whiteAlpha.800', '')}
+      rounded="2xl" padding="6" borderWidth={'1px'} borderColor={mode('whiteAlpha.800', '')}
       w={{'base': 'full', 'lg': '340px'}}
       boxShadow={'0 4px 30px rgba(0, 0, 0, 0.1)'}
-      background={mode('whiteAlpha.800', 'rgba(23, 25, 35, 0.2)')}
+      background={mode('whiteAlpha.800', 'rgba(32, 34, 46, 0.2)')}
       backdropFilter={{ 'md': 'blur(5px)' }}
     >
       
@@ -293,10 +306,11 @@ export const TradeForm = ({ market }) => {
                 <Formik 
                   initialValues={{ contractAmount: 2 }}
                   onSubmit={(values) => {
-                      handleTransactionSubmit(values.contractAmount);
+                      transferTo(values.contractAmount)
+                      nextStep
                       setTimeout(() => {
-                          setSuccess(false);
-                      }, 6000);
+                          setSuccess(false)
+                      }, 6000)
                   }}
                 >
                   {({
@@ -345,14 +359,16 @@ export const TradeForm = ({ market }) => {
                               Total
                             </Text>
                             <Text fontSize="xl" fontWeight="extrabold">
-                              {values.contractAmount * outcomes[0].probability} SOL
+                              {values.contractAmount * outcomes[0].probability} USDC
                             </Text>
                           </Flex>
                         </Stack>
                         
                         <ButtonGroup justifyContent={'center'} size="lg" fontSize="md" spacing='3'>
-                          <Button onClick={prevStep} variant={'ghost'} transition={'all 0.3s ease'} 
-                            _hover={{ bg: mode('gray.200', 'gray.700') }}>
+                          <Button onClick={prevStep} variant={'ghost'} 
+                            transition={'all 0.3s ease'} rounded={'lg'}
+                            _hover={{ bg: mode('gray.200', 'gray.700') }}
+                          >
                             <ArrowBackIcon />
                           </Button>
 
@@ -360,10 +376,9 @@ export const TradeForm = ({ market }) => {
                             className={
                               mode(styles.wallet_adapter_button_trigger_light_mode, styles.wallet_adapter_button_trigger_dark_mode)
                             }
-                            isDisabled={!publicKey || values.contractAmount == 0}
+                            isDisabled={!publicKey || values.contractAmount == 0} isLoading={isLoading}
                             textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')} 
-                            boxShadow={'xl'} width={'full'}
-                            onClick={nextStep}
+                            boxShadow={'xl'} width={'full'} rounded={'lg'}
                           >
                             Place Order
                           </Button>

@@ -95,8 +95,8 @@ export const DepositSingleTokenType: FC = (props: {
             100e9, // maximum amount of token A allowed to deposit (prevent slippage)
             100e9 // maximum amount of token B allowed to deposit (prevent slippage)
         )
-
         transaction.add(instruction)
+        
         try {
             setLoading(true)
             let txid = await sendTransaction(transaction, connection)
@@ -167,6 +167,8 @@ export const DepositSingleTokenType: FC = (props: {
                             value={values.depositAmount}
                             placeholder="Enter amount to deposit"
                             autoComplete="off"
+                            rounded={'xl'}
+                            bg={mode('rgba(236, 240, 241, 0.2)', 'rgba(33, 47, 61, 0.2)')}
                         />
 
                         <MarketLiquidityInfo 
@@ -178,7 +180,7 @@ export const DepositSingleTokenType: FC = (props: {
                             isSubmitted={isSubmitted}
                         />
                         
-                        <Alert bg={mode('blue.50', 'blue.900')} fontSize={'xs'} rounded={'md'} 
+                        <Alert bg={mode('blue.50', 'blue.900')} fontSize={'xs'} rounded={'xl'} 
                             px={4} flexDirection={{ 'base': 'row', 'lg': 'column' }}
                         >
                             <WarningTwoIcon alignSelf={'start'} mb={2} mr={4}/>
@@ -192,8 +194,7 @@ export const DepositSingleTokenType: FC = (props: {
                                     mode(styles.wallet_adapter_button_trigger_light_mode, styles.wallet_adapter_button_trigger_dark_mode)
                                 } 
                                 size="lg" mt={5} textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')} 
-                                width={'100%'}
-                                boxShadow={'xl'}
+                                width={'100%'} boxShadow={'xl'} rounded={'xl'}
                             >
                                 <ScaleFade initialScale={0.5} in={true}>
                                     {isSuccess ? <CheckIcon /> : 

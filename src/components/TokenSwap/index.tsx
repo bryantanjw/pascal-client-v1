@@ -28,7 +28,7 @@ export async function findAssociatedTokenAddress(
         ASSOCIATED_TOKEN_PROGRAM_ID
     )
     )[0]
-    console.log("User's associated token address", associatedAddress.toBase58())
+    // console.log("User's associated token address", associatedAddress.toBase58())
 
     return associatedAddress
 }
@@ -51,19 +51,16 @@ export const TokenSwapForm = () => {
     // Style config //
     const tabStyle = {
         flex: 1,
-        // color: mode('gray.500', 'gray.400'),
-        // bg: mode('gray.50', 'none'),
-        color: mode('gray.800', 'gray.100'),
-        borderRadius: 'lg',
+        color: 'gray.500',
+        rounded: 'xl',
         fontSize: 'sm',
         mx: '2px',
-        fontWeight: 'medium',
+        fontWeight: 'semibold',
         transition: 'all .2s ease',
         _hover : { bg: mode('blackAlpha.50', 'whiteAlpha.50')},
         _selected: {
-            // bg: mode('gray.600', 'gray.600'),
-            // color: 'white',
             bg: mode('white', 'gray.600'),
+            textColor: mode('gray.700', 'white'),
             boxShadow: 'md',
         }
     }
@@ -85,7 +82,7 @@ export const TokenSwapForm = () => {
 
                 setAccountLiquidity(balance?.toLocaleString())
             } catch (err) {
-                console.log("fetchUserPoolBalance", err)
+                // console.log("fetchUserPoolBalance", err)
                 setAccountLiquidity(0)
             }
         }
@@ -118,7 +115,8 @@ export const TokenSwapForm = () => {
 
             <Tabs variant={'unstyled'}>
                 <TabList 
-                    borderRadius={'lg'} bg={mode('#EFEEEE', 'gray.800')} py={'2px'}
+                    bg={mode('#EFEEEE', 'rgb(26,32,44, 0.7)')} py={'2px'}
+                    borderRadius={'xl'} borderWidth={1} borderColor={'transparent'}
                 >
                     <Tab sx={tabStyle}>Deposit</Tab>
                     <Tab sx={tabStyle}>Withdraw</Tab>

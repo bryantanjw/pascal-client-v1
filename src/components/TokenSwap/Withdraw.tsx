@@ -168,6 +168,8 @@ export const WithdrawSingleTokenType: FC = (props: {
                             value={values.withdrawAmount}
                             placeholder="Enter amount to withdraw"
                             autoComplete="off"
+                            rounded={'xl'}
+                            bg={mode('rgba(236, 240, 241, 0.2)', 'rgba(33, 47, 61, 0.2)')}
                         />
 
                         <MarketLiquidityInfo 
@@ -186,8 +188,7 @@ export const WithdrawSingleTokenType: FC = (props: {
                                     )
                                 } 
                                 size="lg" mt={5} textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')} 
-                                width={'full'}
-                                boxShadow={'xl'}
+                                width={'full'} boxShadow={'xl'} rounded={'xl'}
                             >
                                 <ScaleFade initialScale={0.5} in={true}>
                                     {isSuccess ? <CheckIcon /> : 

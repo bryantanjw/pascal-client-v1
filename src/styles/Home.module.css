@@ -95,7 +95,7 @@
   height: 40px;
   font-weight: 500;
   font-size: 15px;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 18px 16px 18px 16px;
   transition: 0.3s;
   border: 1px solid #353535;
@@ -115,7 +115,7 @@
   height: 40px;
   font-weight: 500;
   font-size: 15px;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 18px 16px 18px 16px;
   transition: 0.3s;
   border: 1px solid rgb(237, 237, 237);
