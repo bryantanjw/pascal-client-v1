@@ -3,13 +3,16 @@ import { splBinaryOptionProgram } from "./program"
 import {
   Keypair,
   PublicKey,
+  sendAndConfirmTransaction,
   SystemProgram,
   SYSVAR_RENT_PUBKEY,
+  Transaction,
 } from "@solana/web3.js"
 import { 
     TOKEN_PROGRAM_ID,
     getOrCreateAssociatedTokenAccount,
-    createMint
+    createMint,
+    createAssociatedTokenAccount
 } from "@solana/spl-token"
 import { BN } from "@project-serum/anchor"
 
@@ -52,8 +55,6 @@ async function main() {
     let sellerShortTokenAccountPk: PublicKey
 
     async function initializeBinaryOption() {
-        const mintAuthority = new Keypair()
-        const freezeAuthority = new Keypair()
         const poolKp = new Keypair()
         const longEscrowKp = new Keypair()
         const longMintKp = new Keypair()
@@ -64,8 +65,8 @@ async function main() {
         escrowMintPk = await createMint(
             connection,
             kp,
-            mintAuthority.publicKey,
-            freezeAuthority.publicKey,
+            kp.publicKey,
+            kp.publicKey,
             0,
         )
         console.log("Escrow Mint created: ", escrowMintPk.toBase58())
@@ -85,21 +86,21 @@ async function main() {
         )[0]
 
         await program.methods
-        .initializeBinaryOption(2)
-        .accounts({
-            poolAccount: poolPk,
-            escrowMint: escrowMintPk,
-            escrowAccount: escrowPk,
-            longTokenMint: longTokenMintPk,
-            shortTokenMint: shortTokenMintPk,
-            mintAuthority: kp.publicKey,
-            updateAuthority: kp.publicKey,
-            tokenProgram: tokenProgram.programId,
-            systemProgram: SystemProgram.programId,
-            rent: SYSVAR_RENT_PUBKEY,
-        })
-        .signers([kp, poolKp, longEscrowKp, longMintKp, shortMintKp])
-        .rpc()
+            .initializeBinaryOption(2)
+            .accounts({
+                poolAccount: poolPk,
+                escrowMint: escrowMintPk,
+                escrowAccount: escrowPk,
+                longTokenMint: longTokenMintPk,
+                shortTokenMint: shortTokenMintPk,
+                mintAuthority: kp.publicKey,
+                updateAuthority: kp.publicKey,
+                tokenProgram: tokenProgram.programId,
+                systemProgram: SystemProgram.programId,
+                rent: SYSVAR_RENT_PUBKEY,
+            })
+            .signers([kp, poolKp, longEscrowKp, longMintKp, shortMintKp])
+            .rpc()
     }
 
     async function trade() {
@@ -109,106 +110,107 @@ async function main() {
         buyerPk = buyerKp.publicKey
         sellerPk = sellerKp.publicKey
 
-        console.log("Creating buyer account")
         buyerAccountPk = (await getOrCreateAssociatedTokenAccount(
             connection,
-            buyerKp,
+            kp,
             escrowMintPk,
             buyerPk
         )).address
-        console.log("Buyer Account created: ", buyerAccountPk.toBase58())
         sellerAccountPk = (await getOrCreateAssociatedTokenAccount(
             connection,
-            buyerKp,
+            kp,
             escrowMintPk,
             sellerPk
         )).address
         buyerLongTokenAccountPk = (await getOrCreateAssociatedTokenAccount(
             connection,
-            buyerKp,
+            kp,
             longTokenMintPk,
             buyerPk
         )).address
         buyerShortTokenAccountPk = (await getOrCreateAssociatedTokenAccount(
             connection,
-            buyerKp,
+            kp,
             shortTokenMintPk,
             buyerPk
         )).address
         sellerLongTokenAccountPk = (await getOrCreateAssociatedTokenAccount(
             connection,
-            buyerKp,
+            kp,
             longTokenMintPk,
             sellerPk
         )).address
         sellerShortTokenAccountPk = (await getOrCreateAssociatedTokenAccount(
             connection,
-            buyerKp,
+            kp,
             shortTokenMintPk,
             sellerPk
         )).address
+        console.log("Seller Account created: ", sellerAccountPk.toBase58())
 
         const size = 10
         const buyPrice = 30
         const sellPrice = 70
         const buyAmount = size * buyPrice
         const sellAmount = size * sellPrice
-
+        const transaction = new Transaction()
+        
         const mintBuyerIx = await tokenProgram.methods
-        .mintTo(new BN(buyAmount))
-        .accounts({
-            account: buyerAccountPk,
-            mint: escrowMintPk,
-            owner: kp.publicKey,
-        })
-        .instruction()
+            .mintTo(new BN(buyAmount))
+            .accounts({
+                account: buyerAccountPk,
+                mint: escrowMintPk,
+                owner: kp.publicKey,
+            })
+            .instruction()
+        transaction.add(mintBuyerIx)
 
         const mintSellerIx = await tokenProgram.methods
-        .mintTo(new BN(sellAmount))
-        .accounts({
-            account: sellerAccountPk,
-            mint: escrowMintPk,
-            owner: kp.publicKey,
-        })
-        .instruction()
+            .mintTo(new BN(sellAmount))
+            .accounts({
+                account: sellerAccountPk,
+                mint: escrowMintPk,
+                owner: kp.publicKey,
+            })
+            .instruction()
+        transaction.add(mintSellerIx)
 
         const tradeIx = await program.methods
-        .trade(new BN(size), new BN(buyPrice), new BN(sellPrice))
-        .accounts({
-            poolAccount: poolPk,
-            escrowAccount: escrowPk,
-            longTokenMint: longTokenMintPk,
-            shortTokenMint: shortTokenMintPk,
-            buyer: buyerPk,
-            seller: sellerPk,
-            buyerAccount: buyerAccountPk,
-            sellerAccount: sellerAccountPk,
-            buyerLongTokenAccount: buyerLongTokenAccountPk,
-            buyerShortTokenAccount: buyerShortTokenAccountPk,
-            sellerLongTokenAccount: sellerLongTokenAccountPk,
-            sellerShortTokenAccount: sellerShortTokenAccountPk,
-            escrowAuthority: escrowAuthorityPk,
-            tokenProgram: tokenProgram.programId,
-        })
-        .signers([kp, buyerKp, sellerKp])
-        .instruction()
+            .trade(new BN(size), new BN(buyPrice), new BN(sellPrice))
+            .accounts({
+                poolAccount: poolPk,
+                escrowAccount: escrowPk,
+                longTokenMint: longTokenMintPk,
+                shortTokenMint: shortTokenMintPk,
+                buyer: buyerPk,
+                seller: sellerPk,
+                buyerAccount: buyerAccountPk,
+                sellerAccount: sellerAccountPk,
+                buyerLongTokenAccount: buyerLongTokenAccountPk,
+                buyerShortTokenAccount: buyerShortTokenAccountPk,
+                sellerLongTokenAccount: sellerLongTokenAccountPk,
+                sellerShortTokenAccount: sellerShortTokenAccountPk,
+                escrowAuthority: escrowAuthorityPk,
+                tokenProgram: tokenProgram.programId,
+            })
+            .signers([kp, buyerKp, sellerKp])
+            .instruction()
+        transaction.add(tradeIx)
 
-        await sendAndConfirmTx(
-            provider,
-            [mintBuyerIx, mintSellerIx, tradeIx],
-            [kp, buyerKp, sellerKp]
-        )
+        console.log("Sending trade transaction")
+        const signature = await sendAndConfirmTransaction(connection, transaction, [kp, buyerKp, sellerKp])
+        console.log("Trade tx: ", signature)
     }
 
     async function settle() {
         await program.methods
-        .settle()
-        .accounts({
-            poolAccount: poolPk,
-            winningMint: longTokenMintPk,
-            poolAuthority: kp.publicKey,
-        })
-        .rpc()
+            .settle()
+            .accounts({
+                poolAccount: poolPk,
+                winningMint: longTokenMintPk,
+                poolAuthority: kp.publicKey,
+            })
+            .rpc()
     }
 
     async function collect() {
