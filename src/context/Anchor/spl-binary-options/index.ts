@@ -20,10 +20,10 @@ import {
   getProvider,
   loadKp,
   sendAndConfirmTx,
-//   test,
+  test,
 } from "@/utils/solana"
 
-export async function binaryOptionTests() {
+async function main() {
     const provider = await getProvider()
     const { connection } = provider
     const program = splBinaryOptionProgram({
@@ -52,8 +52,8 @@ export async function binaryOptionTests() {
     let sellerShortTokenAccountPk: PublicKey
 
     async function initializeBinaryOption() {
-        const mintAuthority = new Keypair
-        const freezeAuthority = new Keypair
+        const mintAuthority = new Keypair()
+        const freezeAuthority = new Keypair()
         const poolKp = new Keypair()
         const longEscrowKp = new Keypair()
         const longMintKp = new Keypair()
@@ -68,6 +68,7 @@ export async function binaryOptionTests() {
             freezeAuthority.publicKey,
             0,
         )
+        console.log("Escrow Mint created: ", escrowMintPk.toBase58())
         longTokenMintPk = longMintKp.publicKey
         shortTokenMintPk = shortMintKp.publicKey
 
@@ -108,13 +109,14 @@ export async function binaryOptionTests() {
         buyerPk = buyerKp.publicKey
         sellerPk = sellerKp.publicKey
 
-        // buyerAccountPk = await createAta(escrowMintPk, buyerPk)
+        console.log("Creating buyer account")
         buyerAccountPk = (await getOrCreateAssociatedTokenAccount(
             connection,
             buyerKp,
             escrowMintPk,
             buyerPk
         )).address
+        console.log("Buyer Account created: ", buyerAccountPk.toBase58())
         sellerAccountPk = (await getOrCreateAssociatedTokenAccount(
             connection,
             buyerKp,
@@ -192,8 +194,9 @@ export async function binaryOptionTests() {
         .instruction()
 
         await sendAndConfirmTx(
-        [mintBuyerIx, mintSellerIx, tradeIx],
-        [kp, buyerKp, sellerKp]
+            provider,
+            [mintBuyerIx, mintSellerIx, tradeIx],
+            [kp, buyerKp, sellerKp]
         )
     }
 
@@ -230,4 +233,20 @@ export async function binaryOptionTests() {
         const binaryAccount = await program.account.binaryOption.fetch(poolPk)
         assert(binaryAccount.settled === true)
     }
+
+    await test(initializeBinaryOption)
+    await test(trade)
+    await test(settle)
+    await test(collect)
+    await test(fetchBinaryOption)
 }
+
+main()
+  .then(() => {
+    console.log("Finished successfully")
+    process.exit(0)
+  })
+  .catch((error) => {
+    console.log(error)
+    process.exit(1)
+})

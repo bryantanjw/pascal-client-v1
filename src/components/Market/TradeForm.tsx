@@ -150,7 +150,6 @@ export const TradeForm = ({ market }) => {
       const secret = JSON.parse(process.env.NEXT_PUBLIC_USER_PRIVATE_KEY ?? "") as number[]
       const secretKey = Uint8Array.from(secret)
       const ownerKeypair = web3.Keypair.fromSecretKey(secretKey)
-      console.log("ownerTokenAccount", ownerKeypair.publicKey.toBase58())
     
       const ownerTokenAccount = await token.getOrCreateAssociatedTokenAccount(
         connection,

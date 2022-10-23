@@ -7,7 +7,6 @@ import NextNProgress from "nextjs-progressbar"
 import { AnimatePresence } from 'framer-motion'
 
 import WalletContextProvider from '@/context/WalletContextProvider'
-import { WorkspaceProvider } from '@/context/Anchor'
 import { baseURL } from 'config'
 
 import '@/styles/globals.css'
@@ -40,16 +39,14 @@ function MyApp({ Component, pageProps, router }: AppProps) {
   return (
     <ChakraProvider theme={theme}>
       <WalletContextProvider>
-        <WorkspaceProvider>
-          <NextNProgress height={2} color={'black'} />
-          <AnimatePresence
-            mode='wait'
-            initial={false}
-            onExitComplete={() => window.scrollTo(0, 0)}
-          >
-            <Component {...pageProps} key={url} />
-          </AnimatePresence>
-        </WorkspaceProvider>
+        <NextNProgress height={2} color={'black'} />
+        <AnimatePresence
+          mode='wait'
+          initial={false}
+          onExitComplete={() => window.scrollTo(0, 0)}
+        >
+          <Component {...pageProps} key={url} />
+        </AnimatePresence>
       </WalletContextProvider>
     </ChakraProvider>
   )

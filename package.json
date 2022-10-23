@@ -8,7 +8,8 @@
     "start": "next start",
     "test": "ts-node test/main.ts",
     "lint": "next lint",
-    "initializeOutcomeTokens": "ts-node -O '{\"module\": \"commonjs\"}' -r tsconfig-paths/register src/actions/initializeOutcomeTokens.ts"
+    "initializeOutcomeTokens": "ts-node -O '{\"module\": \"commonjs\"}' -r tsconfig-paths/register src/actions/initializeOutcomeTokens.ts",
+    "binaryOptionTests": "ts-node -O '{\"module\": \"commonjs\"}' -r tsconfig-paths/register src/context/Anchor/spl-binary-options"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.2",
@@ -16,6 +17,7 @@
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
     "@metaplex-foundation/js": "^0.16.1",
+    "@native-to-anchor/buffer-layout": "^0.1.0",
     "@project-serum/anchor": "^0.25.0",
     "@project-serum/borsh": "^0.2.5",
     "@pythnetwork/client": "^2.7.1",

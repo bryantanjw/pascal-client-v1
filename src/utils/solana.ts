@@ -43,21 +43,21 @@ export async function getProvider() {
     wallet,
     AnchorProvider.defaultOptions()
   )
-
   if (!hasBalance && !(await provider.connection.getBalance(kp.publicKey))) {
     const txHash = await provider.connection.requestAirdrop(
       kp.publicKey,
-      1000 * LAMPORTS_PER_SOL
+      2 * LAMPORTS_PER_SOL
     )
-    await confirmTx(txHash)
+    await confirmTx(provider, txHash)
+    console.log("Wallet pubKey", kp.publicKey.toBase58())
+    console.log("Airdrop confirmed. Balance:", await provider.connection.getBalance(kp.publicKey))
     hasBalance = true
   }
 
   return provider
 }
 
-export async function confirmTx(txHash: string) {
-  const provider = await getProvider()
+export async function confirmTx(provider: AnchorProvider, txHash: string) {
   const blockhashInfo = await provider.connection.getLatestBlockhash()
   await provider.connection.confirmTransaction({
     blockhash: blockhashInfo.blockhash,
@@ -67,17 +67,46 @@ export async function confirmTx(txHash: string) {
 }
 
 export async function sendAndConfirmTx(
+  provider: AnchorProvider,
   ixs: TransactionInstruction[],
   signers: Signer[]
 ) {
-  const provider = await getProvider()
   const blockhashInfo = await provider.connection.getLatestBlockhash()
   const tx = new Transaction().add(...ixs)
   tx.feePayer = provider.publicKey
   tx.recentBlockhash = blockhashInfo.blockhash
   tx.sign(...signers)
   const txHash = await provider.connection.sendRawTransaction(tx.serialize())
-  await confirmTx(txHash)
+  await confirmTx(provider, txHash)
 
   return txHash
+}
+
+export async function test(cb: () => Promise<void>) {
+  let testCount = 0
+  let errorCount = 0
+
+  const info = (s: string) => {
+      console.log(`\x1b[1;36m${s}\x1b[0m`)
+  };
+    
+  const success = (s: string) => {
+      console.log(`\x1b[1;32m${s}\x1b[0m`)
+  };
+    
+  const error = (s: string) => {
+      console.log(`\x1b[1;31m${s}\x1b[0m`)
+  };
+  const tab = "      "
+  console.log(`${tab}Running test '\x1b[1m${cb.name}\x1b[0m'`)
+
+  try {
+    await cb()
+    success(`${tab}Test '${cb.name}' passed.`)
+  } catch (e) {
+    error(`${tab}Test '${cb.name}' failed. Reason: ${e}`)
+    errorCount++;
+  } finally {
+    testCount++;
+  }
 }
