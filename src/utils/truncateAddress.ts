@@ -9,6 +9,6 @@ export function truncate (fullStr, strLen, separator?) {
         backChars = Math.floor(charsToShow);
     
     return fullStr.substr(0, frontChars) + 
-           separator + 
-           fullStr.substr(fullStr.length - backChars);
+        separator + 
+        fullStr.substr(fullStr.length - backChars);
 }

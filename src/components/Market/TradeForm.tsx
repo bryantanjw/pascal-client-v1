@@ -106,7 +106,6 @@ export const TradeForm = ({ market }) => {
   const alternatingColorScheme = [mode('purple.500', 'purple.200'), mode('#2C7C7C', '#81E6D9'), 'pink']
   // Style config //
 
-  
   const { closing_date, outcomes, short, target_value, token_info } = market
 
   // States
