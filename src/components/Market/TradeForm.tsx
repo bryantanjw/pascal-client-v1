@@ -28,6 +28,7 @@ import { TokenSwapForm } from '../TokenSwap'
 import { Airdrop } from '../TokenSwap/AirdropForm'
 
 import styles from '@/styles/Home.module.css'
+import ThreeButton from './ThreeButton'
 
 type TradeFormItemProps = {
   label: string | React.ReactNode
@@ -139,7 +140,7 @@ export const TradeForm = ({ market }) => {
 
   const transferTo = async (contractAmount) => {
     try {
-      setLoading(true)
+      setLoading(true)                                                                                                                                                                                                                        
 
       if (!connection || !publicKey) {
         return
@@ -370,7 +371,7 @@ export const TradeForm = ({ market }) => {
                             <ArrowBackIcon />
                           </Button>
 
-                          <Button type={'submit'} 
+                          {/* <Button type={'submit'} 
                             className={
                               mode(styles.wallet_adapter_button_trigger_light_mode, styles.wallet_adapter_button_trigger_dark_mode)
                             }
@@ -379,7 +380,8 @@ export const TradeForm = ({ market }) => {
                             boxShadow={'xl'} width={'full'} rounded={'lg'}
                           >
                             Place Order
-                          </Button>
+                          </Button> */}
+                          <ThreeButton />
                         </ButtonGroup>
                       </Stack>
                     </form>

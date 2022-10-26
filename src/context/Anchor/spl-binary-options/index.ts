@@ -7,12 +7,12 @@ import {
   SystemProgram,
   SYSVAR_RENT_PUBKEY,
   Transaction,
+  Connection
 } from "@solana/web3.js"
 import { 
     TOKEN_PROGRAM_ID,
     getOrCreateAssociatedTokenAccount,
-    createMint,
-    createAssociatedTokenAccount
+    createMint
 } from "@solana/spl-token"
 import { BN } from "@project-serum/anchor"
 
@@ -22,14 +22,12 @@ import { SPL_BINARY_OPTION_PROGRAM_ID } from "@/utils/constants"
 import {
   getProvider,
   loadKp,
-  sendAndConfirmTx,
   test,
 } from "@/utils/solana"
 
 async function main() {
     const provider = await getProvider()
-    const { connection } = provider
-    const program = splBinaryOptionProgram({
+    const binaryOptionProgram = splBinaryOptionProgram({
         provider,
         programId: SPL_BINARY_OPTION_PROGRAM_ID,
     })
@@ -63,7 +61,7 @@ async function main() {
         poolPk = poolKp.publicKey
         escrowPk = longEscrowKp.publicKey
         escrowMintPk = await createMint(
-            connection,
+            provider.connection,
             kp,
             kp.publicKey,
             kp.publicKey,
@@ -85,7 +83,7 @@ async function main() {
         )
         )[0]
 
-        await program.methods
+        await binaryOptionProgram.methods
             .initializeBinaryOption(2)
             .accounts({
                 poolAccount: poolPk,
@@ -111,42 +109,41 @@ async function main() {
         sellerPk = sellerKp.publicKey
 
         buyerAccountPk = (await getOrCreateAssociatedTokenAccount(
-            connection,
+            provider.provider.connection,
             kp,
             escrowMintPk,
             buyerPk
         )).address
         sellerAccountPk = (await getOrCreateAssociatedTokenAccount(
-            connection,
+            provider.provider.connection,
             kp,
             escrowMintPk,
             sellerPk
         )).address
         buyerLongTokenAccountPk = (await getOrCreateAssociatedTokenAccount(
-            connection,
+            provider.connection,
             kp,
             longTokenMintPk,
             buyerPk
         )).address
         buyerShortTokenAccountPk = (await getOrCreateAssociatedTokenAccount(
-            connection,
+            provider.connection,
             kp,
             shortTokenMintPk,
             buyerPk
         )).address
         sellerLongTokenAccountPk = (await getOrCreateAssociatedTokenAccount(
-            connection,
+            provider.connection,
             kp,
             longTokenMintPk,
             sellerPk
         )).address
         sellerShortTokenAccountPk = (await getOrCreateAssociatedTokenAccount(
-            connection,
+            provider.connection,
             kp,
             shortTokenMintPk,
             sellerPk
         )).address
-        console.log("Seller Account created: ", sellerAccountPk.toBase58())
 
         const size = 10
         const buyPrice = 30
@@ -175,7 +172,7 @@ async function main() {
             .instruction()
         transaction.add(mintSellerIx)
 
-        const tradeIx = await program.methods
+        const tradeIx = await binaryOptionProgram.methods
             .trade(new BN(size), new BN(buyPrice), new BN(sellPrice))
             .accounts({
                 poolAccount: poolPk,
@@ -197,13 +194,12 @@ async function main() {
             .instruction()
         transaction.add(tradeIx)
 
-        console.log("Sending trade transaction")
-        const signature = await sendAndConfirmTransaction(connection, transaction, [kp, buyerKp, sellerKp])
+        const signature = await sendAndConfirmTransaction(provider.connection, transaction, [kp, buyerKp, sellerKp])
         console.log("Trade tx: ", signature)
     }
 
     async function settle() {
-        await program.methods
+        await binaryOptionProgram.methods
             .settle()
             .accounts({
                 poolAccount: poolPk,
@@ -214,7 +210,7 @@ async function main() {
     }
 
     async function collect() {
-        await program.methods
+        await binaryOptionProgram.methods
         .collect()
         .accounts({
             poolAccount: poolPk,
@@ -232,7 +228,7 @@ async function main() {
     }
 
     async function fetchBinaryOption() {
-        const binaryAccount = await program.account.binaryOption.fetch(poolPk)
+        const binaryAccount = await binaryOptionProgram.account.binaryOption.fetch(poolPk)
         assert(binaryAccount.settled === true)
     }
 
@@ -241,6 +237,119 @@ async function main() {
     await test(settle)
     await test(collect)
     await test(fetchBinaryOption)
+}
+
+export async function trade(
+    kp: Keypair,
+    poolPk: PublicKey,
+    escrowPk: PublicKey,
+    escrowMintPk: PublicKey,
+    longTokenMintPk: PublicKey,
+    shortTokenMintPk: PublicKey,
+    escrowAuthorityPk: PublicKey,
+) {
+    const binaryOptionProgram = splBinaryOptionProgram({
+        provider,
+        programId: SPL_BINARY_OPTION_PROGRAM_ID,
+    })
+    const tokenProgram = splTokenProgram({
+        provider,
+        programId: TOKEN_PROGRAM_ID,
+    })
+    const buyerKp = new Keypair()
+    const sellerKp = new Keypair()
+
+    const buyerPk = buyerKp.publicKey
+    const sellerPk = sellerKp.publicKey
+
+    const buyerAccountPk = (await getOrCreateAssociatedTokenAccount(
+        provider.connection,
+        kp,
+        escrowMintPk,
+        buyerPk
+    )).address
+    const sellerAccountPk = (await getOrCreateAssociatedTokenAccount(
+        provider.connection,
+        kp,
+        escrowMintPk,
+        sellerPk
+    )).address
+    const buyerLongTokenAccountPk = (await getOrCreateAssociatedTokenAccount(
+        provider.connection,
+        kp,
+        longTokenMintPk,
+        buyerPk
+    )).address
+    const buyerShortTokenAccountPk = (await getOrCreateAssociatedTokenAccount(
+        provider.connection,
+        kp,
+        shortTokenMintPk,
+        buyerPk
+    )).address
+    const sellerLongTokenAccountPk = (await getOrCreateAssociatedTokenAccount(
+        provider.connection,
+        kp,
+        longTokenMintPk,
+        sellerPk
+    )).address
+    const sellerShortTokenAccountPk = (await getOrCreateAssociatedTokenAccount(
+        provider.connection,
+        kp,
+        shortTokenMintPk,
+        sellerPk
+    )).address
+
+    const size = 10
+    const buyPrice = 30
+    const sellPrice = 70
+    const buyAmount = size * buyPrice
+    const sellAmount = size * sellPrice
+    const transaction = new Transaction()
+    
+    const mintBuyerIx = await tokenProgram.methods
+        .mintTo(new BN(buyAmount))
+        .accounts({
+            account: buyerAccountPk,
+            mint: escrowMintPk,
+            owner: kp.publicKey,
+        })
+        .instruction()
+    transaction.add(mintBuyerIx)
+
+    const mintSellerIx = await tokenProgram.methods
+        .mintTo(new BN(sellAmount))
+        .accounts({
+            account: sellerAccountPk,
+            mint: escrowMintPk,
+            owner: kp.publicKey,
+        })
+        .instruction()
+    transaction.add(mintSellerIx)
+
+    const tradeIx = await binaryOptionProgram.methods
+        .trade(new BN(size), new BN(buyPrice), new BN(sellPrice))
+        .accounts({
+            poolAccount: poolPk,
+            escrowAccount: escrowPk,
+            longTokenMint: longTokenMintPk,
+            shortTokenMint: shortTokenMintPk,
+            buyer: buyerPk,
+            seller: sellerPk,
+            buyerAccount: buyerAccountPk,
+            sellerAccount: sellerAccountPk,
+            buyerLongTokenAccount: buyerLongTokenAccountPk,
+            buyerShortTokenAccount: buyerShortTokenAccountPk,
+            sellerLongTokenAccount: sellerLongTokenAccountPk,
+            sellerShortTokenAccount: sellerShortTokenAccountPk,
+            escrowAuthority: escrowAuthorityPk,
+            tokenProgram: tokenProgram.programId,
+        })
+        .signers([kp, buyerKp, sellerKp])
+        .instruction()
+    transaction.add(tradeIx)
+
+    const signature = await sendAndConfirmTransaction(provider.connection, transaction, [kp, buyerKp, sellerKp])
+    console.log("Trade tx: ", signature)
 }
 
 main()

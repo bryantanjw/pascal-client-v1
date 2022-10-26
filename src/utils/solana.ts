@@ -2,10 +2,7 @@ import * as fs from "fs/promises"
 import {
   Connection,
   Keypair,
-  LAMPORTS_PER_SOL,
-  Signer,
-  Transaction,
-  TransactionInstruction,
+  LAMPORTS_PER_SOL
 } from "@solana/web3.js"
 import { AnchorProvider, Wallet } from "@project-serum/anchor"
 const KEYPAIR_PATH = "test-keypair.json"
@@ -64,22 +61,6 @@ export async function confirmTx(provider: AnchorProvider, txHash: string) {
     lastValidBlockHeight: blockhashInfo.lastValidBlockHeight,
     signature: txHash,
   })
-}
-
-export async function sendAndConfirmTx(
-  provider: AnchorProvider,
-  ixs: TransactionInstruction[],
-  signers: Signer[]
-) {
-  const blockhashInfo = await provider.connection.getLatestBlockhash()
-  const tx = new Transaction().add(...ixs)
-  tx.feePayer = provider.publicKey
-  tx.recentBlockhash = blockhashInfo.blockhash
-  tx.sign(...signers)
-  const txHash = await provider.connection.sendRawTransaction(tx.serialize())
-  await confirmTx(provider, txHash)
-
-  return txHash
 }
 
 export async function test(cb: () => Promise<void>) {
