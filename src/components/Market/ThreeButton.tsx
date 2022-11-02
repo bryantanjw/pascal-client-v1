@@ -82,12 +82,6 @@ export default function ThreeButton() {
     )
 }
 
-const transition = {
-    type: "spring",
-    duration: 0.7,
-    bounce: 0.2
-}
-
 export function Shapes({ isHover, isPress, mouseX, mouseY }) {
     const lightRotateX = useSmoothTransform(mouseY, spring, mouseToLightRotation)
     const lightRotateY = useSmoothTransform(mouseX, spring, mouseToLightRotation)
@@ -214,13 +208,13 @@ function Camera({ mouseX, mouseY, ...props }) {
     const camera = useThree(({ camera }) => camera)
     const size = useThree(({ size }) => size)
     const scene = useThree(({ scene }) => scene)
-    const cameraRef = useRef()
+    const cameraRef = useRef<any>()
 
     useLayoutEffect(() => {
         const { current: cam } = cameraRef
         if (cam) {
-        cam.aspect = size.width / size.height
-        cam.updateProjectionMatrix()
+            cam.aspect = size.width / size.height
+            cam.updateProjectionMatrix()
         }
     }, [size, props])
 
@@ -248,3 +242,9 @@ function Camera({ mouseX, mouseY, ...props }) {
 const spring = { stiffness: 600, damping: 30 }
 
 const mouseToLightRotation = (v) => (-1 * v) / 140
+
+const transition = {
+    type: "spring",
+    duration: 0.7,
+    bounce: 0.2
+}
