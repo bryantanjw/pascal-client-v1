@@ -1,10 +1,11 @@
 import type { AppProps } from 'next/app'
-import { ChakraProvider, Flex, useColorModeValue } from '@chakra-ui/react'
+import { ChakraProvider } from '@chakra-ui/react'
 import { mode } from '@chakra-ui/theme-tools'
 import { StepsStyleConfig as Steps } from 'chakra-ui-steps'
 import { extendTheme } from '@chakra-ui/react'
 import NextNProgress from "nextjs-progressbar"
 import { AnimatePresence } from 'framer-motion'
+import { Analytics } from '@vercel/analytics/react'
 
 import WalletContextProvider from '@/context/WalletContextProvider'
 import { baseURL } from 'config'
@@ -46,6 +47,7 @@ function MyApp({ Component, pageProps, router }: AppProps) {
           onExitComplete={() => window.scrollTo(0, 0)}
         >
           <Component {...pageProps} key={url} />
+          <Analytics />
         </AnimatePresence>
       </WalletContextProvider>
     </ChakraProvider>
