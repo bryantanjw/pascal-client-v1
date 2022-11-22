@@ -1,11 +1,13 @@
 import {
     Progress, Text, HStack, VStack, Stack,
-    Table, Thead, Tbody, Tr, Th, Td,
-    Radio, useRadioGroup, useRadio, UseRadioProps, useId, 
+    useRadioGroup, useRadio, UseRadioProps, useId,
     useColorModeValue as mode,
     chakra,
     StackProps,
+    Box, Flex,
+    Spacer,
 } from '@chakra-ui/react'
+import { MdCheckCircle, MdOutlineCircle } from 'react-icons/md'
 import fetch from 'unfetch'
 import useSWR from "swr"
 import { useWallet } from '@solana/wallet-adapter-react'
@@ -13,14 +15,7 @@ import { useDispatch } from '@/store/store'
 import { setTitle } from '@/store/slices/outcomeSlice'
 
 // Style config //
-export const alternatingColorScheme = ['purple', 'teal', 'pink']
-const tableHeaderStyle = {
-    pl: 0,
-    fontSize: { 'base': '2xs', 'md': 'xs'}
-}
-const tableCellStyle = {
-    fontSize: { 'base': 'sm', 'md': 'md'}
-}
+const progressBarColorScheme = ['purple', 'teal', 'pink']
 // Style config //
 
 const fetcher = async url => {
@@ -45,74 +40,100 @@ interface RadioOptionProps extends UseRadioProps, Omit<StackProps, 'onChange'> {
     market: any
 }
 
-interface RadioGroupProps extends Omit<StackProps, 'onChange'> {
-    market: any
-}
-
 const RadioOption = (props: RadioOptionProps) => {
     const { publicKey } = useWallet()
     
     const { index, outcome, market, ...radioProps } = props
     const { state, getInputProps, getCheckboxProps, getLabelProps } = useRadio(radioProps)
     const id = useId()
-
-    const color = alternatingColorScheme[index % alternatingColorScheme.length]
+    
+    const checkoxColorScheme = [mode('purple.500', 'purple.200'), mode('#2C7C7C', '#81E6D9'), 'pink']
+    const bgColorScheme = [mode('rgb(128,90,213,0.2)', 'rgb(214,188,250,0.1)'), mode('rgb(44,124,124,0.2)', 'rgb(129,230,217,0.1)'), 'pink']
 
     const { data } = useSWR(publicKey ? `../api/users?pubKey=${publicKey?.toString()}` : null, fetcher)
     
     return (
-        <Tr _hover={{ bg: mode('gray.100', 'gray.800') }} {...getCheckboxProps()}>
-            <Td sx={tableCellStyle} pl={2} pr={0}>
-                <chakra.label {...getLabelProps()} cursor={'pointer'}>
-                    <input {...getInputProps()} aria-labelledby={id} />
-                    <HStack spacing={6}>
-                        <Radio {...getCheckboxProps(props)} transition={'all 0.2s ease'} colorScheme={color} />
-                        <Stack width={'full'}>
-                            <HStack justifyContent={'space-between'}>
-                                <Text>{outcome.title}</Text>
-                                <Text>{outcome.probability * 100}%</Text>
-                            </HStack>
-                            <Progress value={outcome.probability * 100}
-                                size={'sm'} rounded={'xl'} 
-                                opacity={state.isChecked ? '100%' : '40%'} transition={'all 0.2s ease'}
-                                colorScheme={color}
-                            />
-                        </Stack>
-                    </HStack>
-                </chakra.label>
-            </Td>
-            <Td sx={tableCellStyle} isNumeric>
-                <chakra.label {...getLabelProps()} cursor={'pointer'}>
-                    <input {...getInputProps()} aria-labelledby={id} />
-                    <Text>{outcome.probability}</Text>
-                </chakra.label>
-            </Td>
-            <Td sx={tableCellStyle} isNumeric>
-                <chakra.label {...getLabelProps()} cursor={'pointer'}>
-                    <input {...getInputProps()} aria-labelledby={id} />
-                    {!publicKey && <Text>0.00</Text>}
-                    <Text>
-                        {data && data[0].positions.map((position, index) => {
-                            let found = false
-                            if (position.marketId === market.marketId && position.outcome === outcome.title) {
-                                found = true
-                                return position.shares
-                            }
-                            if (index == position.length - 1 && !found) {
-                                return 0.00
-                            }
-                        })}
-                    </Text>
-                </chakra.label>
-            </Td>
-        </Tr>
+        <chakra.label {...getLabelProps()}>
+            <input {...getInputProps()} aria-labelledby={id} />
+            <Box
+                borderWidth="1px"
+                px="5"
+                py="4"
+                rounded="2xl"
+                cursor="pointer"
+                transition="all 0.2s"
+                fontSize= {{ 'base': 'sm', 'md': 'md' }}
+                _hover={{
+                    borderColor: "gray.400"
+                }}
+                _checked={{
+                    bg: bgColorScheme[index % bgColorScheme.length],
+                    borderColor: checkoxColorScheme[index % checkoxColorScheme.length],
+                }}
+                {...getCheckboxProps(props)} id={id}
+            >
+                <Flex >
+                    <Flex width={"full"} alignItems="center">
+                        <Box flex={1.8}>
+                            <Stack>
+                                <HStack justifyContent={'space-between'}>
+                                    <Text>{outcome.title}</Text>
+                                    <Text>{outcome.probability * 100}%</Text>
+                                </HStack>
+                                <Progress value={outcome.probability * 100}
+                                    size={'sm'} rounded={'xl'} 
+                                    opacity={state.isChecked ? '100%' : '40%'} transition={'all 0.2s ease'}
+                                    colorScheme={progressBarColorScheme[index % progressBarColorScheme.length]}
+                                />
+                            </Stack>
+                        </Box>
+
+                        <Spacer />
+
+                        <chakra.label {...getLabelProps()} cursor="pointer">
+                            <input {...getInputProps()} aria-labelledby={id} />
+                            <Text>{outcome.probability}</Text>
+                        </chakra.label>
+
+                        <Spacer />
+
+                        <chakra.label {...getLabelProps()} pr={5} cursor="pointer">
+                            <input {...getInputProps()} aria-labelledby={id} />
+                            {!publicKey && <Text>0.00</Text>}
+                            {data && data[0].positions.map((position, index) => {
+                                let found = false
+                                if (position.marketId === market.marketId && position.outcome === outcome.title) {
+                                    found = true
+                                    return position.shares
+                                }
+                                if (index == position.length - 1 && !found) {
+                                    return 0.00
+                                }
+                            })}
+                        </chakra.label>
+                    </Flex>
+
+                    <Flex display={{ 'base': 'none', 'md': 'block'}} direction={"column"}>
+                        <Box
+                            data-checked={state.isChecked ? '' : undefined}
+                            fontSize="xl"
+                            _checked={{
+                                color: checkoxColorScheme[index % checkoxColorScheme.length],
+                            }}
+                            color={mode('gray.300', 'whiteAlpha.400')}
+                        >
+                            {state.isChecked ? <MdCheckCircle /> : <MdOutlineCircle />}
+                        </Box>
+                        <Text visibility={"hidden"}>&nbsp;</Text>
+                    </Flex>
+                </Flex>
+            </Box>
+        </chakra.label>
     )
 }
 
-const RadioGroup = (props: RadioGroupProps) => {
-    const { market } = props
-
-    const dispatch = useDispatch() // calling the reducer
+const Outcomes = ({ market }) => {
+    const dispatch = useDispatch() // <-- calling the reducer
 
     const handleChange = (value) => {
         dispatch(setTitle(value))
@@ -124,38 +145,31 @@ const RadioGroup = (props: RadioGroupProps) => {
     })
 
     return (
-        <VStack spacing={{ base: 2, md: 4 }} width={{ 'base': '86%', 'md': 'full' }} 
+        <VStack mt={4} spacing={{ base: 2, md: 3 }} width={{ 'base': '83%', 'md': 'full' }} 
             {...getRootProps()}
         >
-            <Table variant='simple'>
-                <Thead>
-                    <Tr>
-                        <Th sx={tableHeaderStyle}>Outcome/Probability</Th>
-                        <Th sx={tableHeaderStyle} isNumeric>Price (USDC)</Th>
-                        <Th sx={tableHeaderStyle} isNumeric>Your Shares</Th>
-                    </Tr>
-                </Thead>
-                <Tbody>
-                    {market.outcomes.map((outcome, index) => {
-                        return (
-                            <RadioOption key={index} 
-                                index={index} market={market} outcome={outcome}
-                                {...getRadioProps({ 
-                                    value: outcome.title,
-                                })}
-                            />
-                        )
-                    })}
-                </Tbody>
-            </Table>
+            <Flex fontWeight={"bold"} textColor={mode('gray.700', 'gray.400')}
+                width={"full"} px={5} letterSpacing={"wider"}
+                fontSize={{ 'base': '2xs', 'md': 'xs' }}
+                justifyContent={'space-between'} textAlign={"center"}
+            >
+                <Text>OUTCOME / PROBABILITY</Text>
+                <Text pl={{ 'md': 8 }}>PRICE (USDC)</Text>
+                <Text pr={{ 'md': 10 }}>YOUR SHARES</Text>
+            </Flex>
+            <Stack width={"full"} spacing={3}>
+                {market.outcomes.map((outcome, index) => {
+                    return (
+                        <RadioOption key={index} 
+                            index={index} market={market} outcome={outcome}
+                            {...getRadioProps({ 
+                                value: outcome.title,
+                            })}
+                        />
+                    )
+                })}
+            </Stack>
         </VStack>
-    )
-}
-
-const Outcomes = ({ market }) => {
-    
-    return (
-        <RadioGroup market={market} />
     )
 }
 
