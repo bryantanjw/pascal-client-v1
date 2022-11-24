@@ -2,9 +2,12 @@ import * as fs from "fs/promises"
 import {
   Connection,
   Keypair,
-  LAMPORTS_PER_SOL
+  LAMPORTS_PER_SOL,
+  PublicKey
 } from "@solana/web3.js"
-import { AnchorProvider, Wallet } from "@project-serum/anchor"
+import { AnchorProvider, setProvider, Wallet } from "@project-serum/anchor"
+import { ProtocolAddresses } from "@monaco-protocol/client";
+
 const KEYPAIR_PATH = "test-keypair.json"
 
 export async function loadKp() {

@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react'
 import useSWR from 'swr'
 
-const FilterToggle = React.lazy(() => import('./FilterToggle'))
+const FilterToggle = React.lazy(() => import('./FilterToggle')) // <-- to load Suspense
 const MarketCard = React.lazy(() => import('./MarketCard'))
 
 // Style config //
