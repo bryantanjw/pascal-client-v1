@@ -10,7 +10,7 @@
     "lint": "next lint",
     "initializeOutcomeTokens": "ts-node -O '{\"module\": \"commonjs\"}' -r tsconfig-paths/register src/actions/initializeOutcomeTokens.ts",
     "binaryOptionTests": "ts-node -O '{\"module\": \"commonjs\"}' -r tsconfig-paths/register src/context/Anchor/spl-binary-options",
-    "createMarket": "ts-node -O '{\"module\": \"commonjs\"}' -r tsconfig-paths/register src/actions/createMarket.ts"
+    "createMarket": "ts-node -O '{\"module\": \"commonjs\"}' -r tsconfig-paths/register src/actions/createVerboseMarket.ts"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.2",
@@ -46,6 +46,7 @@
     "framer-motion-3d": "^7.6.1",
     "fs": "^0.0.1-security",
     "moment": "^2.29.4",
+    "mongodb": "^4.12.1",
     "next": "^12.3.1",
     "next-connect": "^0.13.0",
     "nextjs-progressbar": "^0.0.14",
