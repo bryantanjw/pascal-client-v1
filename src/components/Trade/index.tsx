@@ -29,14 +29,13 @@ const categories = ['Financials', 'Economics', 'Crypto', 'Climate']
 // TODO: 1. add createMarket button/modal for admin
 //  2. Search bar
 
-const MarketList: any = () => {
-    const { data, error } = useSWR('/api/fetchMarkets', fetcher)
+const MarketList = ({ markets }) => {
+    // const { data, error } = useSWR('/api/fetchMarkets', fetcher)
     
     // FilterToggle state management is be ignored for the time being
     const { value, getCheckboxProps } = useCheckboxGroup({ defaultValue: [] })
 
-    if (!data) return
-    if (error) {
+    if (!markets) {
         return (
             <Alert status='error' rounded={'lg'}>
                 <AlertIcon mr={4} />
@@ -46,8 +45,8 @@ const MarketList: any = () => {
     }
 
     let filteredMarkets = []
-    if (data) {
-        filteredMarkets = data.filter(({ category }) => value.includes(category))
+    if (markets) {
+        filteredMarkets = markets.filter(({ category }) => value.includes(category))
     }
 
     return (
@@ -78,7 +77,7 @@ const MarketList: any = () => {
                                 <MarketCard market={market} />
                             </Stack>
                         )))
-                        : (data && data.map((market: any) => (
+                        : (markets && markets.map((market: any) => (
                             <Stack key={market.marketId}>
                                 <MarketCard market={market} />
                             </Stack>
