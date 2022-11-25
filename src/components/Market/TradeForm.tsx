@@ -19,16 +19,6 @@ import * as web3 from "@solana/web3.js"
 import * as token from '@solana/spl-token'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { Field, Formik } from 'formik'
-import {
-  getMarket,
-  MarketAccount,
-  getMarketOutcomesByMarket,
-  MarketOutcomeAccount,
-  getMintInfo,
-  findMarketPositionPda,
-  createOrder,
-  GetAccount,
-} from "@monaco-protocol/client"
 import Confetti from 'react-dom-confetti'
 import { Step, Steps, useSteps } from "chakra-ui-steps"
 
