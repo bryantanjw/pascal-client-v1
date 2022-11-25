@@ -106,7 +106,7 @@ export function StatCard(props: StatCardProps) {
   )
 }  
 
-export const Stats = ({ account }) => {
+export const Stats = ({ user }) => {
   return (
     <Box as="section">
       <Box width={{ 'base': '100%', 'md': '2xl'}}>

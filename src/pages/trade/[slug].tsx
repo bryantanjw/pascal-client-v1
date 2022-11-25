@@ -25,7 +25,6 @@ export const getStaticPaths = async () => {
   }
 }
 
-// should not call an internal API route inside getStaticProps
 export const getStaticProps = async ({ params: { slug } }) => {
   try {
     const client = await clientPromise

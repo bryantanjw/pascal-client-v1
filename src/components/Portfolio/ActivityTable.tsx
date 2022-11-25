@@ -13,7 +13,7 @@ import { Position } from "./PositionsTable"
 // TODO: add sorting table column function using react-table
 // example: https://codesandbox.io/s/mjk1v?file=/src/makeData.js:19-24
 
-const ActivityTable = ({ account }) => {
+const ActivityTable = ({ user }) => {
     const columns = React.useMemo(
         () => [
             {
@@ -56,7 +56,7 @@ const ActivityTable = ({ account }) => {
                     </Tr>
                 </Thead>
                 <Tbody>
-                    {account && account[0].positions.map((row, index) => (
+                    {user && user.positions.map((row, index) => (
                         <Tr key={index}>
                             {columns.map((column, index) => {
                                 const cell = row[column.accessor as keyof typeof row]
@@ -72,7 +72,7 @@ const ActivityTable = ({ account }) => {
                     }
                 </Tbody>
             </Table>
-            {!account &&
+            {!user &&
                 <Text color={mode('gray.600', 'gray.700')} p={6} textAlign={'center'}>No activities found</Text>
             }
         </Box>

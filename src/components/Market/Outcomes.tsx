@@ -50,7 +50,7 @@ const RadioOption = (props: RadioOptionProps) => {
     const checkoxColorScheme = [mode('purple.500', 'purple.200'), mode('#2C7C7C', '#81E6D9'), 'pink']
     const bgColorScheme = [mode('rgb(128,90,213,0.2)', 'rgb(214,188,250,0.1)'), mode('rgb(44,124,124,0.2)', 'rgb(129,230,217,0.1)'), 'pink']
 
-    const { data } = useSWR(publicKey ? `../api/users?pubKey=${publicKey?.toString()}` : null, fetcher)
+    const { data } = useSWR(publicKey ? `../api/user?pubKey=${publicKey?.toString()}` : null, fetcher)
     
     return (
         <chakra.label {...getLabelProps()}>
@@ -100,7 +100,7 @@ const RadioOption = (props: RadioOptionProps) => {
                         <chakra.label {...getLabelProps()} pr={5} cursor="pointer">
                             <input {...getInputProps()} aria-labelledby={id} />
                             {!publicKey && <Text>0.00</Text>}
-                            {data && data[0].positions.map((position, index) => {
+                            {data && data.positions.map((position, index) => {
                                 let found = false
                                 if (position.marketId === market.marketId && position.outcome === outcome.title) {
                                     found = true

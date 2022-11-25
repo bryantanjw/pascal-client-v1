@@ -86,10 +86,10 @@ export const weeklyReturnsData = {
     ],
 };
 
-export const ReturnsGraph = ({ account }) => {
+export const ReturnsGraph = ({ user }) => {
   return (
     <Stack py={2} spacing={8}>
-      {account &&
+      {user &&
         <>
           <Flex>
               <Line
@@ -111,7 +111,7 @@ export const ReturnsGraph = ({ account }) => {
         </>
       }
 
-      {!account && 
+      {!user && 
         <Text color={mode('gray.600', 'gray.700')} p={6} textAlign={'center'}>No positions found</Text>
       }
     </Stack>

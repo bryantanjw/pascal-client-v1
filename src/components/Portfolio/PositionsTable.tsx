@@ -9,7 +9,6 @@ import {
     Box,
     Img,
     Badge,
-    Center,
 } from '@chakra-ui/react'
 import {
     Select as CustomSelect,
@@ -84,7 +83,7 @@ export const badgeEnum: Record<string, string> = {
     closed: 'gray',
 }
 
-export const TableContent = ({ account }, error) => {
+export const TableContent = ({ user }, error) => {
     const columns = [
         // TODO: Add category icon to Market column. why tf is it not working??
         {
@@ -135,7 +134,7 @@ export const TableContent = ({ account }, error) => {
                     </Tr>
                 </Thead>
                 <Tbody>
-                    {account && account[0].positions.map((row, index) => (
+                    {user && user.positions.map((row, index) => (
                         <Tr key={index}>
                             {columns.map((column, index) => {
                                 const cell = row[column.accessor as keyof typeof row]
@@ -151,7 +150,7 @@ export const TableContent = ({ account }, error) => {
                     }
                 </Tbody>
             </Table>
-            {!account &&
+            {!user &&
                     <Text color={mode('gray.600', 'gray.700')} p={6} textAlign={'center'}>No positions found</Text>
             }
         </Box>
@@ -192,11 +191,11 @@ export const TableActions = () => {
     )
 }
   
-export const PositionsTable = ({ account }) => {
+export const PositionsTable = ({ user }) => {
     return (
         <>
             <TableActions />
-            <TableContent account={account} />
+            <TableContent user={user} />
         </>
     )
 }

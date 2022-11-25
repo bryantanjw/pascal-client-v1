@@ -5,18 +5,17 @@ import {
     Center,
     Tabs, TabList, TabPanels, Tab, TabPanel,
     useColorModeValue,
-    Flex,
 } from "@chakra-ui/react"
+import fetch from 'unfetch'
+import useSWR from "swr"
+import { useWallet } from "@solana/wallet-adapter-react"
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 import WithSubnavigation from "components/TopBar"
 import { Stats } from "components/Portfolio/Stat"
-import { PositionsTable } from "@/components/Portfolio/PositionsTable"
+import { PositionsTable } from "components/Portfolio/PositionsTable"
 import { ReturnsGraph } from "components/Portfolio/ReturnsGraph"
 import ActivityTable from "components/Portfolio/ActivityTable"
 import Layout from "components/Layout"
-import { useWallet } from "@solana/wallet-adapter-react"
-import fetch from 'unfetch'
-import useSWR from "swr"
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 
 import styles from '@/styles/Home.module.css'
 
@@ -35,7 +34,7 @@ const fetcher = url => fetch(url).then(r => r.json())
 const Portfolio = () => {
     const { publicKey } = useWallet()
 
-    const { data } = useSWR(`../api/users?pubKey=${publicKey?.toString()}`, fetcher)
+    const { data } = useSWR(`../api/user?pubKey=${publicKey?.toString()}`, fetcher)
 
     return (
         <div className={styles.container}>
@@ -66,7 +65,7 @@ const Portfolio = () => {
 
                             {publicKey &&
                                 <>
-                                {data && <Stats account={data} />}
+                                {data && <Stats user={data} />}
                         
                                 <Tabs py={10} variant={'enclosed'} colorScheme={'black'}>
                                     <TabList>
@@ -75,12 +74,12 @@ const Portfolio = () => {
                                     </TabList>
                                     <TabPanels>
                                         <TabPanel key={1} px={0}>
-                                            <ReturnsGraph account={data} />
-                                            <PositionsTable account={data} />
+                                            <ReturnsGraph user={data} />
+                                            <PositionsTable user={data} />
                                         </TabPanel>
 
                                         <TabPanel key={2} px={0}>
-                                            <ActivityTable account={data} />
+                                            <ActivityTable user={data} />
                                         </TabPanel>
                                     </TabPanels>
                                 </Tabs>
