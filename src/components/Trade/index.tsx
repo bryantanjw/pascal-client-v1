@@ -8,7 +8,6 @@ import {
     Skeleton,
     Alert, AlertIcon, Spinner, Center,
 } from '@chakra-ui/react'
-import useSWR from 'swr'
 
 const FilterToggle = React.lazy(() => import('./FilterToggle')) // <-- to load Suspense
 const MarketCard = React.lazy(() => import('./MarketCard'))
@@ -22,16 +21,12 @@ const gradientBackgroundStyle = {
 }
 // Style config //
 
-const fetcher = (url) => fetch(url).then((res) => res.json())
-
 const categories = ['Financials', 'Economics', 'Crypto', 'Climate']
 
 // TODO: 1. add createMarket button/modal for admin
 //  2. Search bar
 
 const MarketList = ({ markets }) => {
-    // const { data, error } = useSWR('/api/fetchMarkets', fetcher)
-    
     // FilterToggle state management is be ignored for the time being
     const { value, getCheckboxProps } = useCheckboxGroup({ defaultValue: [] })
 

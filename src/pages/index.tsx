@@ -1,7 +1,15 @@
+import { Suspense } from 'react'
 import type { NextPage } from 'next'
 import { InferGetStaticPropsType } from 'next'
 import Head from 'next/head'
-import { Box, Stack, Heading, Text, useColorModeValue as mode } from '@chakra-ui/react'
+import { 
+  Box, 
+  Stack, 
+  Heading, 
+  Text, 
+  useColorModeValue as mode,
+  Center, Spinner,
+} from '@chakra-ui/react'
 import clientPromise from '@/lib/mongodb'
 import Layout from 'components/Layout'
 import WithSubnavigation from 'components/TopBar'
@@ -36,39 +44,45 @@ const Home: NextPage = ({ markets }: InferGetStaticPropsType<typeof getStaticPro
           py={{ base: '10', md: '10', lg: '12' }}
           zIndex={1}
         >
-          <Stack spacing={{ base: 8, md: 10 }}>
-            <Heading
-                lineHeight={1.1}
-                fontWeight={600}
-                fontSize={{ base: '4xl', sm: '4xl', lg: '6xl' }}>
-                <Text
-                  as={'span'}
-                  position={'relative'}
-                >
-                  Trade
+          <Suspense fallback={
+            <Center mt={"200px"}>
+                <Spinner/>
+            </Center>
+          }>
+            <Stack spacing={{ base: 8, md: 10 }}>
+              <Heading
+                  lineHeight={1.1}
+                  fontWeight={600}
+                  fontSize={{ base: '4xl', sm: '4xl', lg: '6xl' }}>
+                  <Text
+                    as={'span'}
+                    position={'relative'}
+                  >
+                    Trade
+                  </Text>
+                  <Text
+                    as={'span'}
+                    position={'relative'}
+                    color={'gray.500'}
+                  >
+                    &nbsp;directly
+                  </Text>
+                  <br />
+                  <Text as={'span'} color={'gray.500'}>
+                    on the outcome of
+                  </Text>
+                  <Text as={'span'}>
+                    &nbsp;events.
+                  </Text>
+                </Heading>
+                <Text color={mode('gray.500', 'gray.200')} fontSize={{ base: 'xl', md: '2xl' }}>
+                  A commodity derivative powered by automated market makers.
                 </Text>
-                <Text
-                  as={'span'}
-                  position={'relative'}
-                  color={'gray.500'}
-                >
-                  &nbsp;directly
-                </Text>
-                <br />
-                <Text as={'span'} color={'gray.500'}>
-                  on the outcome of
-                </Text>
-                <Text as={'span'}>
-                  &nbsp;events.
-                </Text>
-              </Heading>
-              <Text color={mode('gray.500', 'gray.200')} fontSize={{ base: 'xl', md: '2xl' }}>
-                A commodity derivative powered by automated market makers.
-              </Text>
-              
-            <MarketList markets={markets} />
+                
+              <MarketList markets={markets} />
 
-          </Stack>
+            </Stack>
+          </Suspense>
         </Box>
       </Layout>
     </div>
