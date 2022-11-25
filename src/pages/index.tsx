@@ -1,5 +1,5 @@
 import type { NextPage } from 'next'
-import { InferGetServerSidePropsType } from 'next'
+import { InferGetStaticPropsType } from 'next'
 import Head from 'next/head'
 import { Box, Stack, Heading, Text, useColorModeValue as mode } from '@chakra-ui/react'
 import clientPromise from '@/lib/mongodb'
@@ -9,7 +9,7 @@ import MarketList from '@/components/Trade'
 
 import styles from '@/styles/Home.module.css'
 
-const Home: NextPage = ({ markets }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Home: NextPage = ({ markets }: InferGetStaticPropsType<typeof getStaticProps>) => {
 
   return (
     <div className={styles.container}>
@@ -75,7 +75,7 @@ const Home: NextPage = ({ markets }: InferGetServerSidePropsType<typeof getServe
   )
 }
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   try {
     const client = await clientPromise
     const db = client.db("pascal")
