@@ -1,5 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
+import dynamic from 'next/dynamic'
 import {
     Box, Divider,
     Stack, HStack, SimpleGrid,
@@ -10,9 +12,14 @@ import {
     Image,
     IconButton,
 } from '@chakra-ui/react'
+import ChakraNextLink from '../ChakraNextLink'
 import { ArrowBackIcon } from '@chakra-ui/icons'
-import { useRouter } from 'next/router'
-import dynamic from 'next/dynamic'
+import { useWallet } from '@solana/wallet-adapter-react'
+import { 
+    GetAccount,
+    MarketAccount,
+    MarketOutcomeAccount,
+} from '@monaco-protocol/client'
 import MarketProgress from './MarketProgress'
 import { Stat } from './Stat'
 import NewsList from './NewsList'
@@ -22,19 +29,29 @@ import MarketResolution from './MarketResolution'
 import Outcomes from './Outcomes'
 import { DiscussionForm, DiscussionList } from './Discussion'
 import Layout from '../Layout'
-import ChakraNextLink from '../ChakraNextLink'
-import { useWallet } from '@solana/wallet-adapter-react'
+
 import styles from '@/styles/Home.module.css'
 
-// Dynamically load ResearchGraph component on client side
-const ResearchGraph = dynamic(import('./ResearchGraph'), {
-    ssr: false
-})
+type FormData = {
+    [marketOutcome: string]: {
+        forOrAgainst: "For" | "Against"
+        odds: number
+        stake: number
+    }
+}
+
+const defaultFormValues = {
+    forOrAgainst: "For" as "For",
+    odds: 1.5,
+    stake: 0,
+}
 
 const MarketView = ({ market }) => {
-    const router = useRouter()
-
+    const { query } = useRouter()
     const { publicKey } = useWallet()
+    const [marketAccount, setMarketAccount] = useState<GetAccount<MarketAccount>>() // <-- using setMarketAccount for now
+    const [marketOutcomes, setMarketOucomes] = useState<GetAccount<MarketOutcomeAccount>[]>();
+    const [formData, setFormData] = useState<FormData>();
     const isOwner = ( publicKey ? publicKey.toString() === process.env.NEXT_PUBLIC_OWNER_PUBLIC_KEY : false )
 
     // Style config
@@ -214,3 +231,8 @@ const MarketView = ({ market }) => {
 }
 
 export default MarketView
+
+// Dynamically load ResearchGraph component on client side
+const ResearchGraph = dynamic(import('./ResearchGraph'), {
+    ssr: false
+})

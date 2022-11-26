@@ -18,7 +18,7 @@ const Layout = ({ children }: Props): JSX.Element => (
             position={'absolute'} backgroundRepeat={'repeat'}
             left={0} top={-10}
             width={'full'} height={{ 'base': 'full', 'md': '116%' }}
-            opacity={mode('100%', '60%')}
+            opacity={mode('100%', '70%')}
         />
         
         <motion.main
