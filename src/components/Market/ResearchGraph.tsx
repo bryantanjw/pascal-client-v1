@@ -47,7 +47,7 @@ const FinancialsChart = ({ market }) => {
     return (
       <Alert status='error' rounded={'lg'}>
         <AlertIcon mr={4} />
-        An error has occured loading chart.            
+        An error has occured loading chart.
       </Alert>
     )
   }
@@ -64,15 +64,17 @@ const FinancialsChart = ({ market }) => {
   let day1 = 0
 
   const chartData = timestamp.map((timestamp, value) => {
-    let day2 = new Date(timestamp * 1000).getDate()
-    if (day1 !== day2) {
-      timestamps.push(timestamp * 1000)
-      day1 = day2
-    }
+    if (indicators.quote[0].close[value] !== null) {
+      let day2 = new Date(timestamp * 1000).getDate()
+      if (day1 !== day2) {
+        timestamps.push(timestamp * 1000)
+        day1 = day2
+      }
 
-    return { 
-      timestamp: timestamp * 1000, 
-      value: indicators.quote[0].close[value].toFixed(2) 
+      return { 
+        timestamp: timestamp * 1000, 
+        value: indicators.quote[0].close[value].toFixed(2) 
+      }
     }
   })
 
