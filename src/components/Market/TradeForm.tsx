@@ -371,7 +371,7 @@ export const TradeForm = ({ market }) => {
                             <ArrowBackIcon />
                           </Button>
 
-                          {/* <Button type={'submit'} 
+                          <Button type={'submit'} 
                             className={
                               mode(styles.wallet_adapter_button_trigger_light_mode, styles.wallet_adapter_button_trigger_dark_mode)
                             }
@@ -380,8 +380,8 @@ export const TradeForm = ({ market }) => {
                             boxShadow={'xl'} width={'full'} rounded={'lg'}
                           >
                             Place Order
-                          </Button> */}
-                          <ThreeButton />
+                          </Button>
+                          {/* <ThreeButton /> */}
                         </ButtonGroup>
                       </Stack>
                     </form>
