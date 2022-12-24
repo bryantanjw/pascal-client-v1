@@ -21,6 +21,16 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { Field, Formik } from 'formik'
 import Confetti from 'react-dom-confetti'
 import { Step, Steps, useSteps } from "chakra-ui-steps"
+import {
+  getMarket,
+  MarketAccount,
+  getMarketOutcomesByMarket,
+  MarketOutcomeAccount,
+  getMintInfo,
+  findMarketPositionPda,
+  createOrder,
+  GetAccount,
+} from "@monaco-protocol/client"
 
 import { getOutcomeState, setIndex, setTitle } from '@/store/slices/outcomeSlice'
 import { useSelector } from '@/store/store'
@@ -36,12 +46,20 @@ type TradeFormItemProps = {
   children?: React.ReactNode
 }
 
+type FormData = {
+  [marketOutcome: string]: {
+      forOrAgainst: "For" | "Against";
+      odds: number;
+      stake: number;
+  }
+}
+
 const TradeFormItem = (props: TradeFormItemProps) => {
   const { label, value, children } = props
   
   return (
     <Flex justify="space-between" fontSize="sm">
-      <Text fontWeight="medium" color={mode('gray.600', 'gray.400')}>
+      <Text as={"div"} fontWeight="medium" color={mode('gray.600', 'gray.400')}>
         {label}
       </Text>
       {value ? <Text fontWeight="medium">{value}</Text> : children}
@@ -141,17 +159,15 @@ export const TradeForm = ({ market }) => {
   const transferTo = async (contractAmount) => {
     try {
       setLoading(true)                                                                                                                                                                                                                        
-
       if (!connection || !publicKey) {
         return
       }
 
       const mintPubKey = new web3.PublicKey(token_info.mintAddress)
-  
       const secret = JSON.parse(process.env.NEXT_PUBLIC_USER_PRIVATE_KEY ?? "") as number[]
       const secretKey = Uint8Array.from(secret)
       const ownerKeypair = web3.Keypair.fromSecretKey(secretKey)
-    
+
       const ownerTokenAccount = await token.getOrCreateAssociatedTokenAccount(
         connection,
         ownerKeypair,
@@ -257,12 +273,7 @@ export const TradeForm = ({ market }) => {
                     </Text>
                     <Heading fontSize={'5xl'} fontWeight={'semibold'} color={alternatingColorScheme[index % alternatingColorScheme.length]}>
                       {title} 
-                      {outcomes.map((outcome, index) => {
-                        if (outcome.title === title) {
-                          dispatch(setIndex(index))
-                          return ` ${outcome.probability * 100}%`
-                        }
-                      })}
+                      {` ${outcomes[index].probability * 100}%`}
                     </Heading>
                   </Flex>
 
@@ -366,7 +377,10 @@ export const TradeForm = ({ market }) => {
                         <ButtonGroup justifyContent={'center'} size="lg" fontSize="md" spacing='3'>
                           <Button onClick={prevStep} variant={'ghost'} 
                             transition={'all 0.3s ease'} rounded={'lg'}
-                            _hover={{ bg: mode('gray.200', 'gray.700') }}
+                            _hover={{ 
+                              bg: mode('gray.200', 'gray.700'),
+                              transform: 'translateX(-2px)',
+                            }}
                           >
                             <ArrowBackIcon />
                           </Button>

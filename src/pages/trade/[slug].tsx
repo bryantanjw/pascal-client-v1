@@ -40,6 +40,7 @@ export const getStaticProps = async ({ params: { slug } }) => {
     }
   } catch (e) {
       console.error("Error getStaticProps", e)
+      throw Error('Failed to connect to MongoDB')
   }
 }
 

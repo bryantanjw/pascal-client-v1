@@ -103,7 +103,7 @@ export async function getStaticProps() {
         props: { markets: JSON.parse(JSON.stringify(markets)) },
     }
   } catch (e) {
-      console.error(e)
+      console.error("Error connecting to MongoDB \n", e)
   }
 }
 

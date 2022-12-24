@@ -83,11 +83,7 @@ const MarketList = ({ markets }) => {
 
             <Image sx={gradientBackgroundStyle} src={'gradient-bg.png'}
                 // eslint-disable-next-line react-hooks/rules-of-hooks
-                alt={'background'} right={'100px'} top={'100px'} transform={'rotate(180deg)'} 
-            />
-            <Image sx={gradientBackgroundStyle} src={'gradient-bg.png'} 
-                // eslint-disable-next-line react-hooks/rules-of-hooks
-                alt={'background'} right={'100px'} bottom={'0px'} transform={'rotate(300deg)'} 
+                alt={'background'} right={'40px'} top={'-200px'} transform={'rotate(-10deg)'} 
             />
       </Box>
     );
