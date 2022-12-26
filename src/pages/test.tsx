@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { useDispatch } from 'react-redux'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
@@ -13,23 +12,29 @@ import {
     Image,
     IconButton,
 } from '@chakra-ui/react'
-import ChakraNextLink from '../ChakraNextLink'
+import ChakraNextLink from '@/components/ChakraNextLink'
 import { ArrowBackIcon } from '@chakra-ui/icons'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { 
-    GetAccount,
+    getMarket,
     MarketAccount,
+    getMarketOutcomesByMarket,
     MarketOutcomeAccount,
+    getMintInfo,
+    findMarketPositionPda,
+    createOrder,
+    GetAccount,
 } from '@monaco-protocol/client'
-import MarketProgress from './MarketProgress'
-import { Stat } from './Stat'
-import NewsList from './NewsList'
-import { TradeForm } from './TradeForm'
-import WithSubnavigation from '../TopBar'
-import MarketResolution from './MarketResolution'
-import Outcomes from './Outcomes'
-import Layout from '../Layout'
-import { setTitle } from '@/store/slices/outcomeSlice'
+
+import MarketProgress from '@/components/Market/MarketProgress'
+import { Stat } from '@/components/Market/Stat'
+import NewsList from '@/components/Market/NewsList'
+import { TradeForm } from '@/components/Market/TradeForm'
+import WithSubnavigation from '@/components/TopBar'
+import MarketResolution from '@/components/Market/MarketResolution'
+import Outcomes from '@/components/Market/Outcomes'
+import Layout from '@/components/Layout'
+import { useProgram } from '@/context/ProgramProvider'
 
 import styles from '@/styles/Home.module.css'
 
@@ -47,9 +52,31 @@ const defaultFormValues = {
     stake: 0,
 }
 
-const MarketView = ({ market }) => {
+const market = {
+    "publicKey": "FYs6qqBWY2tBy3213G37ZRM3ADwnJkRQePKLg4L2htgN",
+    "account": {
+        "authority": "J2LqciLvyxVHMjMcda73459zWfFxw7rveDb5YAhSdGTe",
+        "eventAccount": "5PubqA4PBAHs1B6PABFLLsTbX2kGrSSVFWZ6mZDmUpLA",
+        "mintAccount": "Aqw6KyChFm2jwAFND3K29QjUcKZ3Pk72ePe5oMxomwMH",
+        "marketStatus": {
+            "settled": {}
+        },
+        "marketType": "EventResultWinner",
+        "decimalLimit": 3,
+        "published": false,
+        "suspended": false,
+        "marketOutcomesCount": 2,
+        "marketWinningOutcomeIndex": 0,
+        "marketLockTimestamp": "63a446c0",
+        "marketSettleTimestamp": "63a4508f",
+        "title": "Winner",
+        "escrowAccountBump": 253
+    }
+}
+
+export const MarketView = () => {
+    const { program } = useProgram()
     const { query } = useRouter()
-    const dispatch = useDispatch()
     const { publicKey } = useWallet()
     const [marketAccount, setMarketAccount] = useState<GetAccount<MarketAccount>>() // <-- using setMarketAccount for now
     const [marketOutcomes, setMarketOucomes] = useState<GetAccount<MarketOutcomeAccount>[]>()
@@ -81,23 +108,37 @@ const MarketView = ({ market }) => {
         width: '40%',
     }
     // Style config
+
     const stats = [
-        { label: 'Liquidity', value: market.liquidity },
-        { label: 'Total Volume', value: market.volume },
-        { label: 'Closing Date - UTC', value: new Date(market.closing_date).toISOString().split('T')[0] },
+        { label: 'Liquidity', value: "liquidity" },
+        { label: 'Total Volume', value: "volume" },
+        { label: 'Closing Date - UTC', value: "closing_date" },
     ]
 
-      // Call useEffect once to display first outcome
-    useEffect(() => {
-        dispatch(setTitle(market.outcomes[0].title))
-    }, [])
+    const marketAccount = new PublicKey(query.marketAccount as string)
+
+    const getMarketData = async () => {
+        try {
+            const marketResponse = await getMarket(program, marketAccount);
+            setMarket(marketResponse.data);
+            const marketOutcomeAccountsResponse = await getMarketOutcomesByMarket(program, marketAccount);
+            setMarketOucomes(marketOutcomeAccountsResponse.data.marketOutcomeAccounts);
+            const defaultFormState = marketOutcomeAccountsResponse.data.marketOutcomeAccounts.reduce((formState: FormData, { account: { title }}) => ({
+                ...formState,
+                [title]: defaultFormValues,
+            }), {})
+            setFormData(defaultFormState)
+        } catch (e) {
+            console.error(e);
+        }
+    }
 
     return (
         <div className={styles.container}>
         <Head>
-            <title>{market.title}</title>
+            <title>{market.account.title}</title>
             <meta name="description" content="Trade directly on the outcome of events" />
-            <meta property="og:title" content={market.title} />
+            <meta property="og:title" content={"title"} />
             <meta
             property="og:description"
             content="Trade directly on the outcome of events"
@@ -128,7 +169,7 @@ const MarketView = ({ market }) => {
                             <Heading _before={{ bg: mode('black', 'white') }}
                                 fontSize={{ 'base': 'xl', 'md': '2xl' }} fontWeight="extrabold"
                             >
-                                {market.title}
+                                {market.account.title}
                             </Heading>
                         </HStack>
                     </Stack>
@@ -147,7 +188,7 @@ const MarketView = ({ market }) => {
 
                             <TabPanels>
                                 <TabPanel key={0} px={0}>
-                                    <Outcomes market={market} />
+                                    {/* <Outcomes market={market} /> */}
                                 </TabPanel>
                             </TabPanels>
                         </Tabs>
@@ -162,7 +203,7 @@ const MarketView = ({ market }) => {
                                 <TabPanel key={0} px={0}>
                                     <Flex flexDirection={'column'}>
                                         <Stack>
-                                            <MarketProgress market={market} />
+                                            {/* <MarketProgress market={market} /> */}
                                             
                                             <Divider borderColor={dividerColor} />
 
@@ -188,7 +229,7 @@ const MarketView = ({ market }) => {
                                                     <Heading sx={sectionHeadingStyle}>Market Resolution</Heading>
                                                 </HStack>
                                                 
-                                                <MarketResolution market={market} />
+                                                {/* <MarketResolution market={market} /> */}
                                             </Stack>
 
                                             <Divider borderColor={dividerColor} />
@@ -209,10 +250,10 @@ const MarketView = ({ market }) => {
 
                                 <TabPanel key={1} px={0}>
                                     <Stack marginTop={2}>
-                                        {(market.category === "Financials" || market.category === "Crypto" || market.category === "Economics") 
-                                            && <ResearchGraph market={market} />
-                                        }
-                                        <NewsList market={market} />
+                                        {/* {(market.category === "Financials" || market.category === "Crypto" || market.category === "Economics") 
+                                            && <ResearchGraph market={market} 
+                                        />}
+                                        <NewsList market={market} /> */}
                                     </Stack>
                                 </TabPanel>
                             </TabPanels>
@@ -223,7 +264,7 @@ const MarketView = ({ market }) => {
                         position={{ 'sm': 'relative', 'lg': 'sticky'}} 
                         top={{ 'base': 'none', 'lg': '20' }}
                     >
-                        <TradeForm market={market} />
+                        {/* <TradeForm market={market} /> */}
                     </Flex>
 
                     <Image sx={gradientBackgroundStyle} src={'/gradient-bg1.png'}
@@ -240,6 +281,6 @@ const MarketView = ({ market }) => {
 export default MarketView
 
 // Dynamically load ResearchGraph component on client side
-const ResearchGraph = dynamic(import('./ResearchGraph'), {
+const ResearchGraph = dynamic(import('@/components/Market/ResearchGraph'), {
     ssr: false
 })

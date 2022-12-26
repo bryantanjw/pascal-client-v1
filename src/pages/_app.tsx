@@ -11,6 +11,7 @@ import WalletContextProvider from '@/context/WalletContextProvider'
 import { baseURL } from 'config'
 
 import '@/styles/globals.css'
+import { ProgramProvider } from '@/context/ProgramProvider'
 
 const colors = {
   brand: {
@@ -40,15 +41,17 @@ function MyApp({ Component, pageProps, router }: AppProps) {
   return (
     <ChakraProvider theme={theme}>
       <WalletContextProvider>
-        <NextNProgress height={2} color={'black'} />
-        <AnimatePresence
-          mode='wait'
-          initial={false}
-          onExitComplete={() => window.scrollTo(0, 0)}
-        >
-          <Component {...pageProps} key={url} />
-          <Analytics />
-        </AnimatePresence>
+        <ProgramProvider>
+          <NextNProgress height={2} color={'black'} />
+          <AnimatePresence
+            mode='wait'
+            initial={false}
+            onExitComplete={() => window.scrollTo(0, 0)}
+          >
+            <Component {...pageProps} key={url} />
+            <Analytics />
+          </AnimatePresence>
+        </ProgramProvider>
       </WalletContextProvider>
     </ChakraProvider>
   )

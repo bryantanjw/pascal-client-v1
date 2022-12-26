@@ -1,6 +1,5 @@
 import * as React from 'react'
-import { useState, useEffect } from 'react'
-import { useDispatch } from 'react-redux'
+import { useState } from 'react'
 import {
   Button, ButtonGroup,
   Flex,
@@ -32,13 +31,12 @@ import {
   GetAccount,
 } from "@monaco-protocol/client"
 
-import { getOutcomeState, setIndex, setTitle } from '@/store/slices/outcomeSlice'
+import { getOutcomeState } from '@/store/slices/outcomeSlice'
 import { useSelector } from '@/store/store'
 import { TokenSwapForm } from '../TokenSwap'
 import { Airdrop } from '../TokenSwap/AirdropForm'
 
 import styles from '@/styles/Home.module.css'
-import ThreeButton from './ThreeButton'
 
 type TradeFormItemProps = {
   label: string | React.ReactNode
@@ -133,7 +131,6 @@ export const TradeForm = ({ market }) => {
   const [isSuccess, setSuccess] = useState(false)
   const [isSubmitted, setSubmitted] = useState(false)
   
-  const dispatch = useDispatch()
   const { title, index } = useSelector(getOutcomeState)
 
   const { connection } = useConnection()
@@ -150,11 +147,6 @@ export const TradeForm = ({ market }) => {
   const day = dt.getDate().toString()
   const month = dt.toLocaleString('default', { month: 'long' })
   const year = dt.getFullYear().toString()
-
-  // Call useEffect once to display first outcome
-  useEffect(() => {
-    dispatch(setTitle(outcomes[0].title))
-  }, [])
 
   const transferTo = async (contractAmount) => {
     try {
