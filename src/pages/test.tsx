@@ -14,6 +14,7 @@ import {
 } from '@chakra-ui/react'
 import ChakraNextLink from '@/components/ChakraNextLink'
 import { ArrowBackIcon } from '@chakra-ui/icons'
+import { PublicKey } from '@solana/web3.js'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { 
     getMarket,
@@ -75,10 +76,9 @@ const market = {
 }
 
 export const MarketView = () => {
-    const { program } = useProgram()
-    const { query } = useRouter()
+    const program = useProgram()
     const { publicKey } = useWallet()
-    const [marketAccount, setMarketAccount] = useState<GetAccount<MarketAccount>>() // <-- using setMarketAccount for now
+    const [market, setMarket] = useState<GetAccount<MarketAccount>>()
     const [marketOutcomes, setMarketOucomes] = useState<GetAccount<MarketOutcomeAccount>[]>()
     const [formData, setFormData] = useState<FormData>();
     const isOwner = ( publicKey ? publicKey.toString() === process.env.NEXT_PUBLIC_OWNER_PUBLIC_KEY : false )
@@ -115,14 +115,18 @@ export const MarketView = () => {
         { label: 'Closing Date - UTC', value: "closing_date" },
     ]
 
-    const marketAccount = new PublicKey(query.marketAccount as string)
+    const marketAccount = new PublicKey("FYs6qqBWY2tBy3213G37ZRM3ADwnJkRQePKLg4L2htgN")
 
     const getMarketData = async () => {
         try {
             const marketResponse = await getMarket(program, marketAccount);
             setMarket(marketResponse.data);
+            console.log("market", market)
+            
             const marketOutcomeAccountsResponse = await getMarketOutcomesByMarket(program, marketAccount);
             setMarketOucomes(marketOutcomeAccountsResponse.data.marketOutcomeAccounts);
+            console.log("marketOutcomes", marketOutcomes)
+
             const defaultFormState = marketOutcomeAccountsResponse.data.marketOutcomeAccounts.reduce((formState: FormData, { account: { title }}) => ({
                 ...formState,
                 [title]: defaultFormValues,
@@ -132,11 +136,14 @@ export const MarketView = () => {
             console.error(e);
         }
     }
+    useEffect(() => {
+        getMarketData();
+    }, [program]);
 
     return (
         <div className={styles.container}>
         <Head>
-            <title>{market.account.title}</title>
+            <title>{market?.account.title}</title>
             <meta name="description" content="Trade directly on the outcome of events" />
             <meta property="og:title" content={"title"} />
             <meta
@@ -169,7 +176,7 @@ export const MarketView = () => {
                             <Heading _before={{ bg: mode('black', 'white') }}
                                 fontSize={{ 'base': 'xl', 'md': '2xl' }} fontWeight="extrabold"
                             >
-                                {market.account.title}
+                                {market?.account.title}
                             </Heading>
                         </HStack>
                     </Stack>
