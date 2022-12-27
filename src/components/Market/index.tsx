@@ -87,7 +87,7 @@ const MarketView = ({ market }) => {
         { label: 'Closing Date - UTC', value: new Date(market.closing_date).toISOString().split('T')[0] },
     ]
 
-      // Call useEffect once to display first outcome
+    // Call useEffect once to display first outcome
     useEffect(() => {
         dispatch(setTitle(market.outcomes[0].title))
     }, [])

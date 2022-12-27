@@ -65,7 +65,7 @@ const TradeFormItem = (props: TradeFormItemProps) => {
   )
 }
 
-export const TradeForm = ({ market }) => {
+export const TradeForm = ({ market, marketOutcomes }) => {
   // Style config //
   const confettiConfig = {
     angle: 90,
@@ -123,8 +123,6 @@ export const TradeForm = ({ market }) => {
   const alternatingColorScheme = [mode('purple.500', 'purple.200'), mode('#2C7C7C', '#81E6D9'), 'pink']
   // Style config //
 
-  const { closing_date, outcomes, short, target_value, token_info } = market
-
   // States
   const [orderSide, setOrderSide] = useState<String>('')
   const [isLoading, setLoading] = useState(false)
@@ -143,88 +141,10 @@ export const TradeForm = ({ market }) => {
     initialStep: 0,
   })
 
-  const dt = new Date(closing_date)
+  const dt = new Date(market?.account.marketLockTimestamp.toNumber()! * 1000)
   const day = dt.getDate().toString()
   const month = dt.toLocaleString('default', { month: 'long' })
   const year = dt.getFullYear().toString()
-
-  const transferTo = async (contractAmount) => {
-    try {
-      setLoading(true)                                                                                                                                                                                                                        
-      if (!connection || !publicKey) {
-        return
-      }
-
-      const mintPubKey = new web3.PublicKey(token_info.mintAddress)
-      const secret = JSON.parse(process.env.NEXT_PUBLIC_USER_PRIVATE_KEY ?? "") as number[]
-      const secretKey = Uint8Array.from(secret)
-      const ownerKeypair = web3.Keypair.fromSecretKey(secretKey)
-
-      const ownerTokenAccount = await token.getOrCreateAssociatedTokenAccount(
-        connection,
-        ownerKeypair,
-        mintPubKey,
-        ownerKeypair.publicKey
-      )
-      console.log("ownerTokenAccount", ownerTokenAccount.address.toBase58())
-  
-      const recipientTokenAccount = await token.getOrCreateAssociatedTokenAccount(
-        connection,
-        ownerKeypair,
-        mintPubKey,
-        publicKey
-      )
-      console.log("recipientTokenAccount", recipientTokenAccount)
-  
-      const mintInfo = await token.getMint(connection, mintPubKey)
-      const tx = new web3.Transaction()
-      tx.add(token.createTransferInstruction(
-        ownerTokenAccount.address,
-        recipientTokenAccount.address,
-        ownerKeypair.publicKey,
-        contractAmount * 10 ** mintInfo.decimals
-      ))
-      let latestBlockHash = await connection.getLatestBlockhash('confirmed');
-      tx.recentBlockhash = await latestBlockHash.blockhash;      
-      let signature = await web3.sendAndConfirmTransaction(connection, tx, [ownerKeypair])
-
-      console.log(
-          `Transaction submitted: https://solana.fm/tx/${signature}?cluster=devnet`
-      )
-      toast({
-          title: "Transaction submitted",
-          description: 
-              <Link href={`https://solana.fm/tx/${signature}?cluster=devnet`} isExternal>
-                  <HStack>
-                      <Text>View transaction</Text>
-                      <ExternalLinkIcon />
-                  </HStack>
-              </Link>,
-          position: "top",
-          isClosable: true,
-          duration: 10000,
-          status: 'success',
-          variant: 'subtle',
-          containerStyle: { marginTop: '75px', marginBottom: '-65px'},
-      })
-      setSuccess(true)
-    } catch (e) {
-        setSuccess(false)
-        toast({
-          title: 'Transaction failed',
-          description: JSON.stringify(e.message).replace(/^"(.*)"$/, '$1'),
-          position: "top",
-          isClosable: true,
-          duration: 10000,
-          status: 'error',
-          variant: 'subtle',
-          containerStyle: { marginTop: '75px', marginBottom: '-65px'},
-        })
-      console.log(JSON.stringify(e))
-    }
-    setLoading(false)
-    setSubmitted(true)
-  }
 
   return (
     <>
@@ -260,18 +180,18 @@ export const TradeForm = ({ market }) => {
                 <Stack spacing={4}>
 
                   <Flex direction={'column'}>
-                    <Text sx={headerTextStyle}>
+                    <Text sx={headerTextStyle} mb={2}>
                       Market says
                     </Text>
-                    <Heading fontSize={'5xl'} fontWeight={'semibold'} color={alternatingColorScheme[index % alternatingColorScheme.length]}>
-                      {title} 
-                      {` ${outcomes[index].probability * 100}%`}
+                    <Heading fontSize={'4xl'} fontWeight={'semibold'} color={alternatingColorScheme[index % alternatingColorScheme.length]}>
+                      {marketOutcomes?.[index].account.title} 
+                      {` ${marketOutcomes?.[index].account.latestMatchedPrice}%`}
                     </Heading>
                   </Flex>
 
                   <Stack spacing={6}>
                     <Heading width={'90%'} fontSize={'2xl'} fontWeight={'semibold'} textColor={mode('gray.800', 'gray.100')}>
-                      Will {short} close above {target_value} on {month} {day}, {year}?
+                      {market?.account.title} on {month} {day}, {year}?
                     </Heading>
                     
                     <Stack>
@@ -308,7 +228,7 @@ export const TradeForm = ({ market }) => {
                 <Formik 
                   initialValues={{ contractAmount: 2 }}
                   onSubmit={(values) => {
-                      transferTo(values.contractAmount)
+                      // transferTo(values.contractAmount)
                       nextStep
                       setTimeout(() => {
                           setSuccess(false)
@@ -326,7 +246,7 @@ export const TradeForm = ({ market }) => {
                         <Heading size="md">Swap summary</Heading>
                         
                         <Stack spacing="3">
-                          <TradeFormItem label="Price per contract" value={`${outcomes[0].probability}`} />
+                          <TradeFormItem label="Price per contract" value={`${marketOutcomes?.[index].account.latestMatchedPrice}`} />
                           <TradeFormItem label="No. of contracts">
                             <Field name="contractAmount">
                               {({ field, form }) => (
@@ -361,7 +281,7 @@ export const TradeForm = ({ market }) => {
                               Total
                             </Text>
                             <Text fontSize="xl" fontWeight="extrabold">
-                              {values.contractAmount * outcomes[0].probability} USDC
+                              {values.contractAmount * marketOutcomes?.[index].account.latestMatchedPrice} USDC
                             </Text>
                           </Flex>
                         </Stack>

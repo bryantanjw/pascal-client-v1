@@ -37,7 +37,7 @@ const MarketResolution = ({ market }) => {
                     <Text key={text} display={'inline'} fontWeight={'bold'}>
                         {text}
                     </Text>
-                    )
+                    ) 
                 })}
             </Box>
 

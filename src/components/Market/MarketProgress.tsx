@@ -1,6 +1,6 @@
 import { Step, Steps, useSteps } from "chakra-ui-steps"
-import { Flex, Heading, Button, Text } from "@chakra-ui/react"
-import { useState } from "react";
+import { Flex } from "@chakra-ui/react"
+import { useEffect } from "react";
 
 function addDays(date, days) {
   var result = new Date(date);
@@ -9,34 +9,32 @@ function addDays(date, days) {
   return result;
 }
 
-export const MarketProgress = ({ market }) => {
-  const dt = new Date(market.closing_date)
-  const market_opened_time = dt.toUTCString()
-
-  const recurrence = market.recurrence
-  const renderFinalizingTime = () => {
-    if (recurrence == "Daily") {
-        return addDays(dt, 1).toUTCString()
-    } else if (recurrence == "Weekly") {
-      return addDays(dt, 7).toUTCString()
-    } else if (recurrence == "Monthly") {
-      return addDays(dt, 30).toUTCString()
-    }
-  }
+export const MarketProgress = ({ marketAccount }) => {
+  const { marketLockTimestamp, marketSettleTimestamp } = marketAccount
 
   const steps = [
-    { label: "Market opened", description: market_opened_time },
-    { label: "Finalizing", description: renderFinalizingTime() },
-    { label: "Closed", description: "" },
+    { label: "Market opened", description: "{market_opened_time}" },
+    { label: "Finalizing", description: new Date(marketLockTimestamp.toNumber() * 1000).toUTCString() },
+    { label: "Closed", description: new Date(marketSettleTimestamp.toNumber() * 1000).toUTCString() },
   ]
 
-  const { nextStep, prevStep, reset, activeStep } = useSteps({
-    initialStep: 0,
+  const { setStep, activeStep } = useSteps({
+    initialStep: 1,
   })
+  const dt = new Date()
 
+  useEffect(() => {
+    if (dt >= new Date(marketLockTimestamp.toNumber() * 1000)) {
+      setStep(2)
+    }
+    if (dt >= new Date(marketSettleTimestamp.toNumber() * 1000)) {
+      setStep(3)
+    }
+  }, [dt.getMinutes()])
+  
   return (
     <Flex minWidth={'lg'} py={4}>
-      <Steps orientation="vertical" colorScheme="gray" activeStep={activeStep+1}>
+      <Steps orientation="vertical" colorScheme="gray" activeStep={activeStep}>
         {steps.map(({ label, description }) => (
           <Step label={label} key={label} description={description} />
         ))}
@@ -46,4 +44,3 @@ export const MarketProgress = ({ market }) => {
 }
 
 export default MarketProgress
-

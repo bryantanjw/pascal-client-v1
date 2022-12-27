@@ -11,6 +11,11 @@ import { MdCheckCircle, MdOutlineCircle } from 'react-icons/md'
 import fetch from 'unfetch'
 import useSWR from "swr"
 import { useWallet } from '@solana/wallet-adapter-react'
+import { 
+    MarketOutcomeAccount,
+    GetAccount,
+} from '@monaco-protocol/client'
+
 import { useDispatch } from '@/store/store'
 import { setIndex, setTitle } from '@/store/slices/outcomeSlice'
 
@@ -35,14 +40,13 @@ const fetcher = async url => {
 }
 
 interface RadioOptionProps extends UseRadioProps, Omit<StackProps, 'onChange'> {
-    index: number
-    market: any
+    marketOutcome: GetAccount<MarketOutcomeAccount>
 }
 
 const RadioOption = (props: RadioOptionProps) => {
     const { publicKey } = useWallet()
     
-    const { index, market, ...radioProps } = props
+    const { marketOutcome, ...radioProps } = props
     const { state, getInputProps, getCheckboxProps, getLabelProps } = useRadio(radioProps)
     const { data } = useSWR(publicKey ? `../api/user?pubKey=${publicKey?.toString()}` : null, fetcher)
     const id = useId()
@@ -50,7 +54,6 @@ const RadioOption = (props: RadioOptionProps) => {
     const checkoxColorScheme = [mode('purple.500', 'purple.200'), mode('#2C7C7C', '#81E6D9'), 'pink']
     const bgColorScheme = [mode('rgb(128,90,213,0.2)', 'rgb(214,188,250,0.1)'), mode('rgb(44,124,124,0.2)', 'rgb(129,230,217,0.1)'), 'pink']
 
-    
     return (
         <chakra.label {...getLabelProps()}>
             <input {...getInputProps()} aria-labelledby={id} />
@@ -66,8 +69,8 @@ const RadioOption = (props: RadioOptionProps) => {
                     borderColor: "gray.400"
                 }}
                 _checked={{
-                    bg: bgColorScheme[index % bgColorScheme.length],
-                    borderColor: checkoxColorScheme[index % checkoxColorScheme.length],
+                    bg: bgColorScheme[marketOutcome.account.index % bgColorScheme.length],
+                    borderColor: checkoxColorScheme[marketOutcome.account.index % checkoxColorScheme.length],
                 }}
                 {...getCheckboxProps()} id={id}
             >
@@ -76,13 +79,13 @@ const RadioOption = (props: RadioOptionProps) => {
                         <Box flex={1.8}>
                             <Stack>
                                 <HStack justifyContent={'space-between'}>
-                                    <Text>{market.outcomes[index].title}</Text>
-                                    <Text>{market.outcomes[index].probability * 100}%</Text>
+                                    <Text>{marketOutcome.account.title}</Text>
+                                    <Text>{marketOutcome.account.latestMatchedPrice}%</Text>
                                 </HStack>
-                                <Progress value={market.outcomes[index].probability * 100}
+                                <Progress value={marketOutcome.account.latestMatchedPrice}
                                     size={'sm'} rounded={'xl'} 
                                     opacity={state.isChecked ? '100%' : '40%'} transition={'all 0.2s ease'}
-                                    colorScheme={progressBarColorScheme[index % progressBarColorScheme.length]}
+                                    colorScheme={progressBarColorScheme[marketOutcome.account.index % progressBarColorScheme.length]}
                                 />
                             </Stack>
                         </Box>
@@ -91,7 +94,7 @@ const RadioOption = (props: RadioOptionProps) => {
 
                         <chakra.label {...getLabelProps()} cursor="pointer">
                             <input {...getInputProps()} aria-labelledby={id} />
-                            <Text>{market.outcomes[index].probability}</Text>
+                            <Text>{marketOutcome.account.latestMatchedPrice}</Text>
                         </chakra.label>
 
                         <Spacer />
@@ -101,7 +104,7 @@ const RadioOption = (props: RadioOptionProps) => {
                             {!publicKey && <Text>0.00</Text>}
                             {data && data.positions.map((position, index) => {
                                 let found = false
-                                if (position.marketId === market.marketId && position.outcome === market.outcomes[index].title) {
+                                if (position.marketId === marketOutcome.account.market && position.outcome === marketOutcome.account.title) {
                                     found = true
                                     return position.shares
                                 }
@@ -117,7 +120,7 @@ const RadioOption = (props: RadioOptionProps) => {
                             data-checked={state.isChecked ? '' : undefined}
                             fontSize="xl"
                             _checked={{
-                                color: checkoxColorScheme[index % checkoxColorScheme.length],
+                                color: checkoxColorScheme[marketOutcome.account.index % checkoxColorScheme.length],
                             }}
                             color={mode('gray.300', 'whiteAlpha.400')}
                         >
@@ -131,11 +134,11 @@ const RadioOption = (props: RadioOptionProps) => {
     )
 }
 
-const Outcomes = ({ market }) => {
+export const OutcomesTest = ({ marketOutcomes }) => {
     const dispatch = useDispatch() // <-- calling the reducer
 
     const handleChange = (value) => {
-        dispatch(setTitle(market.outcomes[parseInt(value)].title))
+        dispatch(setTitle(marketOutcomes[parseInt(value)].account.title))
         dispatch(setIndex(parseInt(value)))
     }
 
@@ -158,10 +161,9 @@ const Outcomes = ({ market }) => {
                 <Text pr={{ 'md': 10 }}>YOUR SHARES</Text>
             </Flex>
             <Stack width={"full"} spacing={3}>
-                {market.outcomes.map((outcome, index) => {
+                {marketOutcomes?.map((outcome: GetAccount<MarketOutcomeAccount>, index: number) => {
                     return (
-                        <RadioOption key={index} 
-                            index={index} market={market}
+                        <RadioOption key={index} marketOutcome={outcome}
                             {...getRadioProps({ 
                                 value: index.toString(), // <-- getRadioProps value only accepts String type
                             })}
@@ -172,5 +174,3 @@ const Outcomes = ({ market }) => {
         </VStack>
     )
 }
-
-export default Outcomes

@@ -33,11 +33,14 @@ import NewsList from '@/components/Market/NewsList'
 import { TradeForm } from '@/components/Market/TradeForm'
 import WithSubnavigation from '@/components/TopBar'
 import MarketResolution from '@/components/Market/MarketResolution'
-import Outcomes from '@/components/Market/Outcomes'
+import { OutcomesTest } from '@/components/Market/Outcomes'
 import Layout from '@/components/Layout'
 import { useProgram } from '@/context/ProgramProvider'
 
 import styles from '@/styles/Home.module.css'
+import { Provider, useDispatch } from 'react-redux'
+import { store } from '@/store/store'
+import { setTitle } from '@/store/slices/outcomeSlice'
 
 type FormData = {
     [marketOutcome: string]: {
@@ -75,7 +78,8 @@ const market = {
     }
 }
 
-export const MarketView = () => {
+const MarketView = () => {
+    const dispatch = useDispatch()
     const program = useProgram()
     const { publicKey } = useWallet()
     const [market, setMarket] = useState<GetAccount<MarketAccount>>()
@@ -112,7 +116,9 @@ export const MarketView = () => {
     const stats = [
         { label: 'Liquidity', value: "liquidity" },
         { label: 'Total Volume', value: "volume" },
-        { label: 'Closing Date - UTC', value: "closing_date" },
+        { label: 'Closing Date - UTC', value: 
+            new Date(market?.account.marketLockTimestamp.toNumber()! * 1000).toUTCString()
+        },
     ]
 
     const marketAccount = new PublicKey("FYs6qqBWY2tBy3213G37ZRM3ADwnJkRQePKLg4L2htgN")
@@ -137,7 +143,8 @@ export const MarketView = () => {
         }
     }
     useEffect(() => {
-        getMarketData();
+        getMarketData()
+        dispatch(setTitle(market?.[0].account.title))
     }, [program]);
 
     return (
@@ -195,7 +202,7 @@ export const MarketView = () => {
 
                             <TabPanels>
                                 <TabPanel key={0} px={0}>
-                                    {/* <Outcomes market={market} /> */}
+                                    <OutcomesTest marketOutcomes={marketOutcomes} />
                                 </TabPanel>
                             </TabPanels>
                         </Tabs>
@@ -210,7 +217,7 @@ export const MarketView = () => {
                                 <TabPanel key={0} px={0}>
                                     <Flex flexDirection={'column'}>
                                         <Stack>
-                                            {/* <MarketProgress market={market} /> */}
+                                            {market && <MarketProgress marketAccount={market?.account} />}
                                             
                                             <Divider borderColor={dividerColor} />
 
@@ -271,7 +278,7 @@ export const MarketView = () => {
                         position={{ 'sm': 'relative', 'lg': 'sticky'}} 
                         top={{ 'base': 'none', 'lg': '20' }}
                     >
-                        {/* <TradeForm market={market} /> */}
+                        <TradeForm market={market} marketOutcomes={marketOutcomes} />
                     </Flex>
 
                     <Image sx={gradientBackgroundStyle} src={'/gradient-bg1.png'}
@@ -285,7 +292,13 @@ export const MarketView = () => {
     )
 }
 
-export default MarketView
+export default function Page() {
+    return (
+        <Provider store={store}>
+            <MarketView />
+        </Provider>
+    )
+}
 
 // Dynamically load ResearchGraph component on client side
 const ResearchGraph = dynamic(import('@/components/Market/ResearchGraph'), {
