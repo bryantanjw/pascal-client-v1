@@ -56,28 +56,6 @@ const defaultFormValues = {
     stake: 0,
 }
 
-const market = {
-    "publicKey": "FYs6qqBWY2tBy3213G37ZRM3ADwnJkRQePKLg4L2htgN",
-    "account": {
-        "authority": "J2LqciLvyxVHMjMcda73459zWfFxw7rveDb5YAhSdGTe",
-        "eventAccount": "5PubqA4PBAHs1B6PABFLLsTbX2kGrSSVFWZ6mZDmUpLA",
-        "mintAccount": "Aqw6KyChFm2jwAFND3K29QjUcKZ3Pk72ePe5oMxomwMH",
-        "marketStatus": {
-            "settled": {}
-        },
-        "marketType": "EventResultWinner",
-        "decimalLimit": 3,
-        "published": false,
-        "suspended": false,
-        "marketOutcomesCount": 2,
-        "marketWinningOutcomeIndex": 0,
-        "marketLockTimestamp": "63a446c0",
-        "marketSettleTimestamp": "63a4508f",
-        "title": "Winner",
-        "escrowAccountBump": 253
-    }
-}
-
 const MarketView = () => {
     const dispatch = useDispatch()
     const program = useProgram()

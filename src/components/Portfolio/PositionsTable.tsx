@@ -11,14 +11,14 @@ import {
     Badge,
 } from '@chakra-ui/react'
 import {
-    Select as CustomSelect,
+    Select as ReactSelect,
     chakraComponents,
 } from "chakra-react-select"
 import { BsSearch } from 'react-icons/bs'
 
-// Custom style config for CustomSelect
+// Custom style config for ReactSelect
 // Documentation: https://github.com/csandman/chakra-react-select
-const customSelectMenuItem = {
+const ReactSelectMenuItem = {
     Option: ({ children, ...props }) => (
         // @ts-ignore
         <chakraComponents.Option {...props}>
@@ -173,7 +173,7 @@ export const TableActions = () => {
             </FormControl>
 
             <FormControl minW={{ 'base': '100px', 'md':'150px' }} w={'auto'}>
-                <CustomSelect
+                <ReactSelect
                     variant="outline"
                     isMulti
                     useBasicStyles
@@ -182,7 +182,7 @@ export const TableActions = () => {
                     options={statusOptions}
                     placeholder="Status"
                     closeMenuOnSelect={false}
-                    components={customSelectMenuItem}
+                    components={ReactSelectMenuItem}
                 />
             </FormControl>
 

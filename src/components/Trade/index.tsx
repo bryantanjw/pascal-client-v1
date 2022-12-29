@@ -27,7 +27,7 @@ const categories = ['Financials', 'Economics', 'Crypto', 'Climate']
 //  2. Search bar
 
 const MarketList = ({ markets }) => {
-    // FilterToggle state management is be ignored for the time being
+    // FilterToggle state management ignored for the time being
     const { value, getCheckboxProps } = useCheckboxGroup({ defaultValue: [] })
 
     if (!markets) {

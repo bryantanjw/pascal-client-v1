@@ -162,7 +162,7 @@ const MarketView = ({ market }) => {
                                 <TabPanel key={0} px={0}>
                                     <Flex flexDirection={'column'}>
                                         <Stack>
-                                            <MarketProgress market={market} />
+                                            <MarketProgress marketAccount={marketAccount} />
                                             
                                             <Divider borderColor={dividerColor} />
 

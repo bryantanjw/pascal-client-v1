@@ -8,6 +8,7 @@ import {
     ScaleFade,
     Skeleton, SkeletonText,
 } from '@chakra-ui/react'
+
 import styles from '@/styles/Home.module.css'
 
 // Style config //

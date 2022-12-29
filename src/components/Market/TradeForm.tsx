@@ -130,10 +130,8 @@ export const TradeForm = ({ market, marketOutcomes }) => {
   const [isSubmitted, setSubmitted] = useState(false)
   
   const { title, index } = useSelector(getOutcomeState)
-
-  const { connection } = useConnection()
   const { publicKey } = useWallet()
-  const isOwner = ( publicKey ? publicKey.toString() === process.env.NEXT_PUBLIC_OWNER_PUBLIC_KEY : false )
+  const isAdmin = ( publicKey ? publicKey.toString() === process.env.NEXT_PUBLIC_OWNER_PUBLIC_KEY : false )
 
   const toast = useToast()
   const steps = [{ label: "" }, { label: "" }]
@@ -161,7 +159,7 @@ export const TradeForm = ({ market, marketOutcomes }) => {
         <TabList mb={3}>
           <Tab sx={tabListStyle}>Swap</Tab>
           <Tab ml={3} sx={tabListStyle}>Pool</Tab>
-          {isOwner &&
+          {isAdmin &&
             <Tab ml={3} sx={tabListStyle}>Airdrop</Tab>
           }
         </TabList>

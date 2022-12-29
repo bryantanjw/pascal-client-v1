@@ -13,22 +13,28 @@ import {
     useColorModeValue,
     useBreakpointValue,
     useDisclosure,
-} from '@chakra-ui/react';
-import { ColorModeSwitcher } from './ColorModeSwitcher'
-import ChakraNextLink from './ChakraNextLink'
+    Button,
+    Heading,
+    Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton,
+} from '@chakra-ui/react'
 import {
     HamburgerIcon,
     CloseIcon,
     ChevronDownIcon,
     ChevronRightIcon,
 } from '@chakra-ui/icons'
-import {
-    WalletMultiButton
-} from '@solana/wallet-adapter-react-ui'
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
+import { useWallet } from '@solana/wallet-adapter-react'
+import { ColorModeSwitcher } from './ColorModeSwitcher'
+import ChakraNextLink from './ChakraNextLink'
+import CreateMarketModal from './CreateMarketModal'
+
 import styles from '@/styles/Home.module.css'
 
 export default function WithSubnavigation() {
-    const { isOpen, onToggle } = useDisclosure();
+    const { publicKey } = useWallet()
+    const isAdmin = ( publicKey ? publicKey.toString() === process.env.NEXT_PUBLIC_OWNER_PUBLIC_KEY : false )
+    const { isOpen, onOpen, onClose, onToggle } = useDisclosure()
   
     return (
         <Box>
@@ -54,7 +60,7 @@ export default function WithSubnavigation() {
                         aria-label={'Toggle Navigation'}
                     />
                 </Flex>
-                <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'left' }}>
+                <Flex flex={{ base: 1 }} mt={2} justify={{ base: 'center', md: 'left' }}>
                     <Text
                         textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
                         fontFamily={'heading'}
@@ -63,29 +69,68 @@ export default function WithSubnavigation() {
                     </Text>
                 </Flex>
         
-                <Flex display={{ base: 'none', md: 'flex' }}>
+                <Flex display={{ base: 'none', md: 'flex' }} mr={10}>
                     <DesktopNav />
                 </Flex>
         
                 <Stack
                     flex={1}
+                    mt={2}
                     justify={'flex-end'}
                     direction={'row'}
-                    spacing={6}>
+                    spacing={7}>
+
                     <ColorModeSwitcher />
+                    
+                    {isAdmin && (
+                        // eslint-disable-next-line react-hooks/rules-of-hooks
+                        <Flex display={{ base: 'none', md: 'block' }}>
+                            <Button
+                                // eslint-disable-next-line react-hooks/rules-of-hooks
+                                color={useColorModeValue('gray.800', 'gray.50')}
+                                variant={'ghost'}
+                                rounded={'xl'}
+                                right={-4}
+                                // eslint-disable-next-line react-hooks/rules-of-hooks
+                                _hover={{ 'bg': useColorModeValue('gray.200', 'gray.700') }}
+                                onClick={onOpen}
+                            >
+                                Create market
+                            </Button>
+
+                            <Modal
+                                onClose={onClose} 
+                                isOpen={isOpen} 
+                                isCentered 
+                                motionPreset='slideInBottom' 
+                                closeOnOverlayClick={false}
+                                scrollBehavior={'inside'}
+                                size={'xl'}
+                            >
+                                <ModalOverlay backdropFilter='auto' backdropBlur='2px' />
+                                <ModalContent p={'12px 0px 0px 12px'} rounded={'2xl'}>
+                                    <ModalHeader mt={3}>
+                                        <Heading size="md" fontWeight="semibold">
+                                            Create a market
+                                        </Heading>
+                                        <Text fontWeight={'normal'} opacity={0.7}>description</Text>
+                                    </ModalHeader>
+                                    <ModalCloseButton />
+
+                                    <ModalBody>
+                                        <CreateMarketModal />
+                                    </ModalBody>
+                                </ModalContent>
+                            </Modal>
+                        </Flex>
+                    )}
+
                     <WalletMultiButton 
                         className={useColorModeValue(
                             styles.wallet_adapter_button_trigger_light_mode, 
                             styles.wallet_adapter_button_trigger_dark_mode
                         )} 
                     />
-                    {/* <Button
-                        display={{ base: 'none', md: 'inline-flex' }}
-                        fontSize={'sm'}
-                        fontWeight={600}
-                        colorScheme={'purple'}>
-                        Connect Wallet
-                    </Button> */}
                 </Stack>
             </Flex>
   
