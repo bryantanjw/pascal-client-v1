@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState } from 'react'
 import {
   Stack,
@@ -19,14 +20,35 @@ import {
   HStack,
   Image,
   Text,
+  Collapse,
 } from '@chakra-ui/react'
 import { Calendar } from 'primereact/calendar'
-import { Select as ReactSelect, chakraComponents } from "chakra-react-select"
+import { Select as ReactSelect, chakraComponents, ChakraStylesConfig } from "chakra-react-select"
+import { AnimatePresence, motion, MotionConfig } from "framer-motion"
+import useMeasure from "react-use-measure"
 
 import 'primereact/resources/themes/lara-light-indigo/theme.css'
 import 'primereact/resources/primereact.css'
 
-const CustomSelectOption = {
+const chakraStyles: ChakraStylesConfig = {
+  menuList: () => ({
+    background: "transparent",
+  }),
+  menu: () => ({
+    position: "relative",
+    height: 0,
+    pt: 2,
+    mb: 4,
+  }),
+  option: () => ({
+    background: "transparent",
+  }),
+  input: () => ({
+    color: "transparent",
+  }),
+};
+
+const CustomSelect = {
   Option: ({ children, ...props }) => (
     // @ts-ignore
     <chakraComponents.Option {...props}>
@@ -36,11 +58,17 @@ const CustomSelectOption = {
         px={{ 'base': 1, 'md': 3 }}
         borderRadius="3xl"
         cursor="pointer"
-        transition="all 0.2s"
+        transition="all 0.2s ease"
         bg={useColorModeValue('gray.100', 'gray.700')}
+        _hover={{
+          // eslint-disable-next-line react-hooks/rules-of-hooks
+          borderColor: useColorModeValue('black', 'white'),
+          bg: 'transparent'
+        }}
+        _focus={{ shadow: 'outline', boxShadow: 'none' }}
       >
         <HStack spacing={1}>
-          <Image src={props.data.iconUrl} alt={props.data.title} width={{ 'base':'11px', 'md':'15px' }} />
+          <Image src={props.data.iconUrl} alt={props.data.title} width={{ 'base':'9px', 'md':'14px' }} filter={useColorModeValue('invert(0%)', 'invert(100%)')} />
           <Box>
             <Text fontSize={{'base':'10px', 'md': 'sm'}} fontWeight="bold">{props.data.title}</Text>
           </Box>
@@ -48,27 +76,45 @@ const CustomSelectOption = {
       </Box>
     </chakraComponents.Option>
   ),
-  SingleValue: ({ children, ...props }) => (
-    // @ts-ignore
-    <chakraComponents.SingleValue {...props}>
-      <Box
-        borderWidth="1px"
-        py={1}
-        px={{ 'base': 1, 'md': 3 }}
-        borderRadius="3xl"
-        cursor="pointer"
-        transition="all 0.2s"
-        bg={useColorModeValue('gray.100', 'gray.700')}
-      >
-        <HStack spacing={1}>
-          <Image src={props.data.iconUrl} alt={props.data.title} width={{ 'base':'11px', 'md':'15px' }} />
-          <Box>
-            <Text fontSize={{'base':'10px', 'md': 'sm'}} fontWeight="bold">{props.data.title}</Text>
-          </Box>
-        </HStack>
-      </Box>
-    </chakraComponents.SingleValue>
-  )
+
+  SingleValue: ({ children, ...props }) => {
+    return (
+      // @ts-ignore
+      <chakraComponents.SingleValue {...props}>
+        <Box
+          borderWidth="1px"
+          py={1}
+          px={{ 'base': 1, 'md': 2 }}
+          borderRadius="3xl"
+          cursor="pointer"
+          transition="all 0.2s"
+          bg={useColorModeValue('black', 'white')}
+          color={useColorModeValue('white', 'black')}
+        >
+          <HStack spacing={2}>
+            <Image src={props.data.iconUrl} alt={props.data.title} width={{ 'base':'11px', 'md':'9px' }} filter={useColorModeValue('invert(100%)', 'invert(0%)')} />
+            <Box>
+              <Text fontSize={{'base':'10px', 'md': '2xs'}} fontWeight="bold">{props.data.title}</Text>
+            </Box>
+          </HStack>
+        </Box>
+      </chakraComponents.SingleValue>
+    )
+  },
+
+  MenuList: ({ children, ...props }) => {
+    const { menuIsOpen } = props
+    return (
+      // @ts-ignore
+      <chakraComponents.MenuList {...props}>
+        <Collapse in={!menuIsOpen} animateOpacity>
+          <HStack pt={1} bg={'transparent'} border={0} mb={'30px'} position="relative">
+              {children}
+          </HStack>
+        </Collapse>
+      </chakraComponents.MenuList>
+    )
+  },
 }
 
 const Form1 = () => {
@@ -101,29 +147,30 @@ const Form1 = () => {
 
   ]
   return (
-    <Stack spacing={4}>
+    <ResizablePanel>
+      <Stack spacing={4}>
       <Flex>
         <FormControl variant={"floating"}>
           <Input variant={"flushed"} id="title" placeholder=" " />
           <FormLabel htmlFor="title" fontWeight={'normal'}>
             Title
           </FormLabel>
-          <FormHelperText textAlign={"end"}>Keep it very short and sweet!</FormHelperText>
+          <FormHelperText textAlign={"end"}>Keep it short and sweet!</FormHelperText>
         </FormControl>
       </Flex>
-
       <FormControl variant={"floating"} id="category" cursor={"text"}>
-        <FormLabel htmlFor="title" fontWeight={'normal'}>
+        <FormLabel htmlFor="category" fontWeight={'normal'}>
             Category
-          </FormLabel>
+        </FormLabel>
         <ReactSelect
           useBasicStyles
           variant="flushed"
           instanceId="chakra-react-select-1"
           name="category"
-          placeholder={""}
+          placeholder={" "}
           options={categoryOptions}
-          components={CustomSelectOption}
+          components={CustomSelect}
+          chakraStyles={chakraStyles}
         />
       </FormControl>
 
@@ -131,16 +178,12 @@ const Form1 = () => {
         <FormLabel htmlFor="title" fontWeight={'normal'} mt={"5%"}>
           When should your market lock for resolution?
         </FormLabel>
-        <Calendar id="time24" value={date} onChange={(e) => setDate(e.value)} inline showTime showSeconds
-          style={{
-            border: '0px !important',
-            width: '100%'
-          }}
-        />
+        {/* <Calendar id="time24" value={date} onChange={(e) => setDate(e.value)} inline showTime showSeconds /> */}
       </FormControl>
-    </Stack>
-  );
-};
+      </Stack>
+    </ResizablePanel>
+  )
+}
 
 const Form2 = () => {
   return (
@@ -346,8 +389,11 @@ export default function CreateMarketModal() {
   const toast = useToast();
   const [step, setStep] = useState(1);
   const [progress, setProgress] = useState(33.33);
+
+  let duration = 0.5;
+
   return (
-    <>
+    <MotionConfig transition={{ duration, type: "tween" }}>
       <Box
         m="10px auto"
         as="form">
@@ -360,19 +406,18 @@ export default function CreateMarketModal() {
           <Flex justifyContent={'flex-end'} w="100%">
             <ButtonGroup mt="5%">
               <Flex>
-                <Button
+                {(step === 2 || step === 3) && <Button
                   p={5}
                   onClick={() => {
                     setStep(step - 1);
                     setProgress(progress - 33.33);
                   }}
-                  isDisabled={step === 1}
                   colorScheme="gray"
                   variant="solid"
                   mr="8%">
                   Back
-                </Button>
-                <Button
+                </Button>}
+                { <Button
                   p={5}
                   isDisabled={step === 3}
                   onClick={() => {
@@ -386,7 +431,7 @@ export default function CreateMarketModal() {
                   colorScheme="gray"
                   variant="outline">
                   Next
-                </Button>
+                </Button>}
               </Flex>
               {step === 3 ? (
                 <Button
@@ -408,6 +453,56 @@ export default function CreateMarketModal() {
             </ButtonGroup>
           </Flex>
       </Box>
-    </>
+    </MotionConfig>
   );
 }
+
+const ResizablePanel = ({ children }) => {
+  let [ref, { height }] = useMeasure();
+
+  return (
+    <motion.div
+      animate={{ height: height || "auto" }}
+      className="relative overflow-hidden"
+    >
+      <AnimatePresence initial={false}>
+        <motion.div
+          key={JSON.stringify(children, ignoreCircularReferences())}
+          initial={{
+            x: 384,
+          }}
+          animate={{
+            x: 0,
+            // transition: { duration: duration / 2, delay: duration / 2 },
+          }}
+          exit={{
+            x: -384,
+            // transition: { duration: duration / 2 },
+          }}
+          className={height ? "absolute" : "relative"}
+        >
+          <div ref={ref} className="px-8 pb-8">
+            {children}
+          </div>
+        </motion.div>
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+/*
+  Replacer function to JSON.stringify that ignores
+  circular references and internal React properties.
+  https://github.com/facebook/react/issues/8669#issuecomment-531515508
+*/
+const ignoreCircularReferences = () => {
+  const seen = new WeakSet();
+  return (key, value) => {
+    if (key.startsWith("_")) return; // Don't compare React's internal props.
+    if (typeof value === "object" && value !== null) {
+      if (seen.has(value)) return;
+      seen.add(value);
+    }
+    return value;
+  };
+};

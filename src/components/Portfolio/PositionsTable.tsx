@@ -185,7 +185,6 @@ export const TableActions = () => {
                     components={ReactSelectMenuItem}
                 />
             </FormControl>
-
         </HStack>
       </Stack>
     )

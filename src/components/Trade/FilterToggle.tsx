@@ -22,7 +22,7 @@ const ToggleButton = (props: BoxProps) => (
     px={{ 'base': 1, 'md': 3 }}
     borderRadius="3xl"
     cursor="pointer"
-    transition="all 0.2s"
+    transition="all 0.2s ease"
     bg={useColorModeValue('gray.100', 'gray.700')}
     _hover={{
       borderColor: useColorModeValue('black', 'white'),

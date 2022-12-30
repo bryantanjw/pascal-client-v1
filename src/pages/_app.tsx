@@ -51,7 +51,6 @@ const theme = extendTheme({
               left: 0,
               zIndex: 2,
               position: "absolute",
-              backgroundColor: "white",
               pointerEvents: "none",
               px: 1,
               my: 2,
