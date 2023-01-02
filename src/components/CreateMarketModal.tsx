@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState } from 'react'
 import {
   Stack,
@@ -20,15 +19,25 @@ import {
   HStack,
   Image,
   Text,
-  Collapse,
+  keyframes,
+  useRadio,
 } from '@chakra-ui/react'
-import { Calendar } from 'primereact/calendar'
-import { Select as ReactSelect, chakraComponents, ChakraStylesConfig } from "chakra-react-select"
-import { AnimatePresence, motion, MotionConfig } from "framer-motion"
-import useMeasure from "react-use-measure"
+import { Select as ReactSelect, chakraComponents, ChakraStylesConfig } from 'chakra-react-select'
+import { AnimatePresence, motion, MotionConfig } from 'framer-motion'
+import useMeasure from 'react-use-measure'
+import { Datepicker, Button as MButton, Page, setOptions } from '@mobiscroll/react'
 
-import 'primereact/resources/themes/lara-light-indigo/theme.css'
-import 'primereact/resources/primereact.css'
+import '@mobiscroll/react/dist/css/mobiscroll.min.css'
+
+const collapse = keyframes`
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+`
 
 const chakraStyles: ChakraStylesConfig = {
   menuList: () => ({
@@ -36,16 +45,27 @@ const chakraStyles: ChakraStylesConfig = {
   }),
   menu: () => ({
     position: "relative",
-    height: 0,
     pt: 2,
     mb: 4,
+    marginTop: 0,
+    height: "0px",
+    animation: `${collapse} 0.2s ease-in-out`,
   }),
   option: () => ({
     background: "transparent",
   }),
-  input: () => ({
-    color: "transparent",
+  input: (provided, state) => ({
+    ...provided,
+    color: state.hasValue ? "transparent" : "normal",
   }),
+  dropdownIndicator: (provided, state) => ({
+    ...provided,
+    transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 0,
+    transition: "all 0.3s ease",
+  }),
+  placeholder: () => ({
+    visibility: "hidden"
+  })
 };
 
 const CustomSelect = {
@@ -78,6 +98,7 @@ const CustomSelect = {
   ),
 
   SingleValue: ({ children, ...props }) => {
+
     return (
       // @ts-ignore
       <chakraComponents.SingleValue {...props}>
@@ -103,22 +124,29 @@ const CustomSelect = {
   },
 
   MenuList: ({ children, ...props }) => {
-    const { menuIsOpen } = props
     return (
       // @ts-ignore
       <chakraComponents.MenuList {...props}>
-        <Collapse in={!menuIsOpen} animateOpacity>
-          <HStack pt={1} bg={'transparent'} border={0} mb={'30px'} position="relative">
-              {children}
-          </HStack>
-        </Collapse>
+        <HStack pt={1} bg={'transparent'} border={0} mb={'30px'} position="relative">
+            {children}
+        </HStack>
       </chakraComponents.MenuList>
     )
   },
+
+  Menu: ({ children, ...props }) => {
+    return (
+      // @ts-ignore
+      <chakraComponents.Menu {...props}>
+        {children}
+      </chakraComponents.Menu>
+    )
+  },
+
 }
 
 const Form1 = () => {
-  const [date, setDate] = useState<any>()
+  const [date, setDate] = useState<Date>()
   const categoryOptions = [
     {
       label: "Financials",
@@ -146,10 +174,21 @@ const Form1 = () => {
     },
 
   ]
+
+  const Custom = () => {
+    return <ReactSelect
+    useBasicStyles
+    variant="flushed"
+    instanceId="chakra-react-select-1"
+    name="category"
+    options={categoryOptions}
+    components={CustomSelect}
+    chakraStyles={chakraStyles}
+  />
+  }
   return (
     <ResizablePanel>
-      <Stack spacing={4}>
-      <Flex>
+    <Stack spacing={4}>
         <FormControl variant={"floating"}>
           <Input variant={"flushed"} id="title" placeholder=" " />
           <FormLabel htmlFor="title" fontWeight={'normal'}>
@@ -157,29 +196,22 @@ const Form1 = () => {
           </FormLabel>
           <FormHelperText textAlign={"end"}>Keep it short and sweet!</FormHelperText>
         </FormControl>
-      </Flex>
-      <FormControl variant={"floating"} id="category" cursor={"text"}>
-        <FormLabel htmlFor="category" fontWeight={'normal'}>
-            Category
-        </FormLabel>
-        <ReactSelect
-          useBasicStyles
-          variant="flushed"
-          instanceId="chakra-react-select-1"
-          name="category"
-          placeholder={" "}
-          options={categoryOptions}
-          components={CustomSelect}
-          chakraStyles={chakraStyles}
-        />
-      </FormControl>
+        <FormControl variant={"floating"} cursor={"text"}>
+          <Input as={Custom} id="category" placeholder=" " />
+          <FormLabel htmlFor="category" fontWeight={'normal'}>
+              Category
+          </FormLabel>
+        </FormControl>
 
-      <FormControl id="lockTimestamp">
-        <FormLabel htmlFor="title" fontWeight={'normal'} mt={"5%"}>
-          When should your market lock for resolution?
-        </FormLabel>
-        {/* <Calendar id="time24" value={date} onChange={(e) => setDate(e.value)} inline showTime showSeconds /> */}
-      </FormControl>
+        <FormControl id="lockTimestamp">
+          <FormLabel htmlFor="title" fontWeight={'normal'} mt={"5%"}>
+            Market closes in
+          </FormLabel>
+          <Flex justifyContent={"flex-end"}>
+            <Input type={"date"} mr={"5%"} />
+            <Input type={"time"} />
+          </Flex>
+        </FormControl>
       </Stack>
     </ResizablePanel>
   )
@@ -401,7 +433,7 @@ export default function CreateMarketModal() {
           value={progress}
           size={'xs'}
           mb="5%"
-          isAnimated></Progress>
+        />
         {step === 1 ? <Form1 /> : step === 2 ? <Form2 /> : <Form3 />}
           <Flex justifyContent={'flex-end'} w="100%">
             <ButtonGroup mt="5%">
@@ -481,9 +513,9 @@ const ResizablePanel = ({ children }) => {
           }}
           className={height ? "absolute" : "relative"}
         >
-          <div ref={ref} className="px-8 pb-8">
+          <Box ref={ref} className="px-8 pb-8">
             {children}
-          </div>
+          </Box>
         </motion.div>
       </AnimatePresence>
     </motion.div>

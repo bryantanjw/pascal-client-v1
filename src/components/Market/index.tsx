@@ -143,6 +143,7 @@ const MarketView = ({ market }) => {
                         <Tabs colorScheme={'black'}>
                             <TabList>
                                 <Tab sx={tabListStyle}>Outcomes</Tab>
+                                <Tab sx={tabListStyle}>Orderbook</Tab>
                             </TabList>
 
                             <TabPanels>

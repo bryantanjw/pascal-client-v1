@@ -80,7 +80,6 @@ const Home: NextPage = ({ markets }: InferGetStaticPropsType<typeof getStaticPro
                 </Text>
                 
               <MarketList markets={markets} />
-
             </Stack>
           </Suspense>
         </Box>

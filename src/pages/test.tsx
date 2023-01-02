@@ -175,7 +175,8 @@ const MarketView = () => {
                     <Stack spacing={4} minW={'sm'} flex="2">
                         <Tabs colorScheme={'black'}>
                             <TabList>
-                                <Tab sx={tabListStyle}>Outcomes</Tab>
+                                <Tab sx={tabListStyle} mr={7}>Outcomes</Tab>
+                                <Tab sx={tabListStyle}>Orderbook</Tab>
                             </TabList>
 
                             <TabPanels>
@@ -265,6 +266,7 @@ const MarketView = () => {
                     />
                 </Stack>
             </Box>
+
         </Layout>
         </div>
     )
