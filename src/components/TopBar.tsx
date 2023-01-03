@@ -27,7 +27,7 @@ import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { ColorModeSwitcher } from './ColorModeSwitcher'
 import ChakraNextLink from './ChakraNextLink'
-import CreateMarketModal from './CreateMarketModal'
+import { CreateMarketModal } from './CreateMarketModal'
 
 import styles from '@/styles/Home.module.css'
 
@@ -86,13 +86,9 @@ export default function WithSubnavigation() {
                         // eslint-disable-next-line react-hooks/rules-of-hooks
                         <Flex display={{ base: 'none', md: 'block' }}>
                             <Button
-                                // eslint-disable-next-line react-hooks/rules-of-hooks
-                                color={useColorModeValue('gray.800', 'gray.50')}
                                 variant={'ghost'}
                                 rounded={'xl'}
                                 right={-4}
-                                // eslint-disable-next-line react-hooks/rules-of-hooks
-                                _hover={{ 'bg': useColorModeValue('gray.200', 'gray.700') }}
                                 onClick={onOpen}
                             >
                                 Create market
@@ -113,7 +109,6 @@ export default function WithSubnavigation() {
                                         <Heading size="md" fontWeight="semibold">
                                             Create a market
                                         </Heading>
-                                        <Text fontWeight={'normal'} opacity={0.7}>description</Text>
                                     </ModalHeader>
                                     <ModalCloseButton />
 

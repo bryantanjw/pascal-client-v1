@@ -63,7 +63,8 @@
     "styled-components": "^4.1.1",
     "swr": "^1.3.0",
     "three": "^0.137.0",
-    "unfetch": "^4.2.0"
+    "unfetch": "^4.2.0",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@types/node": "18.0.0",

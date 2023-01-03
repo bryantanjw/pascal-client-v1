@@ -1,33 +1,26 @@
 import React, { useState } from 'react'
 import {
   Stack,
-  Progress,
   Box,
-  ButtonGroup, Button,
-  Heading,
+  Button,
   Flex,
   FormControl,
-  GridItem,
   FormLabel,
-  Select,
-  SimpleGrid,
-  Input, InputLeftAddon, InputGroup,
-  Textarea,
+  Input,
   FormHelperText,
-  useToast,
+  Heading,
   useColorModeValue,
   HStack,
   Image,
   Text,
   keyframes,
-  useRadio,
+  FormErrorMessage,
 } from '@chakra-ui/react'
 import { Select as ReactSelect, chakraComponents, ChakraStylesConfig } from 'chakra-react-select'
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion'
 import useMeasure from 'react-use-measure'
-import { Datepicker, Button as MButton, Page, setOptions } from '@mobiscroll/react'
-
-import '@mobiscroll/react/dist/css/mobiscroll.min.css'
+import { Field, Form, Formik } from 'formik'
+import * as yup from "yup"
 
 const collapse = keyframes`
   0% {
@@ -68,7 +61,7 @@ const chakraStyles: ChakraStylesConfig = {
   })
 };
 
-const CustomSelect = {
+const CustomReactSelect = {
   Option: ({ children, ...props }) => (
     // @ts-ignore
     <chakraComponents.Option {...props}>
@@ -145,348 +138,158 @@ const CustomSelect = {
 
 }
 
-const Form1 = () => {
-  const [date, setDate] = useState<Date>()
-  const categoryOptions = [
-    {
-      label: "Financials",
-      title: "Financials",
-      value: "Financials",
-      iconUrl: "./Financials.svg"
-    },
-    {
-      label: "Economics",
-      title: "Economics",
-      value: "Economics",
-      iconUrl: "./Economics.svg"
-    },
-    {
-      label: "Crypto",
-      title: "Crypto",
-      value: "Crypto",
-      iconUrl: "./Crypto.svg"
-    },
-    {
-      label: "Climate",
-      title: "Climate",
-      value: "Crypto",
-      iconUrl: "./Climate.svg"
-    },
+const Select = () => {
+  const categories = ['Financials', 'Economics', 'Crypto', 'Climate', 'Other']
+  const categoryOptions = categories.map((category) => ({
+    value: category,
+    label: category,
+    iconUrl: `./${category}.svg`,
+    title: category
+  }))
 
-  ]
-
-  const Custom = () => {
-    return <ReactSelect
-    useBasicStyles
-    variant="flushed"
-    instanceId="chakra-react-select-1"
-    name="category"
-    options={categoryOptions}
-    components={CustomSelect}
-    chakraStyles={chakraStyles}
-  />
-  }
-  return (
-    <ResizablePanel>
-    <Stack spacing={4}>
-        <FormControl variant={"floating"}>
-          <Input variant={"flushed"} id="title" placeholder=" " />
-          <FormLabel htmlFor="title" fontWeight={'normal'}>
-            Title
-          </FormLabel>
-          <FormHelperText textAlign={"end"}>Keep it short and sweet!</FormHelperText>
-        </FormControl>
-        <FormControl variant={"floating"} cursor={"text"}>
-          <Input as={Custom} id="category" placeholder=" " />
-          <FormLabel htmlFor="category" fontWeight={'normal'}>
-              Category
-          </FormLabel>
-        </FormControl>
-
-        <FormControl id="lockTimestamp">
-          <FormLabel htmlFor="title" fontWeight={'normal'} mt={"5%"}>
-            Market closes in
-          </FormLabel>
-          <Flex justifyContent={"flex-end"}>
-            <Input type={"date"} mr={"5%"} />
-            <Input type={"time"} />
-          </Flex>
-        </FormControl>
-      </Stack>
-    </ResizablePanel>
+  return ( 
+    <ReactSelect
+      useBasicStyles
+      instanceId="chakra-react-select-1"
+      name="category"
+      options={categoryOptions}
+      components={CustomReactSelect}
+      chakraStyles={chakraStyles}
+    />
   )
 }
 
-const Form2 = () => {
+const Form1 = () => {
   return (
     <>
-      <Heading w="100%" textAlign={'center'} fontWeight="normal" mb="2%">
-        User Details
-      </Heading>
-      <FormControl as={GridItem} colSpan={[6, 3]}>
-        <FormLabel
-          htmlFor="country"
-          fontSize="sm"
-          fontWeight="md"
-          color="gray.700"
-          _dark={{
-            color: 'gray.50',
-          }}>
-          Country / Region
+    <Field name="title">
+      {({ field, form }) => (
+      <FormControl isInvalid={form.errors.title && form.touched.title}>
+        <FormLabel htmlFor="title" fontWeight={'normal'}>
+          Title
         </FormLabel>
-        <Select
-          id="country"
-          name="country"
-          autoComplete="country"
-          placeholder="Select option"
-          focusBorderColor="brand.400"
-          shadow="sm"
-          size="sm"
-          w="full"
-          rounded="md">
-          <option>United States</option>
-          <option>Canada</option>
-          <option>Mexico</option>
-        </Select>
+        <Input {...field} id="title" placeholder=" " />
+        <FormErrorMessage>{form.errors.title}</FormErrorMessage>
+        <FormHelperText textAlign={"end"}>Keep it short and sweet!</FormHelperText>
       </FormControl>
+      )}
+    </Field>
+    
+    <Field name="category">
+      {({ field, form }) => (
+      <FormControl cursor={"text"} isInvalid={form.errors.category && form.touched.category}>
+        <FormLabel htmlFor="category" fontWeight={'normal'}>
+          Category
+        </FormLabel>
+        <Select {...field} />
+        <FormErrorMessage>{form.errors.category}</FormErrorMessage>
+      </FormControl>
+      )}
+    </Field>
 
-      <FormControl as={GridItem} colSpan={6}>
-        <FormLabel
-          htmlFor="street_address"
-          fontSize="sm"
-          fontWeight="md"
-          color="gray.700"
-          _dark={{
-            color: 'gray.50',
-          }}
-          mt="2%">
-          Street address
+    <Field name="lockTimestamp">
+      {({ field, form }) => (
+      <FormControl id="lockTimestamp" isInvalid={form.errors.lockTimestamp && form.touched.lockTimestamp}>
+        <FormLabel htmlFor="title" fontWeight={'normal'} mt={"5%"}>
+          Market closes in
         </FormLabel>
-        <Input
-          type="text"
-          name="street_address"
-          id="street_address"
-          autoComplete="street-address"
-          focusBorderColor="brand.400"
-          shadow="sm"
-          size="sm"
-          w="full"
-          rounded="md"
-        />
+        <Flex justifyContent={"flex-end"}>
+          <Input {...field} type={"date"} mr={"5%"} />
+          <Input {...field} type={"time"} />
+        </Flex>
+        <FormErrorMessage>{form.errors.lockTimestamp}</FormErrorMessage>
       </FormControl>
-
-      <FormControl as={GridItem} colSpan={[6, 6, null, 2]}>
-        <FormLabel
-          htmlFor="city"
-          fontSize="sm"
-          fontWeight="md"
-          color="gray.700"
-          _dark={{
-            color: 'gray.50',
-          }}
-          mt="2%">
-          City
-        </FormLabel>
-        <Input
-          type="text"
-          name="city"
-          id="city"
-          autoComplete="city"
-          focusBorderColor="brand.400"
-          shadow="sm"
-          size="sm"
-          w="full"
-          rounded="md"
-        />
-      </FormControl>
-
-      <FormControl as={GridItem} colSpan={[6, 3, null, 2]}>
-        <FormLabel
-          htmlFor="state"
-          fontSize="sm"
-          fontWeight="md"
-          color="gray.700"
-          _dark={{
-            color: 'gray.50',
-          }}
-          mt="2%">
-          State / Province
-        </FormLabel>
-        <Input
-          type="text"
-          name="state"
-          id="state"
-          autoComplete="state"
-          focusBorderColor="brand.400"
-          shadow="sm"
-          size="sm"
-          w="full"
-          rounded="md"
-        />
-      </FormControl>
-
-      <FormControl as={GridItem} colSpan={[6, 3, null, 2]}>
-        <FormLabel
-          htmlFor="postal_code"
-          fontSize="sm"
-          fontWeight="md"
-          color="gray.700"
-          _dark={{
-            color: 'gray.50',
-          }}
-          mt="2%">
-          ZIP / Postal
-        </FormLabel>
-        <Input
-          type="text"
-          name="postal_code"
-          id="postal_code"
-          autoComplete="postal-code"
-          focusBorderColor="brand.400"
-          shadow="sm"
-          size="sm"
-          w="full"
-          rounded="md"
-        />
-      </FormControl>
+      )}
+    </Field>
     </>
-  );
-};
+  )
+}
 
-const Form3 = () => {
+const Form2 = ({ title }) => {
   return (
     <>
-      <Heading w="100%" textAlign={'center'} fontWeight="normal">
-        Social Handles
-      </Heading>
-      <SimpleGrid columns={1} spacing={6}>
-        <FormControl as={GridItem} colSpan={[3, 2]}>
-          <FormLabel
-            fontSize="sm"
-            fontWeight="md"
-            color="gray.700"
-            _dark={{
-              color: 'gray.50',
-            }}>
-            Website
-          </FormLabel>
-          <InputGroup size="sm">
-            <InputLeftAddon
-              bg="gray.50"
-              _dark={{
-                bg: 'gray.800',
-              }}
-              color="gray.500"
-              rounded="md">
-              http://
-            </InputLeftAddon>
-            <Input
-              type="tel"
-              placeholder="www.example.com"
-              focusBorderColor="brand.400"
-              rounded="md"
-            />
-          </InputGroup>
-        </FormControl>
+    <Heading size={'md'}>{title}</Heading>
+    <Field name="resolutionCriteria">
+      {({ field, form }) => (
+      <FormControl isInvalid={form.errors.resolutionCriteria && form.touched.resolutionCriteria}>
+        <FormLabel htmlFor="resolutionCriteria" fontWeight={'normal'}>
+          Resolution Criteria
+        </FormLabel>
+        <Input {...field} id="resolutionCriteria" placeholder="This market resolves if..." />
+        <FormErrorMessage>{form.errors.resolutionCriteria}</FormErrorMessage>
+        <FormHelperText textAlign={"end"}>Be clear and objective!</FormHelperText>
+      </FormControl>
+      )}
+    </Field>
 
-        <FormControl id="email" mt={1}>
-          <FormLabel
-            fontSize="sm"
-            fontWeight="md"
-            color="gray.700"
-            _dark={{
-              color: 'gray.50',
-            }}>
-            About
-          </FormLabel>
-          <Textarea
-            placeholder="you@example.com"
-            rows={3}
-            shadow="sm"
-            focusBorderColor="brand.400"
-            fontSize={{
-              sm: 'sm',
-            }}
-          />
-          <FormHelperText>
-            Brief description for your profile. URLs are hyperlinked.
-          </FormHelperText>
-        </FormControl>
-      </SimpleGrid>
     </>
-  );
-};
+  )
+}
 
-export default function CreateMarketModal() {
-  const toast = useToast();
-  const [step, setStep] = useState(1);
-  const [progress, setProgress] = useState(33.33);
-
+export const CreateMarketModal = () => {
   let duration = 0.5;
 
+  const ValidationSchema = yup.object().shape({
+    title: yup.string().required("Market title is required"),
+    category: yup.string().required("Market category is required"),
+    lockTimestamp: yup.date().min(new Date(), 'Resolution date must be in the future').required(),
+    resolutionCriteria: yup.string().required("Resolution criteria is required")
+  })
+  
   return (
     <MotionConfig transition={{ duration, type: "tween" }}>
       <Box
         m="10px auto"
-        as="form">
-        <Progress
-          value={progress}
-          size={'xs'}
-          mb="5%"
-        />
-        {step === 1 ? <Form1 /> : step === 2 ? <Form2 /> : <Form3 />}
-          <Flex justifyContent={'flex-end'} w="100%">
-            <ButtonGroup mt="5%">
-              <Flex>
-                {(step === 2 || step === 3) && <Button
-                  p={5}
-                  onClick={() => {
-                    setStep(step - 1);
-                    setProgress(progress - 33.33);
-                  }}
-                  colorScheme="gray"
-                  variant="solid"
-                  mr="8%">
-                  Back
-                </Button>}
-                { <Button
-                  p={5}
-                  isDisabled={step === 3}
-                  onClick={() => {
-                    setStep(step + 1);
-                    if (step === 3) {
-                      setProgress(100);
-                    } else {
-                      setProgress(progress + 33.33);
-                    }
-                  }}
-                  colorScheme="gray"
-                  variant="outline">
-                  Next
-                </Button>}
-              </Flex>
-              {step === 3 ? (
-                <Button
-                  w="7rem"
-                  colorScheme="red"
-                  variant="solid"
-                  onClick={() => {
-                    toast({
-                      title: 'Account created.',
-                      description: "We've created your account for you.",
-                      status: 'success',
-                      duration: 3000,
-                      isClosable: true,
-                    });
-                  }}>
-                  Submit
-                </Button>
-              ) : null}
-            </ButtonGroup>
-          </Flex>
+      >
+        <Formik
+          initialValues={{ title: '', category: '', lockTimestamp: '', resolutionCriteria: '' }}
+          validationSchema={ValidationSchema}
+          onSubmit={async (values, actions) => {
+            alert(JSON.stringify(values, null, 2));
+          }}
+        >
+          {(props) => (
+            <FormStepper {...props}>
+              <Form1 />
+              <Form2 title={props.values.title} />
+            </FormStepper>
+          )}
+        </Formik>
       </Box>
     </MotionConfig>
   );
+}
+
+const FormStepper = ({ children, ...props }) => {
+  const { isSubmitting, errors, values } = props
+  const stepsArray = React.Children.toArray(children)
+  const [currentStep, setCurrentStep] = useState(0)
+  const currentChild = stepsArray[currentStep]
+  console.log(values)
+
+  return (
+    <Form>
+      <Stack spacing={4}>
+        {currentChild}
+      </Stack>
+
+      <Flex justifyContent={"flex-end"} mt={5} py={2}>
+        <Button
+          variant={"outline"}
+          onClick={() => {
+            currentStep === 0 ? setCurrentStep(1) : setCurrentStep(0);
+          }}
+        >
+          {currentStep === 0 ? "Next" : "Back"}
+        </Button>
+        {currentStep === 1 && (
+          <Button ml={4} type="submit" isDisabled={isSubmitting || errors || !values}>
+            Submit
+          </Button>
+        )}
+      </Flex>
+    </Form>
+  )
 }
 
 const ResizablePanel = ({ children }) => {
@@ -537,4 +340,4 @@ const ignoreCircularReferences = () => {
     }
     return value;
   };
-};
+}
