@@ -11,26 +11,12 @@ import {
   Tooltip,
   Tabs, TabList, TabPanels, Tab, TabPanel, HStack,
   useToast,
-  Link,
 } from '@chakra-ui/react'
-import { ArrowBackIcon, InfoOutlineIcon, ExternalLinkIcon } from '@chakra-ui/icons'
-import * as web3 from "@solana/web3.js"
-import * as token from '@solana/spl-token'
-import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { ArrowBackIcon, InfoOutlineIcon } from '@chakra-ui/icons'
+import { useWallet } from '@solana/wallet-adapter-react'
 import { Field, Formik } from 'formik'
 import Confetti from 'react-dom-confetti'
 import { Step, Steps, useSteps } from "chakra-ui-steps"
-import {
-  getMarket,
-  MarketAccount,
-  getMarketOutcomesByMarket,
-  MarketOutcomeAccount,
-  getMintInfo,
-  findMarketPositionPda,
-  createOrder,
-  GetAccount,
-} from "@monaco-protocol/client"
-
 import { getOutcomeState } from '@/store/slices/outcomeSlice'
 import { useSelector } from '@/store/store'
 import { TokenSwapForm } from '../TokenSwap'

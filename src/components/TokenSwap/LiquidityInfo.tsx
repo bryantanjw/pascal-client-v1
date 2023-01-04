@@ -13,7 +13,7 @@ import {
     Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverBody,
 } from "@chakra-ui/react"
 import { ExternalLinkIcon, InfoOutlineIcon } from "@chakra-ui/icons"
-import { truncate } from "utils/truncateAddress"
+import { truncate } from "@/utils/utils"
 import { useWallet } from "@solana/wallet-adapter-react"
 
 const AddressesInfo = (props) => {

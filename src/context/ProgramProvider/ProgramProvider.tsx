@@ -1,7 +1,7 @@
 import { AnchorProvider, Program } from "@project-serum/anchor";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { Connection, PublicKey } from "@solana/web3.js";
-import { ReactNode, useEffect, useMemo, useReducer, useState } from "react";
+import { ReactNode, useEffect, useReducer, useState } from "react";
 import { ProgramActionTypes, reducer } from "./reducer";
 import { ProgramContext, initalState } from "./state";
 

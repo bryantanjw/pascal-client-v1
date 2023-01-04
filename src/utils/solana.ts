@@ -1,96 +1,49 @@
-import * as fs from "fs/promises"
-import {
-  Connection,
-  Keypair,
-  LAMPORTS_PER_SOL,
-  PublicKey
-} from "@solana/web3.js"
-import { AnchorProvider, setProvider, Wallet } from "@project-serum/anchor"
-import { ProtocolAddresses } from "@monaco-protocol/client";
+import { AnchorProvider, setProvider, Program } from "@project-serum/anchor"
+import { PublicKey } from "@solana/web3.js"
+import { ProtocolAddresses } from "@monaco-protocol/client"
 
-const KEYPAIR_PATH = "test-keypair.json"
-
-export async function loadKp() {
-    try {
-      const kpBytes = await fs.readFile(KEYPAIR_PATH)
-      const kp = Keypair.fromSecretKey(
-        Uint8Array.from(JSON.parse(kpBytes.toString()))
-      )
+export async function getProgram() {
+    const provider = AnchorProvider.env();
+    setProvider(provider);
+    const protocol = process.env.PROTOCOL_TYPE;
   
-      return kp
-    } catch {
-      console.log("Creating test keypair file...")
-      const randomKp = new Keypair()
-      await fs.writeFile(
-        KEYPAIR_PATH,
-        JSON.stringify(Array.from(randomKp.secretKey))
-      )
-      return randomKp
+    let protocolAddress: PublicKey
+    switch(protocol){
+      case "stable":
+        protocolAddress = new PublicKey(ProtocolAddresses.DEVNET_STABLE);
+        break;
+      case "release":
+        protocolAddress = new PublicKey(ProtocolAddresses.RELEASE);
+        break;
+      default:
+        console.log("⚠️  PROTOCOL_TYPE env variable not set ⚠️\n\nSet with:\n\nexport PROTOCOL_TYPE=stable\nexport PROTOCOL_TYPE=release");
+        process.exit(1);      
     }
-}
-
-let hasBalance = false
-export async function getProvider() {
-  const kp = await loadKp()
-  const ENDPOINT = "https://api.devnet.solana.com"
-  const connection = new Connection(ENDPOINT, {
-    commitment: "confirmed",
-  })
-  const wallet = new Wallet(kp)
-
-  const provider = new AnchorProvider(
-    connection,
-    wallet,
-    AnchorProvider.defaultOptions()
-  )
-  if (!hasBalance && !(await provider.connection.getBalance(kp.publicKey))) {
-    const txHash = await provider.connection.requestAirdrop(
-      kp.publicKey,
-      2 * LAMPORTS_PER_SOL
-    )
-    await confirmTx(provider, txHash)
-    console.log("Wallet pubKey", kp.publicKey.toBase58())
-    console.log("Airdrop confirmed. Balance:", await provider.connection.getBalance(kp.publicKey))
-    hasBalance = true
-  }
-
-  return provider
-}
-
-export async function confirmTx(provider: AnchorProvider, txHash: string) {
-  const blockhashInfo = await provider.connection.getLatestBlockhash()
-  await provider.connection.confirmTransaction({
-    blockhash: blockhashInfo.blockhash,
-    lastValidBlockHeight: blockhashInfo.lastValidBlockHeight,
-    signature: txHash,
-  })
-}
-
-export async function test(cb: () => Promise<void>) {
-  let testCount = 0
-  let errorCount = 0
-
-  const info = (s: string) => {
-      console.log(`\x1b[1;36m${s}\x1b[0m`)
-  };
+  
+    const program = await Program.at(protocolAddress, provider);
     
-  const success = (s: string) => {
-      console.log(`\x1b[1;32m${s}\x1b[0m`)
-  };
+    console.log(`Protocol type: ${protocol}`);
+    console.log(`RPC node: ${program.provider.connection.rpcEndpoint}`)
+    console.log(`Wallet PublicKey: ${program.provider.publicKey}`)
     
-  const error = (s: string) => {
-      console.log(`\x1b[1;31m${s}\x1b[0m`)
-  };
-  const tab = "      "
-  console.log(`${tab}Running test '\x1b[1m${cb.name}\x1b[0m'`)
+    return program
+}
 
-  try {
-    await cb()
-    success(`${tab}Test '${cb.name}' passed.`)
-  } catch (e) {
-    error(`${tab}Test '${cb.name}' failed. Reason: ${e}`)
-    errorCount++;
-  } finally {
-    testCount++;
-  }
+export function getProcessArgs(expectedArgs: string[], exampleInvocation: string): any{
+    const defaultArgLength = 2
+    if (process.argv.length != defaultArgLength+expectedArgs.length) {
+      console.log(
+        `Expected number of args: ${expectedArgs.length}\n` +
+        `Example invocation: ${exampleInvocation} ${expectedArgs.toString().replace(/,/g, ' ')}`
+      );
+      process.exit(1);
+    }
+    const namedArgs = process.argv.slice(-expectedArgs.length)
+    let values = {}
+    expectedArgs.map(function (arg, i){
+      return values[expectedArgs[i]] = namedArgs[i]
+    })
+    console.log("Supplied arguments:")
+    console.log(values)
+    return values
 }

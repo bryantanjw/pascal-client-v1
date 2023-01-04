@@ -15,13 +15,191 @@ import {
   Text,
   keyframes,
   FormErrorMessage,
+  ModalOverlay, ModalBody, ModalHeader, ModalContent, ModalCloseButton,
+  Select,
+  Textarea,
 } from '@chakra-ui/react'
 import { Select as ReactSelect, chakraComponents, ChakraStylesConfig } from 'chakra-react-select'
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion'
 import useMeasure from 'react-use-measure'
 import { Field, Form, Formik } from 'formik'
 import * as yup from "yup"
+import { createVerboseMarket } from '@/utils/utils'
 
+import styles from '@/styles/Home.module.css'
+
+const categories = ['Financials', 'Economics', 'Crypto', 'Climate', 'Other']
+
+const Form1 = () => {
+  return (
+    <>
+    <Field name="title">
+      {({ field, form }) => (
+      <FormControl isInvalid={form.errors.title && form.touched.title}>
+        <FormLabel htmlFor="title" fontWeight={'normal'}>
+          Title
+        </FormLabel>
+        <Input {...field} id="title" placeholder=" " />
+        <FormErrorMessage>{form.errors.title}</FormErrorMessage>
+        <FormHelperText textAlign={"end"}>Keep it short and sweet!</FormHelperText>
+      </FormControl>
+      )}
+    </Field>
+    
+    <Field name="category">
+      {({ field, form }) => (
+      <FormControl cursor={"text"} isInvalid={form.errors.category && form.touched.category}>
+        <FormLabel htmlFor="category" fontWeight={'normal'}>
+          Category
+        </FormLabel>
+        <Select {...field} placeholder={"-"}>
+          {categories.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
+        </Select>
+        <FormErrorMessage>{form.errors.category}</FormErrorMessage>
+      </FormControl>
+      )}
+    </Field>
+
+    <Field name="lockTimestamp">
+      {({ field, form }) => (
+      <FormControl id="lockTimestamp" isInvalid={form.errors.lockTimestamp && form.touched.lockTimestamp}>
+        <FormLabel htmlFor="title" fontWeight={'normal'} mt={"5%"}>
+          Resolution date
+        </FormLabel>
+        <Input {...field} type={"datetime-local"}/>
+        <FormErrorMessage>{form.errors.lockTimestamp}</FormErrorMessage>
+      </FormControl>
+      )}
+    </Field>
+    </>
+  )
+}
+
+const Form2 = ({ title }) => {
+  return (
+    <>
+    <Heading fontWeight={"medium"} size={'md'}>{title}</Heading>
+    <Field name="resolutionCriteria">
+      {({ field, form }) => (
+      <FormControl isInvalid={form.errors.resolutionCriteria && form.touched.resolutionCriteria}>
+        <FormLabel htmlFor="resolutionCriteria" fontWeight={'normal'}>
+          Description
+        </FormLabel>
+        <Textarea {...field} id="resolutionCriteria" placeholder="This market resolves if..." />
+        <FormErrorMessage>{form.errors.resolutionCriteria}</FormErrorMessage>
+        <FormHelperText textAlign={"end"}>Be clear and objective!</FormHelperText>
+      </FormControl>
+      )}
+    </Field>
+
+    </>
+  )
+}
+
+export const CreateMarketModal = () => {
+  let duration = 0.5;
+
+  const validationSchema = yup.object().shape({
+    title: yup.string().required("Market title is required"),
+    category: yup.string().required("Market category is required"),
+    lockTimestamp: yup.date().min(new Date(), 'Resolution date must be in the future').required(),
+    resolutionCriteria: yup.string().required("Resolution criteria is required")
+  })
+  
+  return (
+    <MotionConfig transition={{ duration, type: "tween" }}>
+      <ModalOverlay backdropFilter='auto' backdropBlur='2px' />
+      <ModalContent p={'12px 15px'} rounded={'2xl'} boxShadow={"2xl"} bg={useColorModeValue("gray.50", "gray.800")}>
+        <ModalHeader mt={3}>
+          <Heading size="lg" fontWeight="semibold">
+              Create a market
+          </Heading>
+        </ModalHeader>
+        <ModalCloseButton m={"10px auto"} rounded={'xl'} />
+        
+        <ModalBody>
+          <Box m="10px auto">
+            <Formik
+              initialValues={{ title: '', category: '', lockTimestamp: '', resolutionCriteria: '' }}
+              validationSchema={validationSchema}
+              onSubmit={async (values, actions) => {
+                alert(JSON.stringify(values, null, 2));
+                createVerboseMarket(values);
+                actions.setSubmitting(false);
+              }}
+            >
+              {(props) => (
+                <FormStepper {...props}>
+                  <Form1 />
+                  <Form2 title={props.values.title} />
+                </FormStepper>
+              )}
+            </Formik>
+          </Box>
+        </ModalBody>
+      </ModalContent>
+    </MotionConfig>
+  )
+}
+
+const FormStepper = ({ children, ...props }) => {
+  const { isSubmitting, errors, values } = props
+  const stepsArray = React.Children.toArray(children)
+  const [currentStep, setCurrentStep] = useState(0)
+  const currentChild = stepsArray[currentStep]
+  console.log(values)
+
+  const buttonStyle = {
+    textColor: useColorModeValue('gray.700', 'gray.100'),
+    borderColor: useColorModeValue('gray.700', 'gray.100'),
+    transition: 'all 0.3s ease',
+    _hover: {
+      bg: useColorModeValue('gray.100', 'whiteAlpha.100'),
+    }
+  }
+
+  return (
+    <Form>
+      <Stack spacing={4}>
+        {currentChild}
+      </Stack>
+
+      <Flex justifyContent={"flex-end"} mt={8} py={2}>
+        <Button
+          disabled={!values.title || !values.category || !values.lockTimestamp}
+          variant={"outline"}
+          onClick={() => {
+            currentStep === 0 ? setCurrentStep(1) : setCurrentStep(0);
+          }}
+          sx={buttonStyle}
+        >
+          {currentStep === 0 ? "Next" : "Back"}
+        </Button>
+        {currentStep === 1 && (
+          <Button 
+            ml={4} 
+            type="submit" 
+            isDisabled={isSubmitting || !values.resolutionCriteria} 
+            isLoading={isSubmitting}
+            boxShadow={'xl'}
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            className={useColorModeValue(styles.wallet_adapter_button_trigger_light_mode, styles.wallet_adapter_button_trigger_dark_mode)}
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            textColor={useColorModeValue('white', '#353535')} bg={useColorModeValue('#353535', 'gray.50')} 
+          >
+            Submit
+          </Button>
+        )}
+      </Flex>
+    </Form>
+  )
+}
+
+// START: Custom styling ReactSelect //
 const collapse = keyframes`
   0% {
     opacity: 0;
@@ -91,7 +269,6 @@ const CustomReactSelect = {
   ),
 
   SingleValue: ({ children, ...props }) => {
-
     return (
       // @ts-ignore
       <chakraComponents.SingleValue {...props}>
@@ -135,22 +312,19 @@ const CustomReactSelect = {
       </chakraComponents.Menu>
     )
   },
-
 }
 
-const Select = () => {
-  const categories = ['Financials', 'Economics', 'Crypto', 'Climate', 'Other']
+// CustomSelect design to be revisited; field values are not propagating to formik
+const CustomSelect = () => {
   const categoryOptions = categories.map((category) => ({
     value: category,
     label: category,
     iconUrl: `./${category}.svg`,
     title: category
   }))
-
   return ( 
     <ReactSelect
       useBasicStyles
-      instanceId="chakra-react-select-1"
       name="category"
       options={categoryOptions}
       components={CustomReactSelect}
@@ -158,139 +332,8 @@ const Select = () => {
     />
   )
 }
+// END: Custom styling ReactSelect //
 
-const Form1 = () => {
-  return (
-    <>
-    <Field name="title">
-      {({ field, form }) => (
-      <FormControl isInvalid={form.errors.title && form.touched.title}>
-        <FormLabel htmlFor="title" fontWeight={'normal'}>
-          Title
-        </FormLabel>
-        <Input {...field} id="title" placeholder=" " />
-        <FormErrorMessage>{form.errors.title}</FormErrorMessage>
-        <FormHelperText textAlign={"end"}>Keep it short and sweet!</FormHelperText>
-      </FormControl>
-      )}
-    </Field>
-    
-    <Field name="category">
-      {({ field, form }) => (
-      <FormControl cursor={"text"} isInvalid={form.errors.category && form.touched.category}>
-        <FormLabel htmlFor="category" fontWeight={'normal'}>
-          Category
-        </FormLabel>
-        <Select {...field} />
-        <FormErrorMessage>{form.errors.category}</FormErrorMessage>
-      </FormControl>
-      )}
-    </Field>
-
-    <Field name="lockTimestamp">
-      {({ field, form }) => (
-      <FormControl id="lockTimestamp" isInvalid={form.errors.lockTimestamp && form.touched.lockTimestamp}>
-        <FormLabel htmlFor="title" fontWeight={'normal'} mt={"5%"}>
-          Market closes in
-        </FormLabel>
-        <Flex justifyContent={"flex-end"}>
-          <Input {...field} type={"date"} mr={"5%"} />
-          <Input {...field} type={"time"} />
-        </Flex>
-        <FormErrorMessage>{form.errors.lockTimestamp}</FormErrorMessage>
-      </FormControl>
-      )}
-    </Field>
-    </>
-  )
-}
-
-const Form2 = ({ title }) => {
-  return (
-    <>
-    <Heading size={'md'}>{title}</Heading>
-    <Field name="resolutionCriteria">
-      {({ field, form }) => (
-      <FormControl isInvalid={form.errors.resolutionCriteria && form.touched.resolutionCriteria}>
-        <FormLabel htmlFor="resolutionCriteria" fontWeight={'normal'}>
-          Resolution Criteria
-        </FormLabel>
-        <Input {...field} id="resolutionCriteria" placeholder="This market resolves if..." />
-        <FormErrorMessage>{form.errors.resolutionCriteria}</FormErrorMessage>
-        <FormHelperText textAlign={"end"}>Be clear and objective!</FormHelperText>
-      </FormControl>
-      )}
-    </Field>
-
-    </>
-  )
-}
-
-export const CreateMarketModal = () => {
-  let duration = 0.5;
-
-  const ValidationSchema = yup.object().shape({
-    title: yup.string().required("Market title is required"),
-    category: yup.string().required("Market category is required"),
-    lockTimestamp: yup.date().min(new Date(), 'Resolution date must be in the future').required(),
-    resolutionCriteria: yup.string().required("Resolution criteria is required")
-  })
-  
-  return (
-    <MotionConfig transition={{ duration, type: "tween" }}>
-      <Box
-        m="10px auto"
-      >
-        <Formik
-          initialValues={{ title: '', category: '', lockTimestamp: '', resolutionCriteria: '' }}
-          validationSchema={ValidationSchema}
-          onSubmit={async (values, actions) => {
-            alert(JSON.stringify(values, null, 2));
-          }}
-        >
-          {(props) => (
-            <FormStepper {...props}>
-              <Form1 />
-              <Form2 title={props.values.title} />
-            </FormStepper>
-          )}
-        </Formik>
-      </Box>
-    </MotionConfig>
-  );
-}
-
-const FormStepper = ({ children, ...props }) => {
-  const { isSubmitting, errors, values } = props
-  const stepsArray = React.Children.toArray(children)
-  const [currentStep, setCurrentStep] = useState(0)
-  const currentChild = stepsArray[currentStep]
-  console.log(values)
-
-  return (
-    <Form>
-      <Stack spacing={4}>
-        {currentChild}
-      </Stack>
-
-      <Flex justifyContent={"flex-end"} mt={5} py={2}>
-        <Button
-          variant={"outline"}
-          onClick={() => {
-            currentStep === 0 ? setCurrentStep(1) : setCurrentStep(0);
-          }}
-        >
-          {currentStep === 0 ? "Next" : "Back"}
-        </Button>
-        {currentStep === 1 && (
-          <Button ml={4} type="submit" isDisabled={isSubmitting || errors || !values}>
-            Submit
-          </Button>
-        )}
-      </Flex>
-    </Form>
-  )
-}
 
 const ResizablePanel = ({ children }) => {
   let [ref, { height }] = useMeasure();

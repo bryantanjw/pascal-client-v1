@@ -14,8 +14,7 @@ import {
     useBreakpointValue,
     useDisclosure,
     Button,
-    Heading,
-    Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton,
+    Modal,
 } from '@chakra-ui/react'
 import {
     HamburgerIcon,
@@ -103,19 +102,7 @@ export default function WithSubnavigation() {
                                 scrollBehavior={'inside'}
                                 size={'xl'}
                             >
-                                <ModalOverlay backdropFilter='auto' backdropBlur='2px' />
-                                <ModalContent p={'12px 0px 0px 12px'} rounded={'2xl'}>
-                                    <ModalHeader mt={3}>
-                                        <Heading size="md" fontWeight="semibold">
-                                            Create a market
-                                        </Heading>
-                                    </ModalHeader>
-                                    <ModalCloseButton />
-
-                                    <ModalBody>
-                                        <CreateMarketModal />
-                                    </ModalBody>
-                                </ModalContent>
+                                <CreateMarketModal />
                             </Modal>
                         </Flex>
                     )}
