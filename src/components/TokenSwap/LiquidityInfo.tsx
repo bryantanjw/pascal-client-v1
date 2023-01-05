@@ -13,7 +13,6 @@ import {
     Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverBody,
 } from "@chakra-ui/react"
 import { ExternalLinkIcon, InfoOutlineIcon } from "@chakra-ui/icons"
-import { truncate } from "@/utils/utils"
 import { useWallet } from "@solana/wallet-adapter-react"
 
 const AddressesInfo = (props) => {
@@ -21,6 +20,21 @@ const AddressesInfo = (props) => {
     const { label, value, link } = props
     const { onCopy } = useClipboard(value)
 
+    function truncate (fullStr, strLen, separator?) {
+        if (fullStr.length <= strLen) return fullStr;
+        
+        separator = separator || '...';
+        
+        var sepLen = separator.length,
+            charsToShow = strLen - sepLen,
+            frontChars = Math.ceil(charsToShow),
+            backChars = Math.floor(charsToShow);
+        
+        return fullStr.substr(0, frontChars) + 
+            separator + 
+            fullStr.substr(fullStr.length - backChars);
+    }
+    
     return (
         <Stack>
             <HStack spacing={3}>

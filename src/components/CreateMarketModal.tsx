@@ -9,7 +9,7 @@ import {
   Input,
   FormHelperText,
   Heading,
-  useColorModeValue,
+  useColorModeValue as mode,
   HStack,
   Image,
   Text,
@@ -18,13 +18,16 @@ import {
   ModalOverlay, ModalBody, ModalHeader, ModalContent, ModalCloseButton,
   Select,
   Textarea,
+  Divider,
+  Link,
+  IconButton,
 } from '@chakra-ui/react'
+import { ChevronRightIcon, ExternalLinkIcon } from '@chakra-ui/icons'
 import { Select as ReactSelect, chakraComponents, ChakraStylesConfig } from 'chakra-react-select'
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion'
 import useMeasure from 'react-use-measure'
 import { Field, Form, Formik } from 'formik'
 import * as yup from "yup"
-import { createVerboseMarket } from '@/utils/utils'
 
 import styles from '@/styles/Home.module.css'
 
@@ -81,84 +84,133 @@ const Form1 = () => {
 
 const Form2 = ({ title }) => {
   return (
-    <>
-    <Heading fontWeight={"medium"} size={'md'}>{title}</Heading>
-    <Field name="resolutionCriteria">
-      {({ field, form }) => (
-      <FormControl isInvalid={form.errors.resolutionCriteria && form.touched.resolutionCriteria}>
-        <FormLabel htmlFor="resolutionCriteria" fontWeight={'normal'}>
-          Description
-        </FormLabel>
-        <Textarea {...field} id="resolutionCriteria" placeholder="This market resolves if..." />
-        <FormErrorMessage>{form.errors.resolutionCriteria}</FormErrorMessage>
-        <FormHelperText textAlign={"end"}>Be clear and objective!</FormHelperText>
-      </FormControl>
-      )}
-    </Field>
+    <Stack spacing={8}>
+      <Heading fontWeight={"medium"} size={'md'}>{title}</Heading>
+      <Field name="description">
+        {({ field, form }) => (
+        <FormControl isInvalid={form.errors.description && form.touched.description}>
+          <FormLabel htmlFor="description" fontWeight={'normal'}>
+            Description
+          </FormLabel>
+          <Textarea {...field} id="description" placeholder="This market resolves to YES if..." />
+          <FormErrorMessage>{form.errors.description}</FormErrorMessage>
+          <FormHelperText textAlign={"end"}>Be clear and objective!</FormHelperText>
+        </FormControl>
+        )}
+      </Field>
+    </Stack>
+  )
+}
 
-    </>
+const SuccessForm = ({ ...props }) => {
+  return (
+    <Box color={"gray.50"}>
+      <Heading size={"2xl"} fontWeight={"medium"}>Your market<br /> has been created! </Heading>
+      <Divider my={12} borderColor={"gray.700"} />
+      <Flex justifyContent={"flex-start"} textAlign={"center"}>
+        <Text mr={3} fontWeight={"normal"} fontSize={"lg"}>View the market account on the blockchain</Text> 
+        <Link href='https://solscan.io/?cluster=devnet' 
+          _hover={{ 
+            transform: "translateX(2px) scale(1.01)",
+            }} 
+          isExternal
+          fontSize={"lg"}
+        >
+          <ExternalLinkIcon />
+        </Link>
+      </Flex>
+    </Box>
   )
 }
 
 export const CreateMarketModal = () => {
+  const [success, setSuccess] = useState(false)
   let duration = 0.5;
+
+  const createMarket = async (values) => {
+    try {
+      const response = await fetch("../api/createMarket", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+        console.log(error);
+        alert("Error creating market")
+    }
+  }
 
   const validationSchema = yup.object().shape({
     title: yup.string().required("Market title is required"),
     category: yup.string().required("Market category is required"),
     lockTimestamp: yup.date().min(new Date(), 'Resolution date must be in the future').required(),
-    resolutionCriteria: yup.string().required("Resolution criteria is required")
+    description: yup.string().required("Resolution criteria is required")
   })
   
   return (
     <MotionConfig transition={{ duration, type: "tween" }}>
       <ModalOverlay backdropFilter='auto' backdropBlur='2px' />
-      <ModalContent p={'12px 15px'} rounded={'2xl'} boxShadow={"2xl"} bg={useColorModeValue("gray.50", "gray.800")}>
-        <ModalHeader mt={3}>
-          <Heading size="lg" fontWeight="semibold">
-              Create a market
-          </Heading>
-        </ModalHeader>
-        <ModalCloseButton m={"10px auto"} rounded={'xl'} />
-        
-        <ModalBody>
-          <Box m="10px auto">
-            <Formik
-              initialValues={{ title: '', category: '', lockTimestamp: '', resolutionCriteria: '' }}
-              validationSchema={validationSchema}
-              onSubmit={async (values, actions) => {
-                alert(JSON.stringify(values, null, 2));
-                createVerboseMarket(values);
-                actions.setSubmitting(false);
-              }}
+        <Formik
+          initialValues={{ title: '', category: '', lockTimestamp: '', description: '' }}
+          validationSchema={validationSchema}
+          onSubmit={(values, actions) => {
+            createMarket(values);
+            actions.setSubmitting(false);
+            setSuccess(true);
+          }}
+        >
+          {(props) => (
+            <ModalContent
+              maxW={"500px"}
+              p={'12px 15px'} 
+              rounded={'2xl'} 
+              boxShadow={"2xl"}
+              transition={`background-color 1s ease-in-out`}
+              // eslint-disable-next-line react-hooks/rules-of-hooks
+              bg={success ? mode("rgb(64,40,249, 0.95)", "rgb(64,40,220, 0.95)") : mode("gray.50", "gray.800")}
             >
-              {(props) => (
-                <FormStepper {...props}>
-                  <Form1 />
-                  <Form2 title={props.values.title} />
-                </FormStepper>
-              )}
-            </Formik>
-          </Box>
-        </ModalBody>
-      </ModalContent>
+            <ModalHeader mt={6}>
+              <Heading size="lg" fontWeight="semibold">
+                {success ? null : "Create a market"}
+              </Heading>
+            </ModalHeader>
+            <ModalCloseButton color={success ? "gray.50" : "gray.700"} m={"10px auto"} rounded={'xl'} size={"lg"} />
+            
+            <ModalBody>
+              <Box m="10px auto">
+                <ResizablePanel>
+                  <FormStepper {...props}>
+                    <Form1 />
+                    <Form2 title={props.values.title} />
+                    <SuccessForm />
+                  </FormStepper>
+                </ResizablePanel>
+              </Box>
+            </ModalBody>
+          </ModalContent>
+        )}
+      </Formik>
     </MotionConfig>
   )
 }
 
 const FormStepper = ({ children, ...props }) => {
-  const { isSubmitting, errors, values } = props
+  const { isSubmitting, handleSubmit, errors, values } = props
   const stepsArray = React.Children.toArray(children)
   const [currentStep, setCurrentStep] = useState(0)
   const currentChild = stepsArray[currentStep]
   console.log(values)
 
   const buttonStyle = {
-    textColor: useColorModeValue('gray.700', 'gray.100'),
-    borderColor: useColorModeValue('gray.700', 'gray.100'),
+    textColor: mode('gray.700', 'gray.100'),
+    borderColor: mode('gray.700', 'gray.100'),
     transition: 'all 0.3s ease',
     _hover: {
-      bg: useColorModeValue('gray.100', 'whiteAlpha.100'),
+      bg: mode('gray.100', 'whiteAlpha.100'),
     }
   }
 
@@ -168,8 +220,9 @@ const FormStepper = ({ children, ...props }) => {
         {currentChild}
       </Stack>
 
-      <Flex justifyContent={"flex-end"} mt={8} py={2}>
-        <Button
+      <Flex justifyContent={"flex-end"} mt={14} py={2}>
+
+        {currentStep !==2 && <Button
           disabled={!values.title || !values.category || !values.lockTimestamp}
           variant={"outline"}
           onClick={() => {
@@ -177,22 +230,48 @@ const FormStepper = ({ children, ...props }) => {
           }}
           sx={buttonStyle}
         >
-          {currentStep === 0 ? "Next" : "Back"}
-        </Button>
+          {(currentStep === 0) ? "Next" : "Back"}
+        </Button>}
+
         {currentStep === 1 && (
           <Button 
             ml={4} 
             type="submit" 
-            isDisabled={isSubmitting || !values.resolutionCriteria} 
+            isDisabled={isSubmitting || !values.description} 
             isLoading={isSubmitting}
+            onClick={() => {
+              handleSubmit();
+              !isSubmitting && setCurrentStep(2);
+            }}
             boxShadow={'xl'}
             // eslint-disable-next-line react-hooks/rules-of-hooks
-            className={useColorModeValue(styles.wallet_adapter_button_trigger_light_mode, styles.wallet_adapter_button_trigger_dark_mode)}
+            className={mode(styles.wallet_adapter_button_trigger_light_mode, styles.wallet_adapter_button_trigger_dark_mode)}
             // eslint-disable-next-line react-hooks/rules-of-hooks
-            textColor={useColorModeValue('white', '#353535')} bg={useColorModeValue('#353535', 'gray.50')} 
+            textColor={mode('white', '#353535')} bg={mode('#353535', 'gray.50')} 
           >
             Submit
           </Button>
+        )}
+        
+        {currentStep === 2 && (
+          <HStack spacing={4}>
+            <IconButton
+              aria-label='View market' 
+              rounded={"xl"} 
+              variant={"ghost"} 
+              fontSize={'4xl'}
+              size={'lg'}
+              color={'gray.50'}
+              bg={"gray.700"}
+              boxShadow={'xl'}
+              mt={8}
+              _hover={{
+                transform: 'translateX(3px) scale(1.01)',
+              }}
+              icon={<ChevronRightIcon />}
+              as={Link}
+            />
+          </HStack>
         )}
       </Flex>
     </Form>
@@ -250,16 +329,16 @@ const CustomReactSelect = {
         borderRadius="3xl"
         cursor="pointer"
         transition="all 0.2s ease"
-        bg={useColorModeValue('gray.100', 'gray.700')}
+        bg={mode('gray.100', 'gray.700')}
         _hover={{
           // eslint-disable-next-line react-hooks/rules-of-hooks
-          borderColor: useColorModeValue('black', 'white'),
+          borderColor: mode('black', 'white'),
           bg: 'transparent'
         }}
         _focus={{ shadow: 'outline', boxShadow: 'none' }}
       >
         <HStack spacing={1}>
-          <Image src={props.data.iconUrl} alt={props.data.title} width={{ 'base':'9px', 'md':'14px' }} filter={useColorModeValue('invert(0%)', 'invert(100%)')} />
+          <Image src={props.data.iconUrl} alt={props.data.title} width={{ 'base':'9px', 'md':'14px' }} filter={mode('invert(0%)', 'invert(100%)')} />
           <Box>
             <Text fontSize={{'base':'10px', 'md': 'sm'}} fontWeight="bold">{props.data.title}</Text>
           </Box>
@@ -279,11 +358,11 @@ const CustomReactSelect = {
           borderRadius="3xl"
           cursor="pointer"
           transition="all 0.2s"
-          bg={useColorModeValue('black', 'white')}
-          color={useColorModeValue('white', 'black')}
+          bg={mode('black', 'white')}
+          color={mode('white', 'black')}
         >
           <HStack spacing={2}>
-            <Image src={props.data.iconUrl} alt={props.data.title} width={{ 'base':'11px', 'md':'9px' }} filter={useColorModeValue('invert(100%)', 'invert(0%)')} />
+            <Image src={props.data.iconUrl} alt={props.data.title} width={{ 'base':'11px', 'md':'9px' }} filter={mode('invert(100%)', 'invert(0%)')} />
             <Box>
               <Text fontSize={{'base':'10px', 'md': '2xs'}} fontWeight="bold">{props.data.title}</Text>
             </Box>
@@ -341,28 +420,11 @@ const ResizablePanel = ({ children }) => {
   return (
     <motion.div
       animate={{ height: height || "auto" }}
-      className="relative overflow-hidden"
-    >
+      className="relative overflow-hidden">
       <AnimatePresence initial={false}>
-        <motion.div
-          key={JSON.stringify(children, ignoreCircularReferences())}
-          initial={{
-            x: 384,
-          }}
-          animate={{
-            x: 0,
-            // transition: { duration: duration / 2, delay: duration / 2 },
-          }}
-          exit={{
-            x: -384,
-            // transition: { duration: duration / 2 },
-          }}
-          className={height ? "absolute" : "relative"}
-        >
           <Box ref={ref} className="px-8 pb-8">
             {children}
           </Box>
-        </motion.div>
       </AnimatePresence>
     </motion.div>
   );
