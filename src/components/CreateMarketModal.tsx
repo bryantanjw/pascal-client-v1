@@ -15,19 +15,24 @@ import {
   Text,
   keyframes,
   FormErrorMessage,
-  ModalOverlay, ModalBody, ModalHeader, ModalContent, ModalCloseButton,
+  ModalOverlay, ModalBody, ModalContent, ModalCloseButton,
   Select,
   Textarea,
   Divider,
   Link,
   IconButton,
+  Center,
+  Spinner,
 } from '@chakra-ui/react'
 import { ChevronRightIcon, ExternalLinkIcon } from '@chakra-ui/icons'
 import { Select as ReactSelect, chakraComponents, ChakraStylesConfig } from 'chakra-react-select'
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion'
+import { getMarketOutcomesByMarket } from '@monaco-protocol/client'
 import useMeasure from 'react-use-measure'
 import { Field, Form, Formik } from 'formik'
 import * as yup from "yup"
+import { useProgram } from '@/context/ProgramProvider'
+import { createVerboseMarket } from '@/utils/monaco'
 
 import styles from '@/styles/Home.module.css'
 
@@ -36,6 +41,7 @@ const categories = ['Financials', 'Economics', 'Crypto', 'Climate', 'Other']
 const Form1 = () => {
   return (
     <>
+    <Heading mt={6} mb={5} size="lg" fontWeight="semibold">Create a market</Heading>
     <Field name="title">
       {({ field, form }) => (
       <FormControl isInvalid={form.errors.title && form.touched.title}>
@@ -84,12 +90,13 @@ const Form1 = () => {
 
 const Form2 = ({ title }) => {
   return (
-    <Stack spacing={8}>
-      <Heading fontWeight={"medium"} size={'md'}>{title}</Heading>
+    <Stack>
+      <Heading mt={6} mb={5} size="lg" fontWeight="semibold">Create a market</Heading>
+      <Text fontSize={"xl"} fontWeight={"medium"} size={'md'}>{title}</Text>
       <Field name="description">
         {({ field, form }) => (
         <FormControl isInvalid={form.errors.description && form.touched.description}>
-          <FormLabel htmlFor="description" fontWeight={'normal'}>
+          <FormLabel mt={2} htmlFor="description" fontWeight={'normal'}>
             Description
           </FormLabel>
           <Textarea {...field} id="description" placeholder="This market resolves to YES if..." />
@@ -102,21 +109,21 @@ const Form2 = ({ title }) => {
   )
 }
 
-const SuccessForm = ({ ...props }) => {
+const SuccessForm = () => {
   return (
     <Box color={"gray.50"}>
-      <Heading size={"2xl"} fontWeight={"medium"}>Your market<br /> has been created! </Heading>
+      <Heading mt={10} size={"2xl"} fontWeight={"medium"}>Your market has been created!</Heading>
       <Divider my={12} borderColor={"gray.700"} />
       <Flex justifyContent={"flex-start"} textAlign={"center"}>
-        <Text mr={3} fontWeight={"normal"} fontSize={"lg"}>View the market account on the blockchain</Text> 
-        <Link href='https://solscan.io/?cluster=devnet' 
-          _hover={{ 
+        <Text mr={3} fontWeight={"normal"} fontSize={"lg"}>View the market account on the blockchain</Text>
+        <Link href='https://solscan.io/?cluster=devnet'
+          _hover={{
             transform: "translateX(2px) scale(1.01)",
-            }} 
+          }}
           isExternal
           fontSize={"lg"}
         >
-          <ExternalLinkIcon />
+            <ExternalLinkIcon />
         </Link>
       </Flex>
     </Box>
@@ -124,23 +131,35 @@ const SuccessForm = ({ ...props }) => {
 }
 
 export const CreateMarketModal = () => {
+  const program = useProgram()
   const [success, setSuccess] = useState(false)
-  let duration = 0.5;
+  let duration = 0.5
 
   const createMarket = async (values) => {
+    const { title, category, lockTimestamp, description, program } = values
     try {
+      // Get accounts
+      const marketResponse = await createVerboseMarket(program, title, lockTimestamp);
+      const marketAccount = marketResponse!.data.market;
+      const marketPk = marketResponse!.data.marketPk;
+      const outcomeResponse = await getMarketOutcomesByMarket(program, marketPk)
+      const outcomeAccounts = outcomeResponse?.data.marketOutcomeAccounts
+
+      const data = { marketAccount, category, description, outcomeAccounts };
+      console.log("data", data);
       const response = await fetch("../api/createMarket", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify(data),
       });
-      const data = await response.json();
-      console.log(data);
+      const status = await response.json();
+      console.log("createMarket", status);
+      setSuccess(true);
     } catch (error) {
-        console.log(error);
-        alert("Error creating market")
+      setSuccess(false);
+      console.log(error);
     }
   }
 
@@ -155,12 +174,13 @@ export const CreateMarketModal = () => {
     <MotionConfig transition={{ duration, type: "tween" }}>
       <ModalOverlay backdropFilter='auto' backdropBlur='2px' />
         <Formik
-          initialValues={{ title: '', category: '', lockTimestamp: '', description: '' }}
+          initialValues={{ title: '', category: '', lockTimestamp: '', description: '', program }}
           validationSchema={validationSchema}
-          onSubmit={(values, actions) => {
-            createMarket(values);
+          onSubmit={async (values, actions) => {
+            console.log(program);
+            actions.setSubmitting(true);
+            await createMarket(values);
             actions.setSubmitting(false);
-            setSuccess(true);
           }}
         >
           {(props) => (
@@ -169,16 +189,17 @@ export const CreateMarketModal = () => {
               p={'12px 15px'} 
               rounded={'2xl'} 
               boxShadow={"2xl"}
-              transition={`background-color 1s ease-in-out`}
+              transition={`background-color 0.8s ease-in-out`}
               // eslint-disable-next-line react-hooks/rules-of-hooks
               bg={success ? mode("rgb(64,40,249, 0.95)", "rgb(64,40,220, 0.95)") : mode("gray.50", "gray.800")}
             >
-            <ModalHeader mt={6}>
-              <Heading size="lg" fontWeight="semibold">
-                {success ? null : "Create a market"}
-              </Heading>
-            </ModalHeader>
-            <ModalCloseButton color={success ? "gray.50" : "gray.700"} m={"10px auto"} rounded={'xl'} size={"lg"} />
+            <ModalCloseButton 
+              color={success ? "gray.50" : mode("gray.700", "gray.100")} 
+              m={"10px auto"} 
+              rounded={'xl'} 
+              size={"lg"} 
+              isDisabled={props.isSubmitting}
+            />
             
             <ModalBody>
               <Box m="10px auto">
@@ -186,7 +207,11 @@ export const CreateMarketModal = () => {
                   <FormStepper {...props}>
                     <Form1 />
                     <Form2 title={props.values.title} />
-                    <SuccessForm />
+                    {!props.isSubmitting ? (success ? <SuccessForm /> :
+                      <Text fontSize={"lg"} mb={-5} mt={14} mx={4}>
+                        Something went wrong.<br /> Please try creating a market again later.
+                      </Text>) : <Center><Spinner /></Center>
+                    }
                   </FormStepper>
                 </ResizablePanel>
               </Box>
@@ -203,7 +228,6 @@ const FormStepper = ({ children, ...props }) => {
   const stepsArray = React.Children.toArray(children)
   const [currentStep, setCurrentStep] = useState(0)
   const currentChild = stepsArray[currentStep]
-  console.log(values)
 
   const buttonStyle = {
     textColor: mode('gray.700', 'gray.100'),
@@ -221,9 +245,8 @@ const FormStepper = ({ children, ...props }) => {
       </Stack>
 
       <Flex justifyContent={"flex-end"} mt={14} py={2}>
-
         {currentStep !==2 && <Button
-          disabled={!values.title || !values.category || !values.lockTimestamp}
+          disabled={!values.title || !values.category || !values.lockTimestamp || isSubmitting}
           variant={"outline"}
           onClick={() => {
             currentStep === 0 ? setCurrentStep(1) : setCurrentStep(0);
@@ -239,9 +262,9 @@ const FormStepper = ({ children, ...props }) => {
             type="submit" 
             isDisabled={isSubmitting || !values.description} 
             isLoading={isSubmitting}
-            onClick={() => {
+            onClick={async () => {
               handleSubmit();
-              !isSubmitting && setCurrentStep(2);
+              // !isSubmitting && setCurrentStep(2);
             }}
             boxShadow={'xl'}
             // eslint-disable-next-line react-hooks/rules-of-hooks

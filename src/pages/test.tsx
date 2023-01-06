@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Provider, useDispatch } from 'react-redux'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
@@ -15,15 +16,11 @@ import {
 import ChakraNextLink from '@/components/ChakraNextLink'
 import { ArrowBackIcon } from '@chakra-ui/icons'
 import { PublicKey } from '@solana/web3.js'
-import { useWallet } from '@solana/wallet-adapter-react'
 import { 
     getMarket,
     MarketAccount,
     getMarketOutcomesByMarket,
     MarketOutcomeAccount,
-    getMintInfo,
-    findMarketPositionPda,
-    createOrder,
     GetAccount,
 } from '@monaco-protocol/client'
 
@@ -38,9 +35,10 @@ import Layout from '@/components/Layout'
 import { useProgram } from '@/context/ProgramProvider'
 
 import styles from '@/styles/Home.module.css'
-import { Provider, useDispatch } from 'react-redux'
 import { store } from '@/store/store'
 import { setTitle } from '@/store/slices/outcomeSlice'
+import { checkOperatorRoles } from '@monaco-protocol/admin-client'
+import { createVerboseMarket } from './api/createMarket'
 
 type FormData = {
     [marketOutcome: string]: {
@@ -59,11 +57,9 @@ const defaultFormValues = {
 const MarketView = () => {
     const dispatch = useDispatch()
     const program = useProgram()
-    const { publicKey } = useWallet()
     const [market, setMarket] = useState<GetAccount<MarketAccount>>()
     const [marketOutcomes, setMarketOucomes] = useState<GetAccount<MarketOutcomeAccount>[]>()
     const [formData, setFormData] = useState<FormData>();
-    const isOwner = ( publicKey ? publicKey.toString() === process.env.NEXT_PUBLIC_OWNER_PUBLIC_KEY : false )
 
     // Style config
     const dividerColor = mode('gray.300', '#464A54')
@@ -106,6 +102,8 @@ const MarketView = () => {
             const marketResponse = await getMarket(program, marketAccount);
             setMarket(marketResponse.data);
             console.log("market", market)
+            // const createMarketResponse = await createVerboseMarket(program)
+            // console.log("createMarketResponse", createMarketResponse)
             
             const marketOutcomeAccountsResponse = await getMarketOutcomesByMarket(program, marketAccount);
             setMarketOucomes(marketOutcomeAccountsResponse.data.marketOutcomeAccounts);
