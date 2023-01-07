@@ -8,7 +8,6 @@ import {
     Spacer,
 } from '@chakra-ui/react'
 import { MdCheckCircle, MdOutlineCircle } from 'react-icons/md'
-import fetch from 'unfetch'
 import useSWR from "swr"
 import { useWallet } from '@solana/wallet-adapter-react'
 import { 

@@ -7,13 +7,12 @@
     "build": "next build",
     "start": "next start",
     "test": "ts-node test/main.ts",
-    "lint": "next lint",
-    "initializeOutcomeTokens": "ts-node -O '{\"module\": \"commonjs\"}' -r tsconfig-paths/register src/actions/initializeOutcomeTokens.ts",
-    "binaryOptionTests": "ts-node -O '{\"module\": \"commonjs\"}' -r tsconfig-paths/register src/context/Anchor/spl-binary-options"
+    "lint": "next lint"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.2",
     "@chakra-ui/react": "^2.2.9",
+    "@choc-ui/chakra-autocomplete": "^5.1.4",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
     "@metaplex-foundation/js": "^0.16.1",
@@ -50,7 +49,6 @@
     "next": "^12.3.1",
     "next-connect": "^0.13.0",
     "nextjs-progressbar": "^0.0.14",
-    "popmotion": "11.0.5",
     "react": "^18.2.0",
     "react-chartjs-2": "latest",
     "react-dom": "^18.2.0",

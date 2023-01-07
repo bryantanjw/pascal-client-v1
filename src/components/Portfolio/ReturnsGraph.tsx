@@ -16,7 +16,6 @@ import {
     Skeleton, 
     Stack,
     Text,
-    Center,
     useColorModeValue as mode,
 } from '@chakra-ui/react'
 
