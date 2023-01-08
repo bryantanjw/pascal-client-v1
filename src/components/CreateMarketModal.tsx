@@ -38,7 +38,11 @@ import { Field, Form, Formik } from "formik";
 import * as yup from "yup";
 import useMeasure from "react-use-measure";
 import { AnimatePresence, motion, MotionConfig } from "framer-motion";
-import { getMarketOutcomesByMarket } from "@monaco-protocol/client";
+import {
+  getMarket,
+  getMarketOutcomesByMarket,
+  getTradesForMarket,
+} from "@monaco-protocol/client";
 import { openMarket } from "@monaco-protocol/admin-client";
 import { useProgram } from "@/context/ProgramProvider";
 import { PublicKey, Keypair } from "@solana/web3.js";
@@ -50,10 +54,9 @@ import {
   batchAddPricesToAllOutcomePools,
   ClientResponse,
 } from "@monaco-protocol/admin-client";
+import { categories } from "@/utils/constants";
 
 import styles from "@/styles/Home.module.css";
-
-const categories = ["Financials", "Economics", "Crypto", "Climate", "Other"];
 
 enum CreateStatus {
   CreatingMarket = "Creating Market",
@@ -152,23 +155,55 @@ const Form2 = ({ title }) => {
           </FormControl>
         )}
       </Field>
+
+      <Field name="tag">
+        {({ field, form }) => (
+          <FormControl
+            isInvalid={form.errors.keyword && form.touched.keyword}
+            pt={4}
+          >
+            <FormLabel htmlFor="tag" fontWeight={"normal"}>
+              Tag
+            </FormLabel>
+            <Input {...field} id="tag" placeholder=" " />
+            <FormHelperText textAlign={"end"}>
+              Enter a key phrase related to your market.
+            </FormHelperText>
+            <FormErrorMessage>{form.errors.keyword}</FormErrorMessage>
+          </FormControl>
+        )}
+      </Field>
     </Stack>
   );
 };
 
 const SubmittedForm = ({ publicKey, success, isSubmitting, status }) => {
-  console.log("isSubmitting: ", isSubmitting);
   return (
     <Box color={"gray.50"}>
-      <Stack mb={10} mt={12} transition={"all 1s ease-in-out"}>
+      <Stack mb={10} mt={12} transition={"all 2s ease-in-out"}>
         {isSubmitting ? (
-          <SlideFade in={true}>
+          <SlideFade in={isSubmitting}>
             <Center>
-              <Text>{status}</Text>
+              <Text
+                fontWeight={"bold"}
+                fontSize={"3xl"}
+                bgClip={"text"}
+                bgGradient={mode(
+                  "linear(to-r, #585656, #807e7e)",
+                  "linear(to-r, #ffffff, #a9a5a5)"
+                )}
+              >
+                {status}
+              </Text>
             </Center>
           </SlideFade>
         ) : (
-          <Heading lineHeight={1.2} size={"2xl"} fontWeight={"medium"}>
+          <Heading
+            lineHeight={1.2}
+            size={"2xl"}
+            fontWeight={"medium"}
+            color={success ? "gray.50" : mode("gray.700", "gray.50")}
+          >
             {success
               ? "Your market has been created!"
               : "Market creation failed 🙁"}
@@ -179,13 +214,25 @@ const SubmittedForm = ({ publicKey, success, isSubmitting, status }) => {
       <Progress
         size={"xs"}
         value={100}
-        colorScheme={"telegram"}
-        rounded={"2xl"}
+        bgClip={"bar"}
+        sx={{
+          "& > div": {
+            background: isSubmitting
+              ? "linear-gradient(to right, rgba(128,90,213,0.2) 40%, rgba(127,190,188,0.2) 60%)"
+              : mode("gray.700", "gray.400"),
+          },
+        }}
         isIndeterminate={isSubmitting}
+        rounded={"2xl"}
       />
 
       {!isSubmitting && (
-        <Flex mt={14} justifyContent={"flex-start"} textAlign={"center"}>
+        <Flex
+          mt={14}
+          justifyContent={"flex-start"}
+          textAlign={"center"}
+          textColor={success ? "gray.50" : mode("gray.700", "gray.50")}
+        >
           <Text mr={3} fontWeight={"normal"} fontSize={"lg"}>
             {success
               ? "View the market account on the blockchain"
@@ -210,6 +257,7 @@ const SubmittedForm = ({ publicKey, success, isSubmitting, status }) => {
 
 export const CreateMarketModal = () => {
   const program = useProgram();
+  const toast = useToast();
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const [marketPk, setMarketPk] = useState<PublicKey>();
   const [createStatus, setCreateStatus] = useState<CreateStatus>(
@@ -301,32 +349,41 @@ export const CreateMarketModal = () => {
     }
 
     console.log(`Market ${marketPk.toString()} creation complete ✨`);
-    return marketResponse;
+    return marketResponse.data.marketPk;
   }
 
   const addMarket = async (values) => {
-    const { title, category, lockTimestamp, description, program } = values;
+    const { title, category, lockTimestamp, description, tag, program } =
+      values;
+
     try {
       // Get accounts
-      const marketResponse = await createVerboseMarket(
-        program,
-        title,
-        lockTimestamp
-      );
-      const marketAccount = marketResponse!.data.market;
-      const marketPk = marketResponse!.data.marketPk;
+      const marketPk = await createVerboseMarket(program, title, lockTimestamp);
+      if (!marketPk) {
+        throw new Error("Error creating market");
+      }
       const outcomeResponse = await getMarketOutcomesByMarket(
         program,
-        marketPk
+        marketPk!
       );
       const outcomeAccounts = outcomeResponse?.data.marketOutcomeAccounts;
-
       // Set market status from 'initializing' to 'open'
       setCreateStatus(CreateStatus.OpeningMarket);
+      const market = await getMarket(program, marketPk!);
       await openMarket(program, marketPk);
+      const marketAccount = market?.data;
+      const tradeAccount = await getTradesForMarket(program, marketPk!);
 
-      // Add market to database
-      const data = { marketAccount, category, description, outcomeAccounts };
+
+      // Add accounts to database
+      const data = {
+        category,
+        description,
+        tag,
+        marketAccount,
+        outcomeAccounts,
+        tradeAccount,
+      };
       console.log("data", data);
       const response = await fetch("../api/createMarket", {
         method: "POST",
@@ -338,10 +395,20 @@ export const CreateMarketModal = () => {
       const status = await response.json();
       console.log("createMarket", status);
       setIsSuccess(true);
+      setCreateStatus(CreateStatus.Success);
       setMarketPk(marketPk);
     } catch (error) {
       setIsSuccess(false);
-      console.log(error);
+      toast({
+        title: "Transactino failed",
+        description: JSON.stringify(error.message).replace(/^"(.*)"$/, "$1"),
+        status: "error",
+        duration: 8000,
+        position: "bottom-right",
+        isClosable: true,
+        containerStyle: { marginBottom: "50px" },
+      });
+      console.log("here", error);
     }
   };
 
@@ -353,6 +420,7 @@ export const CreateMarketModal = () => {
       .min(new Date(), "Resolution date must be in the future")
       .required(),
     description: yup.string().required("Resolution criteria is required"),
+    tag: yup.string(),
   });
 
   return (
@@ -364,14 +432,12 @@ export const CreateMarketModal = () => {
           category: "",
           lockTimestamp: "",
           description: "",
+          tag: "",
           program,
         }}
         validationSchema={validationSchema}
         onSubmit={async (values, actions) => {
-          actions.setSubmitting(true);
           await addMarket(values);
-          setCreateStatus(CreateStatus.Success);
-          actions.setSubmitting(false);
           console.log(isSuccess);
         }}
       >
@@ -385,9 +451,10 @@ export const CreateMarketModal = () => {
             // eslint-disable-next-line react-hooks/rules-of-hooks
             bg={
               isSuccess
-                ? mode("rgb(64,40,249, 0.95)", "rgb(64,40,220, 0.95)")
-                : mode("gray.50", "gray.800")
+                ? mode("rgb(64,40,249,0.85)", "rgb(64,40,220,0.9)")
+                : mode("rgb(255,255,255)", "rgb(30,30,30,0.9)")
             }
+            backdropFilter={{ md: "blur(5px)" }}
           >
             <ModalCloseButton
               color={isSuccess ? "gray.50" : mode("gray.700", "gray.100")}
@@ -422,7 +489,6 @@ export const CreateMarketModal = () => {
 
 const FormStepper = ({ success, children, ...props }) => {
   const { isSubmitting, handleSubmit, errors, values } = props;
-  const toast = useToast();
   const stepsArray = React.Children.toArray(children);
   const [currentStep, setCurrentStep] = useState(0);
   const currentChild = stepsArray[currentStep];
@@ -519,6 +585,18 @@ const collapse = keyframes`
 
   100% {
     opacity: 1;
+  }
+`;
+
+const shine = keyframes`
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 `;
 

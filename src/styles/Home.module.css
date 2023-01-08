@@ -76,11 +76,11 @@
 }
 
 .card h4 {
-  font-size:  0.9rem;
+  font-size: 0.9rem;
 }
 
 .card p {
-  font-size: 1.0rem;
+  font-size: 1rem;
   line-height: 1.5;
 }
 
@@ -92,7 +92,8 @@
 
 .wallet_adapter_button_trigger_light_mode {
   background-color: #353535;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   height: 40px;
   font-weight: 500;
   font-size: 15px;
@@ -100,10 +101,12 @@
   padding: 18px 16px 18px 16px;
   transition: 0.3s;
   border: 1px solid #353535;
-} .wallet_adapter_button_trigger_light_mode:hover {
+}
+.wallet_adapter_button_trigger_light_mode:hover {
   background: transparent !important;
   color: #353535;
-} .wallet_adapter_button_trigger_light_mode:hover:disabled {
+}
+.wallet_adapter_button_trigger_light_mode:hover:disabled {
   background: #3d3d3d !important;
   border-color: #3d3d3d;
   color: white;
@@ -111,7 +114,8 @@
 
 .wallet_adapter_button_trigger_dark_mode {
   background-color: rgb(237, 237, 237);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   color: #131821;
   height: 40px;
   font-weight: 500;
@@ -120,13 +124,15 @@
   padding: 18px 16px 18px 16px;
   transition: 0.3s;
   border: 1px solid rgb(237, 237, 237);
-}.wallet_adapter_button_trigger_dark_mode:hover {
+}
+.wallet_adapter_button_trigger_dark_mode:hover {
   background-color: transparent !important;
   color: white;
-} .wallet_adapter_button_trigger_dark_mode:hover:disabled {
+}
+.wallet_adapter_button_trigger_dark_mode:hover:disabled {
   background: #ebecf0 !important;
   border-color: #ebecf0;
-  color: #23252B;
+  color: #23252b;
 }
 
 @media (max-width: 600px) {
@@ -135,7 +141,7 @@
     flex-direction: column;
   }
   .wallet_adapter_button_trigger_light_mode {
-    background-image: url('/wallet.png');
+    background-image: url("/wallet.png");
     background-size: 22px;
     background-color: transparent;
     border: none;
@@ -144,15 +150,16 @@
     background-position-x: center;
     background-position-y: center;
     padding-left: 8px;
-  } .wallet_adapter_button_trigger_light_mode:focus,
-    .wallet_adapter_button_trigger_light_mode:hover,
-    .wallet_adapter_button_trigger_light_mode:active {
-      background-color: transparent !important;
-      filter: invert(0%);
+  }
+  .wallet_adapter_button_trigger_light_mode:focus,
+  .wallet_adapter_button_trigger_light_mode:hover,
+  .wallet_adapter_button_trigger_light_mode:active {
+    background-color: transparent !important;
+    filter: invert(0%);
   }
 
   .wallet_adapter_button_trigger_dark_mode {
-    background-image: url('/wallet.png');
+    background-image: url("/wallet.png");
     background-size: 22px;
     background-color: transparent;
     border: none;
@@ -161,11 +168,12 @@
     background-position-x: center;
     background-position-y: center;
     padding-left: 8px;
-  } .wallet_adapter_button_trigger_dark_mode:focus,
-    .wallet_adapter_button_trigger_dark_mode:hover,
-    .wallet_adapter_button_trigger_dark_mode:active {
-      background-color: transparent !important;
-      filter: invert(100%);
+  }
+  .wallet_adapter_button_trigger_dark_mode:focus,
+  .wallet_adapter_button_trigger_dark_mode:hover,
+  .wallet_adapter_button_trigger_dark_mode:active {
+    background-color: transparent !important;
+    filter: invert(100%);
   }
 }
 /* END: Top Bar */
