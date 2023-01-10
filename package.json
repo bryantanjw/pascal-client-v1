@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "test": "ts-node test/main.ts",
-    "lint": "next lint"
+    "lint": "next lint",
+    "initializeOutcomeTokens": "ts-node -O '{\"module\": \"commonjs\"}' -r tsconfig-paths/register src/actions/initializeOutcomeTokens.ts",
+    "binaryOptionTests": "ts-node -O '{\"module\": \"commonjs\"}' -r tsconfig-paths/register src/context/Anchor/spl-binary-options"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.2",

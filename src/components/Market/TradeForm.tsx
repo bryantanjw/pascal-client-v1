@@ -1,5 +1,6 @@
-import * as React from "react";
 import { useState } from "react";
+import useMeasure from "react-use-measure";
+import { AnimatePresence, motion, MotionConfig } from "framer-motion";
 import {
   Button,
   ButtonGroup,
@@ -62,7 +63,7 @@ const TradeFormItem = (props: TradeFormItemProps) => {
 };
 
 export const TradeForm = ({ market, marketOutcomes }) => {
-  // Style config //
+  // START: Style config //
   const confettiConfig = {
     angle: 90,
     spread: 360,
@@ -75,6 +76,12 @@ export const TradeForm = ({ market, marketOutcomes }) => {
     height: "10px",
     perspective: "500px",
     colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"],
+  };
+  const buttonStyle = {
+    p: 7,
+    fontSize: "xl",
+    width: "full",
+    transition: "all 0.3s",
   };
   const headerTextStyle = {
     textColor: mode("gray.500", "gray.300"),
@@ -98,31 +105,12 @@ export const TradeForm = ({ market, marketOutcomes }) => {
       fontWeight: "semibold",
     },
   };
-  const sellButtonStyle = {
-    p: 7,
-    width: "full",
-    fontSize: "xl",
-    textColor: mode("gray.500", "whiteAlpha.700"),
-    borderColor: mode("gray.400", "whiteAlpha.700"),
-    transition: "all 0.3s ease",
-    _hover: {
-      textColor: mode("gray.800", "white"),
-      borderColor: mode("gray.800", "white"),
-    },
-  };
-  const buyButtonStyle = {
-    p: 7,
-    width: "full",
-    fontSize: "xl",
-    textColor: mode("white", 353535),
-    bg: mode("#353535", "gray.50"),
-  };
   const alternatingColorScheme = [
     mode("purple.500", "purple.200"),
     mode("#2C7C7C", "#81E6D9"),
     "pink",
   ];
-  // Style config //
+  // END: Style config //
 
   // States
   const [orderSide, setOrderSide] = useState<String>("");
@@ -145,6 +133,8 @@ export const TradeForm = ({ market, marketOutcomes }) => {
   const day = dt.getDate().toString();
   const month = dt.toLocaleString("default", { month: "long" });
   const year = dt.getFullYear().toString();
+
+  let duration = 0.3;
 
   return (
     <>
@@ -176,12 +166,6 @@ export const TradeForm = ({ market, marketOutcomes }) => {
           <TabPanels>
             {/* Swap Tab */}
             <TabPanel px={0} pb={2}>
-              {/* <Steps width={'45%'} orientation={'horizontal'} colorScheme={'gray'} activeStep={activeStep}>
-              {steps.map(({ label }, index) => (
-                <Step label={label} key={index} />            
-              ))}
-            </Steps> */}
-
               {(activeStep === 0 && (
                 <Stack spacing={4}>
                   <Flex direction={"column"}>
@@ -213,40 +197,29 @@ export const TradeForm = ({ market, marketOutcomes }) => {
                     </Heading>
 
                     <Stack>
-                      <Text
-                        color={mode("gray.700", "gray.200")}
-                        fontWeight={"medium"}
-                        mb={1}
-                      >
-                        Select an outcome option on the left
-                      </Text>
-
                       <ButtonGroup
                         justifyContent={"center"}
                         size="lg"
                         spacing="4"
                         onClick={nextStep}
-                        isDisabled={!title}
+                        variant={"outline"}
                       >
                         <Button
+                          sx={buttonStyle}
                           id="buy"
-                          sx={buyButtonStyle}
-                          className={mode(
-                            styles.wallet_adapter_button_trigger_light_mode,
-                            styles.wallet_adapter_button_trigger_dark_mode
-                          )}
+                          colorScheme={"purple"}
                           onClick={() => setOrderSide("buy")}
                         >
-                          Buy
+                          Yes
                         </Button>
 
                         <Button
+                          sx={buttonStyle}
                           id="sell"
-                          sx={sellButtonStyle}
-                          variant={"outline"}
+                          colorScheme={"teal"}
                           onClick={() => setOrderSide("buy")}
                         >
-                          Sell
+                          No
                         </Button>
                       </ButtonGroup>
                     </Stack>

@@ -28,7 +28,11 @@ import {
   Center,
   SlideFade,
 } from "@chakra-ui/react";
-import { ChevronRightIcon, ExternalLinkIcon } from "@chakra-ui/icons";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ExternalLinkIcon,
+} from "@chakra-ui/icons";
 import {
   Select as ReactSelect,
   chakraComponents,
@@ -165,7 +169,7 @@ const Form2 = ({ title }) => {
             <FormLabel htmlFor="tag" fontWeight={"normal"}>
               Tag
             </FormLabel>
-            <Input {...field} id="tag" placeholder=" " />
+            <Input {...field} id="tag" placeholder=" " autoComplete="off" />
             <FormHelperText textAlign={"end"}>
               Enter a key phrase related to your market.
             </FormHelperText>
@@ -267,7 +271,7 @@ export const CreateMarketModal = () => {
 
   async function createVerboseMarket(program, marketName, lockTimestamp) {
     const mintToken = new PublicKey(
-      "So11111111111111111111111111111111111111112"
+      "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU"
     ); // <-- Wrapped SOL token address
     // Generate a publicKey to represent the event
     const eventAccountKeyPair = Keypair.generate();
@@ -286,13 +290,25 @@ export const CreateMarketModal = () => {
 
       if (!response.success) {
         console.log(response.errors);
+        toast({
+          title: "Transaction failed",
+          description: JSON.stringify(response.errors),
+          // .replace(
+          //   /^"(.*)"$/,
+          //   "$1"
+          // ),
+          status: "error",
+          duration: 8000,
+          position: "bottom-right",
+          isClosable: true,
+          containerStyle: { marginBottom: "50px" },
+        });
       } else {
         logJson(response);
       }
     }
 
     console.log(`Creating market ⏱`);
-    console.log("program", program);
     const marketResponse = await createMarket(
       program,
       marketName,
@@ -357,23 +373,24 @@ export const CreateMarketModal = () => {
       values;
 
     try {
-      // Get accounts
       const marketPk = await createVerboseMarket(program, title, lockTimestamp);
       if (!marketPk) {
         throw new Error("Error creating market");
       }
+      // Set market status from 'initializing' to 'open'
+      setCreateStatus(CreateStatus.OpeningMarket);
+      await openMarket(program, marketPk);
+
+      // Get accounts
       const outcomeResponse = await getMarketOutcomesByMarket(
         program,
         marketPk!
       );
       const outcomeAccounts = outcomeResponse?.data.marketOutcomeAccounts;
-      // Set market status from 'initializing' to 'open'
-      setCreateStatus(CreateStatus.OpeningMarket);
       const market = await getMarket(program, marketPk!);
-      await openMarket(program, marketPk);
-      const marketAccount = market?.data;
-      const tradeAccount = await getTradesForMarket(program, marketPk!);
-
+      const marketAccount = market.data;
+      const trade = await getTradesForMarket(program, marketPk!);
+      const tradeAccount = trade.data;
 
       // Add accounts to database
       const data = {
@@ -393,22 +410,12 @@ export const CreateMarketModal = () => {
         body: JSON.stringify(data),
       });
       const status = await response.json();
-      console.log("createMarket", status);
+
       setIsSuccess(true);
       setCreateStatus(CreateStatus.Success);
       setMarketPk(marketPk);
     } catch (error) {
       setIsSuccess(false);
-      toast({
-        title: "Transactino failed",
-        description: JSON.stringify(error.message).replace(/^"(.*)"$/, "$1"),
-        status: "error",
-        duration: 8000,
-        position: "bottom-right",
-        isClosable: true,
-        containerStyle: { marginBottom: "50px" },
-      });
-      console.log("here", error);
     }
   };
 
@@ -438,7 +445,6 @@ export const CreateMarketModal = () => {
         validationSchema={validationSchema}
         onSubmit={async (values, actions) => {
           await addMarket(values);
-          console.log(isSuccess);
         }}
       >
         {(props) => (
@@ -550,11 +556,21 @@ const FormStepper = ({ success, children, ...props }) => {
         )}
 
         {currentStep === 2 && (
-          <HStack
-            spacing={4}
-            display={isSubmitting ? "none" : success ? "block" : "none"}
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
           >
             <IconButton
+              display={isSubmitting ? "none" : success ? "none" : "block"}
+              aria-label="Back"
+              icon={<ChevronLeftIcon />}
+              size={"lg"}
+              fontSize={"2xl"}
+              onClick={() => setCurrentStep(1)}
+            />
+            <IconButton
+              display={isSubmitting ? "none" : success ? "block" : "none"}
               aria-label="View market"
               rounded={"xl"}
               variant={"ghost"}
@@ -570,7 +586,7 @@ const FormStepper = ({ success, children, ...props }) => {
               icon={<ChevronRightIcon />}
               as={Link}
             />
-          </HStack>
+          </motion.div>
         )}
       </Flex>
     </Form>
@@ -757,21 +773,4 @@ const ResizablePanel = ({ children }) => {
       </AnimatePresence>
     </motion.div>
   );
-};
-
-/*
-  Replacer function to JSON.stringify that ignores
-  circular references and internal React properties.
-  https://github.com/facebook/react/issues/8669#issuecomment-531515508
-*/
-const ignoreCircularReferences = () => {
-  const seen = new WeakSet();
-  return (key, value) => {
-    if (key.startsWith("_")) return; // Don't compare React's internal props.
-    if (typeof value === "object" && value !== null) {
-      if (seen.has(value)) return;
-      seen.add(value);
-    }
-    return value;
-  };
 };
