@@ -63,3 +63,7 @@ export const ASSOCIATED_TOKEN_PROGRAM_ID = new Web3.PublicKey(
 export const SPL_BINARY_OPTION_PROGRAM_ID = new Web3.PublicKey(
   "betw959P4WToez4DkuXwNsJszqbpe3HuY56AcG5yevx"
 );
+
+export const MOBILE_WIDTH: number = 800; // px
+
+export const ORDERBOOK_LEVELS: number = 25; // rows count

@@ -11,6 +11,7 @@ import {
   AlertIcon,
   Spinner,
   Center,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { categories } from "@/utils/constants";
 
@@ -92,11 +93,10 @@ const MarketList = ({ markets }) => {
       <Image
         sx={gradientBackgroundStyle}
         src={"gradient-bg.png"}
-        // eslint-disable-next-line react-hooks/rules-of-hooks
         alt={"background"}
         right={"40px"}
-        top={"-200px"}
-        transform={"rotate(-10deg)"}
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        top={useColorModeValue("-200px", "-320px")}
       />
     </Box>
   );

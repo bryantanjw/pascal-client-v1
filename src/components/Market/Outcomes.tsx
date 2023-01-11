@@ -14,6 +14,8 @@ import {
   Box,
   Flex,
   Spacer,
+  Collapse,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { MdCheckCircle, MdOutlineCircle } from "react-icons/md";
 import useSWR from "swr";
@@ -22,10 +24,19 @@ import { MarketOutcomeAccount, GetAccount } from "@monaco-protocol/client";
 
 import { useDispatch } from "@/store/store";
 import { setIndex, setTitle } from "@/store/slices/outcomeSlice";
+import OrderBook from "./Orderbook";
+import { clearOrdersState } from "@/store/slices/orderbookSlice";
+import { useState } from "react";
 
-// Style config //
-const progressBarColorScheme = ["purple", "teal", "pink"];
-// Style config //
+const ProductIds = {
+  XBTUSD: "PI_XBTUSD",
+  ETHUSD: "PI_ETHUSD",
+};
+
+export const ProductsMap: any = {
+  PI_XBTUSD: "PI_ETHUSD",
+  PI_ETHUSD: "PI_XBTUSD",
+};
 
 const fetcher = async (url) => {
   const res = await fetch(url);
@@ -59,7 +70,8 @@ const RadioOption = (props: RadioOptionProps) => {
   );
   const id = useId();
 
-  const checkoxColorScheme = [
+  const progressBarColorScheme = ["purple", "teal", "pink"];
+  const checkboxColorScheme = [
     mode("purple.500", "purple.200"),
     mode("#2C7C7C", "#81E6D9"),
   ];
@@ -86,8 +98,8 @@ const RadioOption = (props: RadioOptionProps) => {
         fontSize={{ base: "sm", md: "md" }}
         _hover={{
           borderColor: mode(
-            checkoxColorScheme[
-              marketOutcome.account.index % checkoxColorScheme.length
+            checkboxColorScheme[
+              marketOutcome.account.index % checkboxColorScheme.length
             ],
             "rgb(255, 255, 255, 0.1)"
           ),
@@ -104,8 +116,8 @@ const RadioOption = (props: RadioOptionProps) => {
             "rgba(17, 25, 40, 0.7)"
           ),
           borderColor: mode(
-            checkoxColorScheme[
-              marketOutcome.account.index % checkoxColorScheme.length
+            checkboxColorScheme[
+              marketOutcome.account.index % checkboxColorScheme.length
             ],
             "rgb(255, 255, 255, 0.1)"
           ),
@@ -178,8 +190,8 @@ const RadioOption = (props: RadioOptionProps) => {
               fontSize="xl"
               _checked={{
                 color:
-                  checkoxColorScheme[
-                    marketOutcome.account.index % checkoxColorScheme.length
+                  checkboxColorScheme[
+                    marketOutcome.account.index % checkboxColorScheme.length
                   ],
               }}
               color={mode("gray.300", "whiteAlpha.400")}
@@ -195,15 +207,22 @@ const RadioOption = (props: RadioOptionProps) => {
 };
 
 export const OutcomesTest = ({ marketOutcomes }) => {
+  const [productId, setProductId] = useState(ProductIds.XBTUSD);
+  const [isFeedKilled, setIsFeedKilled] = useState(false);
+  const { isOpen, onToggle } = useDisclosure();
   const dispatch = useDispatch(); // <-- calling the reducer
 
+  const toggleProductId = (): void => {
+    dispatch(clearOrdersState());
+    setProductId(ProductsMap[productId]);
+  };
+
   const handleChange = (value) => {
-    dispatch(setTitle(marketOutcomes[parseInt(value)].account.title));
-    dispatch(setIndex(parseInt(value)));
+    toggleProductId();
+    onToggle();
   };
 
   const { getRootProps, getRadioProps } = useRadioGroup({
-    defaultValue: "0",
     onChange: handleChange,
   });
 
@@ -232,13 +251,18 @@ export const OutcomesTest = ({ marketOutcomes }) => {
         {marketOutcomes?.map(
           (outcome: GetAccount<MarketOutcomeAccount>, index: number) => {
             return (
-              <RadioOption
-                key={index}
-                marketOutcome={outcome}
-                {...getRadioProps({
-                  value: index.toString(), // <-- getRadioProps value only accepts String type
-                })}
-              />
+              <>
+                <RadioOption
+                  key={index}
+                  marketOutcome={outcome}
+                  {...getRadioProps({
+                    value: index.toString(), // <-- getRadioProps value only accepts String type
+                  })}
+                />
+                <Collapse in={isOpen} animateOpacity>
+                  <OrderBook productId={productId} />
+                </Collapse>
+              </>
             );
           }
         )}
