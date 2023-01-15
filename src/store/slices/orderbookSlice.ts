@@ -22,7 +22,7 @@ const initialState: OrderbookState = {
   rawAsks: [],
   asks: [],
   maxTotalAsks: 0,
-  groupingSize: 0.5,
+  groupingSize: 1,
 };
 
 const removePriceLevel = (price: number, levels: number[][]): number[][] =>
@@ -69,7 +69,7 @@ const applyDeltas = (
 ): number[][] => {
   let updatedLevels: number[][] = currentLevels;
 
-  orders.forEach((deltaLevel) => {
+  orders?.forEach((deltaLevel) => {
     const deltaLevelPrice = deltaLevel[0];
     const deltaLevelSize = deltaLevel[1];
 
@@ -95,7 +95,7 @@ const applyDeltas = (
 const addTotalSums = (orders: number[][]): number[][] => {
   const totalSums: number[] = [];
 
-  return orders.map((order: number[], idx) => {
+  return orders?.map((order: number[], idx) => {
     const size: number = order[1];
     if (typeof order[2] !== "undefined") {
       return order;
@@ -110,7 +110,7 @@ const addTotalSums = (orders: number[][]): number[][] => {
 };
 
 const addDepths = (orders: number[][], maxTotal: number): number[][] => {
-  return orders.map((order) => {
+  return orders?.map((order) => {
     if (typeof order[3] !== "undefined") {
       return order;
     } else {
@@ -124,7 +124,7 @@ const addDepths = (orders: number[][], maxTotal: number): number[][] => {
 };
 
 const getMaxTotalSum = (orders: number[][]): number => {
-  const totalSums: number[] = orders.map((order) => order[2]);
+  const totalSums: number[] = orders?.map((order) => order[2]);
   return Math.max.apply(Math, totalSums);
 };
 

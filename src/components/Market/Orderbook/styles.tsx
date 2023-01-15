@@ -1,38 +1,53 @@
 import styled from "styled-components";
 
-export const TitleContainer = styled.div`
-  display: flex;
-  justify-content: space-around;
-  color: #98a6af;
-  padding: 0.3em;
-  font-size: 0.8rem;
-
-  span {
-    min-width: 5rem;
-  }
-`;
-
 export const OrderbookContainer = styled.div`
   display: flex;
-  flex-direction: column-reverse;
-  justify-content: center;
-  align-items: center;
-  border-color: #263946;
+  direction={"column"};
+  backdrop-filter: blur(5px);
 
   @media only screen and (min-width: 800px) {
-    flex-direction: row;
     justify-content: center;
   }
 `;
 
 export const TableContainer = styled.div`
+  padding-top: 9px;
+  font-size: 0.9rem;
   display: flex;
   width: 100%;
   flex-direction: column;
-  color: #bfc1c8;
+  height: 120px;
+  overflow: auto;
+  overflow-scrolling: touch;
 
+  background:
+    /* Shadow Cover TOP */ linear-gradient(
+        white 30%,
+        rgba(255, 255, 255, 0)
+      )
+      center top,
+    /* Shadow Cover BOTTOM */ linear-gradient(rgba(255, 255, 255, 0), white 70%)
+      center bottom,
+    /* Shadow TOP */
+      radial-gradient(
+        farthest-side at 50% 0,
+        rgba(0, 0, 0, 0.1),
+        rgba(0, 0, 0, 0)
+      )
+      center top,
+    /* Shadow BOTTOM */
+      radial-gradient(
+        farthest-side at 50% 100%,
+        rgba(0, 0, 0, 0.1),
+        rgba(0, 0, 0, 0)
+      )
+      center bottom;
+
+  background-repeat: no-repeat;
+  background-size: 100% 40px, 100% 40px, 100% 14px, 100% 14px;
+  background-attachment: local, local, scroll, scroll;
   @media only screen and (min-width: 800px) {
-    width: 50%;
+    width: 100%;
   }
 `;
 
@@ -41,10 +56,23 @@ interface PriceButtonContainerProps {
   windowWidth: number;
 }
 
+export const TitleContainer = styled.div`
+  display: flex;
+  justify-content: space-around;
+  color: #98a6af;
+  padding-top: 0.5em;
+  font-size: 0.9em;
+
+  span {
+    min-width: 5rem;
+  }
+`;
+
 export const PriceContainer = styled.div<PriceButtonContainerProps>`
   display: flex;
   justify-content: space-around;
   position: relative;
+  margin: 3px 0;
 
   &:after {
     background-color: ${(props) => (props.isRight ? "#113534" : "#3d1e28")};
@@ -66,7 +94,11 @@ export const PriceContainer = styled.div<PriceButtonContainerProps>`
 
   span {
     z-index: 1;
-    min-width: 54px;
+    min-width: 5rem;
+  }
+
+  .total {
+    opacity: 0.6;
   }
 
   .price {
@@ -75,7 +107,7 @@ export const PriceContainer = styled.div<PriceButtonContainerProps>`
 `;
 
 export const PriceLevelRowContainer = styled.div`
-  margin: 0.155em 0;
+  margin: 0 0;
 `;
 
 interface ButtonContainerProps {
@@ -109,19 +141,6 @@ export const GroupingSelectBoxContainer = styled.div`
     &:hover {
       cursor: pointer;
     }
-  }
-`;
-
-export const SpreadContainer = styled.div`
-  color: #98a6af;
-  background-color: #121723;
-  width: 50%;
-  text-align: center;
-  padding: 0.7em 0;
-
-  @media only screen and (min-width: 800px) {
-    position: absolute;
-    top: 5px;
   }
 `;
 

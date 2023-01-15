@@ -1,76 +1,44 @@
 import React, { useState } from "react";
 import {
-  Stack,
-  Box,
-  Button,
-  Flex,
+  Heading,
   FormControl,
   FormLabel,
-  FormHelperText,
-  Input,
-  Select,
   Textarea,
-  Heading,
-  useColorModeValue as mode,
+  FormErrorMessage,
+  FormHelperText,
+  Select,
+  Stack,
+  Text,
+  Input,
+  SlideFade,
+  Center,
+  Box,
+  Progress,
+  Flex,
+  Link,
   HStack,
   Image,
-  Text,
   keyframes,
-  FormErrorMessage,
-  ModalOverlay,
-  ModalBody,
-  ModalContent,
-  ModalCloseButton,
-  Link,
+  Button,
   IconButton,
-  useToast,
-  Progress,
-  Center,
-  SlideFade,
+  useColorModeValue as mode,
 } from "@chakra-ui/react";
 import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
   ExternalLinkIcon,
+  ChevronRightIcon,
+  ChevronLeftIcon,
 } from "@chakra-ui/icons";
 import {
   Select as ReactSelect,
   chakraComponents,
   ChakraStylesConfig,
 } from "chakra-react-select";
-import { Field, Form, Formik } from "formik";
-import * as yup from "yup";
-import useMeasure from "react-use-measure";
-import { AnimatePresence, motion, MotionConfig } from "framer-motion";
-import {
-  getMarket,
-  getMarketOutcomesByMarket,
-  getTradesForMarket,
-} from "@monaco-protocol/client";
-import { openMarket } from "@monaco-protocol/admin-client";
-import { useProgram } from "@/context/ProgramProvider";
-import { PublicKey, Keypair } from "@solana/web3.js";
-import {
-  createMarket,
-  MarketType,
-  DEFAULT_PRICE_LADDER,
-  initialiseOutcomes,
-  batchAddPricesToAllOutcomePools,
-  ClientResponse,
-} from "@monaco-protocol/admin-client";
-import { categories } from "@/utils/constants";
+import { Field, Form } from "formik";
+import { categories, resolutionSources } from "@/utils/constants";
 
 import styles from "@/styles/Home.module.css";
 
-enum CreateStatus {
-  CreatingMarket = "Creating Market",
-  InitialisingOutcomes = "Initialising Outcomes",
-  AddingPrices = "Adding Prices",
-  OpeningMarket = "Opening Market",
-  Success = "Success",
-}
-
-const Form1 = () => {
+export const Form1 = () => {
   return (
     <>
       <Heading mt={6} mb={5} size="lg" fontWeight="semibold">
@@ -82,7 +50,7 @@ const Form1 = () => {
             <FormLabel htmlFor="title" fontWeight={"normal"}>
               Title
             </FormLabel>
-            <Input {...field} id="title" placeholder=" " />
+            <Textarea {...field} id="title" placeholder=" " />
             <FormErrorMessage>{form.errors.title}</FormErrorMessage>
             <FormHelperText textAlign={"end"}>
               Keep it short and sweet!
@@ -130,7 +98,7 @@ const Form1 = () => {
   );
 };
 
-const Form2 = ({ title }) => {
+export const Form2 = ({ title }) => {
   return (
     <Stack>
       <Heading mt={6} mb={5} size="lg" fontWeight="semibold">
@@ -144,7 +112,7 @@ const Form2 = ({ title }) => {
           <FormControl
             isInvalid={form.errors.description && form.touched.description}
           >
-            <FormLabel mt={2} htmlFor="description" fontWeight={"normal"}>
+            <FormLabel mt={8} htmlFor="description" fontWeight={"normal"}>
               Description
             </FormLabel>
             <Textarea
@@ -160,11 +128,32 @@ const Form2 = ({ title }) => {
         )}
       </Field>
 
+      <Field name="resolutionSource">
+        {({ field, form }) => (
+          <FormControl
+            isInvalid={form.errors.keyword && form.touched.keyword}
+            pt={7}
+          >
+            <FormLabel htmlFor="tag" fontWeight={"normal"}>
+              Resolution Source
+            </FormLabel>
+            <Select {...field} placeholder={"-"}>
+              {resolutionSources.map((source) => (
+                <option key={source.title} value={source.title}>
+                  {source.title}
+                </option>
+              ))}
+            </Select>
+            <FormErrorMessage>{form.errors.keyword}</FormErrorMessage>
+          </FormControl>
+        )}
+      </Field>
+
       <Field name="tag">
         {({ field, form }) => (
           <FormControl
             isInvalid={form.errors.keyword && form.touched.keyword}
-            pt={4}
+            pt={7}
           >
             <FormLabel htmlFor="tag" fontWeight={"normal"}>
               Tag
@@ -181,7 +170,7 @@ const Form2 = ({ title }) => {
   );
 };
 
-const SubmittedForm = ({ publicKey, success, isSubmitting, status }) => {
+export const SubmittedForm = ({ publicKey, success, isSubmitting, status }) => {
   return (
     <Box color={"gray.50"}>
       <Stack mb={10} mt={12} transition={"all 2s ease-in-out"}>
@@ -259,242 +248,9 @@ const SubmittedForm = ({ publicKey, success, isSubmitting, status }) => {
   );
 };
 
-export const CreateMarketModal = () => {
-  const program = useProgram();
-  const toast = useToast();
-  const [isSuccess, setIsSuccess] = useState<boolean>(false);
-  const [marketPk, setMarketPk] = useState<PublicKey>();
-  const [createStatus, setCreateStatus] = useState<CreateStatus>(
-    CreateStatus.CreatingMarket
-  );
-  let duration = 0.5;
-
-  async function createVerboseMarket(program, marketName, lockTimestamp) {
-    const mintToken = new PublicKey(
-      "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU"
-    ); // <-- Wrapped SOL token address
-    // Generate a publicKey to represent the event
-    const eventAccountKeyPair = Keypair.generate();
-    const eventPk = eventAccountKeyPair.publicKey;
-
-    const marketLock = new Date(lockTimestamp).getTime(); // <-- lockTimestamp in seconds
-    const type = MarketType.EventResultWinner;
-    const outcomes = ["Yes", "No"];
-    const priceLadder = Array.from({ length: 50 }, (_, i) => i + 1); // <-- 1 - 100 price ladder
-    const batchSize = 50;
-
-    function logResponse(response: ClientResponse<{}>) {
-      function logJson(json: object) {
-        console.log(JSON.stringify(json, null, 2));
-      }
-
-      if (!response.success) {
-        console.log(response.errors);
-        toast({
-          title: "Transaction failed",
-          description: JSON.stringify(response.errors),
-          // .replace(
-          //   /^"(.*)"$/,
-          //   "$1"
-          // ),
-          status: "error",
-          duration: 8000,
-          position: "bottom-right",
-          isClosable: true,
-          containerStyle: { marginBottom: "50px" },
-        });
-      } else {
-        logJson(response);
-      }
-    }
-
-    console.log(`Creating market ⏱`);
-    const marketResponse = await createMarket(
-      program,
-      marketName,
-      type,
-      mintToken,
-      marketLock,
-      eventPk
-    );
-    // returns CreateMarketResponse: market account public key, creation transaction id, and market account
-    logResponse(marketResponse);
-    if (marketResponse.success) {
-      console.log(
-        `MarketAccount ${marketResponse.data.marketPk.toString()} created ✅`
-      );
-      console.log(`TransactionId: ${marketResponse.data.tnxId}`);
-      setCreateStatus(CreateStatus.InitialisingOutcomes);
-    } else {
-      console.log("Error creating market");
-      return;
-    }
-
-    const marketPk = marketResponse.data.marketPk;
-
-    console.log(`Initialising market outcomes ⏱`);
-    const initialiseOutcomePoolsResponse = await initialiseOutcomes(
-      program,
-      marketPk,
-      outcomes
-    );
-    // returns OutcomeInitialisationsResponse: list of outcomes, their pdas, and transaction id
-    logResponse(initialiseOutcomePoolsResponse);
-    if (initialiseOutcomePoolsResponse.success) {
-      console.log(`Outcomes added to market ✅`);
-      setCreateStatus(CreateStatus.AddingPrices);
-    } else {
-      console.log("Error initialising outcomes");
-      return;
-    }
-
-    console.log(`Adding prices to outcomes ⏱`);
-    const addPriceLaddersResponse = await batchAddPricesToAllOutcomePools(
-      program,
-      marketPk,
-      priceLadder,
-      batchSize
-    );
-    // returns BatchAddPricesToOutcomeResponse: transaction id, and confirmation
-    logResponse(addPriceLaddersResponse);
-    if (addPriceLaddersResponse.success) {
-      console.log(`Prices added to outcomes ✅`);
-    } else {
-      console.log("Error adding prices to outcomes");
-      return;
-    }
-
-    console.log(`Market ${marketPk.toString()} creation complete ✨`);
-    return marketResponse.data.marketPk;
-  }
-
-  const addMarket = async (values) => {
-    const { title, category, lockTimestamp, description, tag, program } =
-      values;
-
-    try {
-      const marketPk = await createVerboseMarket(program, title, lockTimestamp);
-      if (!marketPk) {
-        throw new Error("Error creating market");
-      }
-      // Set market status from 'initializing' to 'open'
-      setCreateStatus(CreateStatus.OpeningMarket);
-      await openMarket(program, marketPk);
-
-      // Get accounts
-      const outcomeResponse = await getMarketOutcomesByMarket(
-        program,
-        marketPk!
-      );
-      const outcomeAccounts = outcomeResponse?.data.marketOutcomeAccounts;
-      const market = await getMarket(program, marketPk!);
-      const marketAccount = market.data;
-      const trade = await getTradesForMarket(program, marketPk!);
-      const tradeAccount = trade.data;
-
-      // Add accounts to database
-      const data = {
-        category,
-        description,
-        tag,
-        marketAccount,
-        outcomeAccounts,
-        tradeAccount,
-      };
-      console.log("data", data);
-      const response = await fetch("../api/createMarket", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-      const status = await response.json();
-
-      setIsSuccess(true);
-      setCreateStatus(CreateStatus.Success);
-      setMarketPk(marketPk);
-    } catch (error) {
-      setIsSuccess(false);
-    }
-  };
-
-  const validationSchema = yup.object().shape({
-    title: yup.string().required("Market title is required"),
-    category: yup.string().required("Market category is required"),
-    lockTimestamp: yup
-      .date()
-      .min(new Date(), "Resolution date must be in the future")
-      .required(),
-    description: yup.string().required("Resolution criteria is required"),
-    tag: yup.string(),
-  });
-
-  return (
-    <MotionConfig transition={{ duration, type: "tween" }}>
-      <ModalOverlay backdropFilter="auto" backdropBlur="2px" />
-      <Formik
-        initialValues={{
-          title: "",
-          category: "",
-          lockTimestamp: "",
-          description: "",
-          tag: "",
-          program,
-        }}
-        validationSchema={validationSchema}
-        onSubmit={async (values, actions) => {
-          await addMarket(values);
-        }}
-      >
-        {(props) => (
-          <ModalContent
-            maxW={"500px"}
-            p={"12px 15px"}
-            rounded={"2xl"}
-            boxShadow={"2xl"}
-            transition={`background-color 0.8s ease-in-out`}
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            bg={
-              isSuccess
-                ? mode("rgb(64,40,249,0.85)", "rgb(64,40,220,0.9)")
-                : mode("rgb(255,255,255)", "rgb(30,30,30,0.9)")
-            }
-            backdropFilter={{ md: "blur(5px)" }}
-          >
-            <ModalCloseButton
-              color={isSuccess ? "gray.50" : mode("gray.700", "gray.100")}
-              m={"10px auto"}
-              rounded={"xl"}
-              size={"lg"}
-              isDisabled={props.isSubmitting}
-            />
-
-            <ModalBody>
-              <Box m="10px auto">
-                <ResizablePanel>
-                  <FormStepper {...props} success={isSuccess}>
-                    <Form1 />
-                    <Form2 title={props.values.title} />
-                    <SubmittedForm
-                      publicKey={marketPk}
-                      success={isSuccess}
-                      isSubmitting={props.isSubmitting}
-                      status={createStatus}
-                    />
-                  </FormStepper>
-                </ResizablePanel>
-              </Box>
-            </ModalBody>
-          </ModalContent>
-        )}
-      </Formik>
-    </MotionConfig>
-  );
-};
-
-const FormStepper = ({ success, children, ...props }) => {
+export const FormStepper = ({ success, marketPk, children, ...props }) => {
   const { isSubmitting, handleSubmit, errors, values } = props;
+  console.log(values);
   const stepsArray = React.Children.toArray(children);
   const [currentStep, setCurrentStep] = useState(0);
   const currentChild = stepsArray[currentStep];
@@ -512,7 +268,7 @@ const FormStepper = ({ success, children, ...props }) => {
     <Form>
       <Stack spacing={4}>{currentChild}</Stack>
 
-      <Flex justifyContent={"flex-end"} mt={14} py={2}>
+      <Flex justifyContent={"flex-end"} mt={14} py={2} textAlign={"center"}>
         {currentStep !== 2 && (
           <Button
             disabled={
@@ -556,11 +312,7 @@ const FormStepper = ({ success, children, ...props }) => {
         )}
 
         {currentStep === 2 && (
-          <motion.div
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
-          >
+          <>
             <IconButton
               display={isSubmitting ? "none" : success ? "none" : "block"}
               aria-label="Back"
@@ -580,13 +332,15 @@ const FormStepper = ({ success, children, ...props }) => {
               bg={"gray.700"}
               boxShadow={"xl"}
               mt={8}
+              mr={0}
               _hover={{
                 transform: "translateX(3px) scale(1.01)",
               }}
               icon={<ChevronRightIcon />}
+              href={`/market/${marketPk}`}
               as={Link}
             />
-          </motion.div>
+          </>
         )}
       </Flex>
     </Form>
@@ -757,20 +511,3 @@ const CustomSelect = () => {
   );
 };
 // END: Custom styling ReactSelect //
-
-const ResizablePanel = ({ children }) => {
-  let [ref, { height }] = useMeasure();
-
-  return (
-    <motion.div
-      animate={{ height: height || "auto" }}
-      className="relative overflow-hidden"
-    >
-      <AnimatePresence initial={false}>
-        <Box ref={ref} className="px-8 pb-8">
-          {children}
-        </Box>
-      </AnimatePresence>
-    </motion.div>
-  );
-};

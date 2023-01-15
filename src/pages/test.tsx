@@ -34,10 +34,10 @@ import {
 import MarketProgress from "@/components/Market/MarketProgress";
 import { Stat } from "@/components/Market/Stat";
 import NewsList from "@/components/Market/NewsList";
-import { TradeForm } from "@/components/TradeForm.tsx";
+import { TradeForm } from "@/components/Trade/TradeForm.tsx";
 import WithSubnavigation from "@/components/TopBar";
 import MarketResolution from "@/components/Market/MarketResolution";
-import { OutcomesTest } from "@/components/Market/Outcomes";
+import Outcomes from "@/components/Market/Outcomes";
 import Layout from "@/components/Layout";
 import { useProgram } from "@/context/ProgramProvider";
 
@@ -221,7 +221,7 @@ const MarketView = () => {
 
                 <TabPanels>
                   <TabPanel key={0} px={0}>
-                    <OutcomesTest marketOutcomes={marketOutcomes} />
+                    <Outcomes marketOutcomes={marketOutcomes} />
                   </TabPanel>
                 </TabPanels>
               </Tabs>

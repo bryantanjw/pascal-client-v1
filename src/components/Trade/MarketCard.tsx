@@ -25,12 +25,13 @@ const statStyle = {
 
 const MarketCard = ({ market }) => {
   const iconColor = mode("invert(0%)", "invert(100%)");
+  const { outcomeAccounts, marketLockTimestamp } = market;
 
-  const dt = new Date(market.closing_date);
+  const dt = new Date(parseInt(marketLockTimestamp, 16) * 1000);
 
   return (
     <ChakraNextLink
-      to={`/trade/${market.marketId}`}
+      to={`/market/${market.publicKey}`}
       _hover={{ textDecoration: "none" }}
     >
       <ScaleFade initialScale={0.9} in={true}>
@@ -72,8 +73,9 @@ const MarketCard = ({ market }) => {
             <Stack spacing={1}>
               <Heading size={"md"}>{market.title}</Heading>
               <h3>
-                on {dt.toLocaleString("default", { month: "long" })}{" "}
-                {dt.getDate()}
+                {`on ${dt.getDate()} ${dt.toLocaleString("default", {
+                  month: "long",
+                })} ${dt.getFullYear()}`}
               </h3>
             </Stack>
           </Suspense>
@@ -83,13 +85,12 @@ const MarketCard = ({ market }) => {
             justify={"space-between"}
             direction={{ base: "row", md: "column", lg: "row" }}
           >
-            <Text>&gt; {market.target_value}</Text>
             <Stack direction={"row"} spacing={3}>
               <Text color={"purple.500"}>
-                Yes ${market.outcomes[0].probability}
+                Yes ${outcomeAccounts[0].account.latestMatchedPrice}
               </Text>
               <Text color={"teal.500"}>
-                No ${market.outcomes[1].probability}
+                No ${outcomeAccounts[1].account.latestMatchedPrice}
               </Text>
             </Stack>
           </Flex>
@@ -103,17 +104,17 @@ const MarketCard = ({ market }) => {
                 src={"/liquidity.png"}
                 width={17}
                 height={17}
-                alt="recurrence"
+                alt="liquidity"
               />
               <h4>{market.liquidity}</h4>
             </HStack>
             <HStack sx={statStyle}>
               <Image
                 filter={iconColor}
-                src={"/recurrence.png"}
+                src={"/traders.png"}
                 width={17}
                 height={17}
-                alt="recurrence"
+                alt="traders"
               />
               <h4>{market.recurrence}</h4>
             </HStack>

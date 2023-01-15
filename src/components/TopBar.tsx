@@ -15,6 +15,8 @@ import {
   useDisclosure,
   Button,
   Modal,
+  Divider,
+  HStack,
 } from "@chakra-ui/react";
 import {
   HamburgerIcon,
@@ -72,11 +74,11 @@ export default function WithSubnavigation() {
             fontFamily={"heading"}
             color={useColorModeValue("gray.800", "white")}
           >
-            Logo
+            Pascal
           </Text>
         </Flex>
 
-        <Flex display={{ base: "none", md: "flex" }} mr={10}>
+        <Flex display={{ base: "none", md: "flex" }} mr={12}>
           <DesktopNav />
         </Flex>
 
@@ -85,21 +87,25 @@ export default function WithSubnavigation() {
           mt={2}
           justify={"flex-end"}
           direction={"row"}
-          spacing={7}
+          spacing={4}
         >
           <ColorModeSwitcher />
-
           {isAdmin && (
-            // eslint-disable-next-line react-hooks/rules-of-hooks
             <Flex display={{ base: "none", md: "block" }}>
-              <Button
-                variant={"ghost"}
-                rounded={"xl"}
-                right={-4}
-                onClick={onOpen}
-              >
-                Create market
-              </Button>
+              <HStack>
+                <Divider
+                  mx={3}
+                  orientation="vertical"
+                  height={"20px"}
+                  borderWidth={"1px"}
+                  rounded={"xl"}
+                  // eslint-disable-next-line react-hooks/rules-of-hooks
+                  borderColor={useColorModeValue("gray.800", "gray.100")}
+                />
+                <Button variant={"ghost"} rounded={"xl"} onClick={onOpen}>
+                  Create market
+                </Button>
+              </HStack>
 
               <Modal
                 onClose={onClose}
@@ -315,7 +321,7 @@ interface NavItem {
 
 const NAV_ITEMS: Array<NavItem> = [
   {
-    label: "Trade",
+    label: "Markets",
     href: "/",
   },
   {

@@ -31,7 +31,7 @@ import {
 import MarketProgress from "./MarketProgress";
 import { Stat } from "./Stat";
 import NewsList from "./NewsList";
-import { TradeForm } from "../TradeForm.tsx";
+import { TradeForm } from "../Trade/TradeForm.tsx";
 import WithSubnavigation from "../TopBar";
 import MarketResolution from "./MarketResolution";
 import Outcomes from "./Outcomes";
@@ -40,34 +40,22 @@ import { setTitle } from "@/store/slices/outcomeSlice";
 
 import styles from "@/styles/Home.module.css";
 
-type FormData = {
-  [marketOutcome: string]: {
-    forOrAgainst: "For" | "Against";
-    odds: number;
-    stake: number;
-  };
-};
-
-const defaultFormValues = {
-  forOrAgainst: "For" as "For",
-  odds: 1.5,
-  stake: 0,
-};
+// Dynamically load ResearchGraph component on client side
+const ResearchGraph = dynamic(import("./ResearchGraph"), {
+  ssr: false,
+});
 
 const MarketView = ({ market }) => {
-  const { query } = useRouter();
   const dispatch = useDispatch();
   const { publicKey } = useWallet();
-  const [marketAccount, setMarketAccount] =
-    useState<GetAccount<MarketAccount>>(); // <-- using setMarketAccount for now
+  useState<GetAccount<MarketAccount>>(); // <-- using setMarketAccount for now
   const [marketOutcomes, setMarketOucomes] =
     useState<GetAccount<MarketOutcomeAccount>[]>();
-  const [formData, setFormData] = useState<FormData>();
   const isOwner = publicKey
     ? publicKey.toString() === process.env.NEXT_PUBLIC_OWNER_PUBLIC_KEY
     : false;
 
-  // Style config
+  // START: Style config //
   const dividerColor = mode("gray.300", "#464A54");
   const iconColor = mode("invert(0%)", "invert(100%)");
   const tabListStyle = {
@@ -79,32 +67,33 @@ const MarketView = ({ market }) => {
       textColor: mode("black", "gray.100"),
       borderColor: mode("black", "gray.100"),
     },
+    _hover: {
+      textColor: mode("gray.600", "gray.200"),
+    },
   };
   const sectionHeadingStyle = {
     fontSize: "lg",
     fontWeight: "bold",
   };
   const gradientBackgroundStyle = {
-    filter: "blur(110px)",
+    filter: "blur(80px)",
     position: "absolute",
     zIndex: -1,
     opacity: "50%",
     width: "40%",
   };
-  // Style config
+  // END: Style config //
+
   const stats = [
     { label: "Liquidity", value: market.liquidity },
     { label: "Total Volume", value: market.volume },
     {
       label: "Closing Date - UTC",
-      value: new Date(market.closing_date).toISOString().split("T")[0],
+      value: new Date(
+        parseInt(market.marketLockTimestamp, 16)
+      ).toLocaleString(),
     },
   ];
-
-  // Call useEffect once to display first outcome
-  useEffect(() => {
-    dispatch(setTitle(market.outcomes[0].title));
-  }, []);
 
   return (
     <div className={styles.container}>
@@ -162,7 +151,7 @@ const MarketView = ({ market }) => {
                   fontSize={{ base: "xl", md: "2xl" }}
                   fontWeight="extrabold"
                 >
-                  {market.title}
+                  {/* {market.title} */}
                 </Heading>
               </HStack>
             </Stack>
@@ -176,13 +165,15 @@ const MarketView = ({ market }) => {
             <Stack spacing={4} minW={"sm"} flex="2">
               <Tabs colorScheme={"black"}>
                 <TabList>
-                  <Tab sx={tabListStyle}>Outcomes</Tab>
-                  <Tab sx={tabListStyle}>Orderbook</Tab>
+                  <Tab mr={7} sx={tabListStyle}>
+                    Outcomes
+                  </Tab>
+                  <Tab sx={tabListStyle}>Graph</Tab>
                 </TabList>
 
                 <TabPanels>
                   <TabPanel key={0} px={0}>
-                    <Outcomes market={market} />
+                    <Outcomes outcomes={market.outcomeAccounts} />
                   </TabPanel>
                 </TabPanels>
               </Tabs>
@@ -200,7 +191,7 @@ const MarketView = ({ market }) => {
                   <TabPanel key={0} px={0}>
                     <Flex flexDirection={"column"}>
                       <Stack>
-                        <MarketProgress marketAccount={marketAccount} />
+                        <MarketProgress account={market} />
 
                         <Divider borderColor={dividerColor} />
 
@@ -298,8 +289,3 @@ const MarketView = ({ market }) => {
 };
 
 export default MarketView;
-
-// Dynamically load ResearchGraph component on client side
-const ResearchGraph = dynamic(import("./ResearchGraph"), {
-  ssr: false,
-});

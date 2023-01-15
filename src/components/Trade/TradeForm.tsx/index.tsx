@@ -1,6 +1,4 @@
 import { useState } from "react";
-import useMeasure from "react-use-measure";
-import { AnimatePresence, motion, MotionConfig } from "framer-motion";
 import {
   Button,
   ButtonGroup,
@@ -41,41 +39,14 @@ type TradeFormItemProps = {
   children?: React.ReactNode;
 };
 
-type FormData = {
-  [marketOutcome: string]: {
-    forOrAgainst: "For" | "Against";
-    odds: number;
-    stake: number;
-  };
-};
-
-const Swap = ({ market, marketOutcomes }) => {
-  const buttonStyle = {
-    p: 7,
-    fontSize: "xl",
-    width: "full",
-    transition: "all 0.3s",
-  };
-  const headerTextStyle = {
-    textColor: mode("gray.500", "gray.300"),
-    fontWeight: "bold",
-    fontSize: "sm",
-  };
-  const alternatingColorScheme = [
-    mode("purple.500", "purple.200"),
-    mode("#2C7C7C", "#81E6D9"),
-    "pink",
-  ];
-
-  const [orderSide, setOrderSide] = useState<String>("");
+const Swap = ({ market }) => {
+  const { marketLockTimestamp, outcomeAccounts } = market;
+  const [outcome, setOutcome] = useState<number>(0);
   const [isLoading, setLoading] = useState(false);
   const [isSuccess, setSuccess] = useState(false);
 
   const { title, index } = useSelector(getOutcomeState);
   const { publicKey } = useWallet();
-  const isAdmin = publicKey
-    ? publicKey.toString() === process.env.NEXT_PUBLIC_OWNER_PUBLIC_KEY
-    : false;
 
   const toast = useToast();
   const steps = [{ label: "" }, { label: "" }];
@@ -83,7 +54,7 @@ const Swap = ({ market, marketOutcomes }) => {
     initialStep: 0,
   });
 
-  const dt = new Date(market?.account.marketLockTimestamp.toNumber()! * 1000);
+  const dt = new Date(parseInt(marketLockTimestamp, 16) * 1000);
   const day = dt.getDate().toString();
   const month = dt.toLocaleString("default", { month: "long" });
   const year = dt.getFullYear().toString();
@@ -93,18 +64,20 @@ const Swap = ({ market, marketOutcomes }) => {
       {(activeStep === 0 && (
         <Stack spacing={4}>
           <Flex direction={"column"}>
-            <Text sx={headerTextStyle} mb={2}>
+            <Text
+              color={mode("gray.500", "gray.100")}
+              fontWeight={"bold"}
+              fontSize={"sm"}
+            >
               Market says
             </Text>
             <Heading
-              fontSize={"4xl"}
+              fontSize={"5xl"}
               fontWeight={"semibold"}
-              color={
-                alternatingColorScheme[index % alternatingColorScheme.length]
-              }
+              color={mode("purple.500", "purple.200")}
             >
-              {marketOutcomes?.[index].account.title}
-              {` ${marketOutcomes?.[index].account.latestMatchedPrice}%`}
+              {`${outcomeAccounts[0].account.title}
+              ${outcomeAccounts[0].account.latestMatchedPrice}%`}
             </Heading>
           </Flex>
 
@@ -115,31 +88,48 @@ const Swap = ({ market, marketOutcomes }) => {
               fontWeight={"semibold"}
               textColor={mode("gray.800", "gray.100")}
             >
-              {market?.account.title} on {month} {day}, {year}?
+              {market.title}
             </Heading>
-
-            <Stack>
+            <Stack pt={2}>
               <ButtonGroup
                 justifyContent={"center"}
                 size="lg"
                 spacing="4"
+                fontSize="2xl"
                 onClick={nextStep}
-                variant={"outline"}
               >
                 <Button
-                  sx={buttonStyle}
                   id="buy"
-                  colorScheme={"purple"}
-                  onClick={() => setOrderSide("buy")}
+                  className={mode(
+                    styles.wallet_adapter_button_trigger_light_mode,
+                    styles.wallet_adapter_button_trigger_dark_mode
+                  )}
+                  p="7"
+                  rounded={"xl"}
+                  fontSize={"xl"}
+                  width={"full"}
+                  textColor={mode("white", "#353535")}
+                  bg={mode("#353535", "gray.50")}
+                  onClick={() => setOutcome(0)}
                 >
                   Yes
                 </Button>
 
                 <Button
-                  sx={buttonStyle}
                   id="sell"
-                  colorScheme={"teal"}
-                  onClick={() => setOrderSide("buy")}
+                  variant={"outline"}
+                  p="7"
+                  fontSize={"xl"}
+                  rounded={"xl"}
+                  width="full"
+                  textColor={mode("gray.500", "whiteAlpha.700")}
+                  borderColor={mode("gray.400", "whiteAlpha.700")}
+                  transition={"all 0.3s ease"}
+                  _hover={{
+                    textColor: mode("gray.800", "white"),
+                    borderColor: mode("gray.800", "white"),
+                  }}
+                  onClick={() => setOutcome(1)}
                 >
                   No
                 </Button>
@@ -167,7 +157,7 @@ const Swap = ({ market, marketOutcomes }) => {
                   <Stack spacing="3">
                     <TradeFormItem
                       label="Price per contract"
-                      value={`${marketOutcomes?.[index].account.latestMatchedPrice}`}
+                      value={`${outcomeAccounts[outcome].account.latestMatchedPrice}`}
                     />
                     <TradeFormItem label="No. of contracts">
                       <Field name="contractAmount">
@@ -220,7 +210,7 @@ const Swap = ({ market, marketOutcomes }) => {
                       </Text>
                       <Text fontSize="xl" fontWeight="extrabold">
                         {values.contractAmount *
-                          marketOutcomes?.[index].account
+                          outcomeAccounts[outcome].account
                             .latestMatchedPrice}{" "}
                         USDC
                       </Text>
@@ -306,7 +296,7 @@ const TradeFormItem = (props: TradeFormItemProps) => {
   );
 };
 
-export const TradeForm = ({ market, marketOutcomes }) => {
+export const TradeForm = ({ market }) => {
   const confettiConfig = {
     angle: 90,
     spread: 360,
@@ -366,7 +356,7 @@ export const TradeForm = ({ market, marketOutcomes }) => {
           <TabPanels>
             {/* Swap Tab */}
             <TabPanel px={0} pb={2}>
-              <Swap market={market} marketOutcomes={marketOutcomes} />
+              <Swap market={market} />
             </TabPanel>
 
             {/* Pool Tab */}

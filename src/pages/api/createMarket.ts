@@ -7,17 +7,21 @@ export default async function handler(req, res) {
       const {
         category,
         description,
+        resolutionSource,
+        marketCreationTimestamp,
         tag,
         marketAccount,
         outcomeAccounts,
         tradeAccount,
       } = req.body;
+      const { publicKey, account } = marketAccount;
 
       // Add market to db
       const client = await clientPromise;
       const markets = client.db("pascal").collection("markets");
       const market = await markets.insertOne({
-        marketAccount,
+        publicKey,
+        ...account,
         outcomeAccounts,
       });
       console.log(
@@ -31,6 +35,8 @@ export default async function handler(req, res) {
           $set: {
             category: category,
             description: description,
+            resolutionSource,
+            marketCreationTimestamp,
             tag: tag,
           },
         }

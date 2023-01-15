@@ -92,7 +92,7 @@ export async function getStaticProps() {
   try {
     const client = await clientPromise;
     const db = client.db("pascal");
-    const markets = await db.collection("test").find({}).toArray();
+    const markets = await db.collection("markets").find({}).toArray();
 
     return {
       props: { markets: JSON.parse(JSON.stringify(markets)) },

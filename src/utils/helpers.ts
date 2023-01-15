@@ -23,7 +23,7 @@ export const roundToNearest = (value: number, interval: number) => {
  */
 export const groupByPrice = (levels: number[][]): number[][] => {
   return levels
-    .map((level, idx) => {
+    ?.map((level, idx) => {
       const nextLevel = levels[idx + 1];
       const prevLevel = levels[idx - 1];
 
@@ -52,7 +52,7 @@ export const groupByTicketSize = (
   ticketSize: number
 ): number[][] => {
   return groupByPrice(
-    levels.map((level) => [roundToNearest(level[0], ticketSize), level[1]])
+    levels?.map((level) => [roundToNearest(level[0], ticketSize), level[1]])
   );
 };
 

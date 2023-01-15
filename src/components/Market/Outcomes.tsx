@@ -1,42 +1,31 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+import { useState } from "react";
 import {
   Progress,
   Text,
   HStack,
   VStack,
   Stack,
-  useRadioGroup,
-  useRadio,
-  UseRadioProps,
-  useId,
   useColorModeValue as mode,
   chakra,
-  StackProps,
   Box,
   Flex,
   Spacer,
   Collapse,
-  useDisclosure,
+  UseCheckboxProps,
+  useCheckboxGroup,
+  Checkbox,
+  useCheckbox,
 } from "@chakra-ui/react";
-import { MdCheckCircle, MdOutlineCircle } from "react-icons/md";
 import useSWR from "swr";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { MarketOutcomeAccount, GetAccount } from "@monaco-protocol/client";
+import {
+  MarketOutcomeAccount,
+  GetAccount,
+  getTradesForProviderWallet,
+} from "@monaco-protocol/client";
 
-import { useDispatch } from "@/store/store";
-import { setIndex, setTitle } from "@/store/slices/outcomeSlice";
-import OrderBook from "./Orderbook";
-import { clearOrdersState } from "@/store/slices/orderbookSlice";
-import { useState } from "react";
-
-const ProductIds = {
-  XBTUSD: "PI_XBTUSD",
-  ETHUSD: "PI_ETHUSD",
-};
-
-export const ProductsMap: any = {
-  PI_XBTUSD: "PI_ETHUSD",
-  PI_ETHUSD: "PI_XBTUSD",
-};
+import { OrderBook } from "./Orderbook";
 
 const fetcher = async (url) => {
   const res = await fetch(url);
@@ -54,82 +43,56 @@ const fetcher = async (url) => {
   return res.json();
 };
 
-interface RadioOptionProps extends UseRadioProps, Omit<StackProps, "onChange"> {
+interface CheckboxProps extends UseCheckboxProps {
   marketOutcome: GetAccount<MarketOutcomeAccount>;
 }
 
-const RadioOption = (props: RadioOptionProps) => {
+const CheckboxOption = (props: CheckboxProps) => {
   const { publicKey } = useWallet();
 
   const { marketOutcome, ...radioProps } = props;
-  const { state, getInputProps, getCheckboxProps, getLabelProps } =
-    useRadio(radioProps);
+  const { state, getCheckboxProps, getInputProps, getLabelProps, htmlProps } =
+    useCheckbox(radioProps);
   const { data } = useSWR(
     publicKey ? `../api/user?pubKey=${publicKey?.toString()}` : null,
     fetcher
   );
-  const id = useId();
 
   const progressBarColorScheme = ["purple", "teal", "pink"];
-  const checkboxColorScheme = [
-    mode("purple.500", "purple.200"),
-    mode("#2C7C7C", "#81E6D9"),
-  ];
+  const checkoxColorScheme = ["purple", "teal", "pink"];
   const bgColorScheme = [
     mode("rgb(128,90,213,0.2)", "rgb(214,188,250,0.1)"),
     mode("rgb(44,124,124,0.2)", "rgb(129,230,217,0.1)"),
+    "pink",
   ];
-  const radialGradientScheme = [
-    "radial-gradient(at top left, hsl(265.16, 86%, 86%) -300%, transparent 80%);",
-    "radial-gradient(at top left, hsl(172.28, 67%, 30%) -300%, transparent 80%);",
+  const borderColorScheme = [
+    mode("purple.500", "purple.200"),
+    mode("#2C7C7C", "#81E6D9"),
   ];
+
   return (
-    <chakra.label {...getLabelProps()}>
-      <input {...getInputProps()} aria-labelledby={id} />
+    <chakra.label {...htmlProps}>
+      <input {...getInputProps()} hidden />
       <Box
         borderWidth="1px"
         px="5"
         py="4"
         rounded="2xl"
         cursor="pointer"
-        transition="all 0.3s"
-        borderColor={mode("gray.300", "rgb(255, 255, 255, 0.1)")}
-        box-shadow="0 0 1rem 0 rgba(0, 0, 0, 0.2)"
+        transition="all 0.2s"
+        fontWeight={"medium"}
         fontSize={{ base: "sm", md: "md" }}
         _hover={{
-          borderColor: mode(
-            checkboxColorScheme[
-              marketOutcome.account.index % checkboxColorScheme.length
-            ],
-            "rgb(255, 255, 255, 0.1)"
-          ),
-          bgImage: mode(
-            "none",
-            radialGradientScheme[
-              marketOutcome.account.index % radialGradientScheme.length
-            ]
-          ),
+          borderColor: "gray.400",
         }}
         _checked={{
-          bg: mode(
-            bgColorScheme[marketOutcome.account.index % bgColorScheme.length],
-            "rgba(17, 25, 40, 0.7)"
-          ),
-          borderColor: mode(
-            checkboxColorScheme[
-              marketOutcome.account.index % checkboxColorScheme.length
+          bg: bgColorScheme[marketOutcome.account.index % bgColorScheme.length],
+          borderColor:
+            borderColorScheme[
+              marketOutcome.account.index % borderColorScheme.length
             ],
-            "rgb(255, 255, 255, 0.1)"
-          ),
-          bgImage: mode(
-            "none",
-            radialGradientScheme[
-              marketOutcome.account.index % radialGradientScheme.length
-            ]
-          ),
         }}
         {...getCheckboxProps()}
-        id={id}
       >
         <Flex>
           <Flex width={"full"} alignItems="center">
@@ -154,18 +117,10 @@ const RadioOption = (props: RadioOptionProps) => {
                 />
               </Stack>
             </Box>
-
             <Spacer />
-
-            <chakra.label {...getLabelProps()} cursor="pointer">
-              <input {...getInputProps()} aria-labelledby={id} />
-              <Text>{marketOutcome.account.latestMatchedPrice}</Text>
-            </chakra.label>
-
+            <Text>{marketOutcome.account.latestMatchedPrice}</Text>
             <Spacer />
-
-            <chakra.label {...getLabelProps()} pr={5} cursor="pointer">
-              <input {...getInputProps()} aria-labelledby={id} />
+            <Stack>
               {!publicKey && <Text>0.00</Text>}
               {data &&
                 data.positions.map((position, index) => {
@@ -181,23 +136,25 @@ const RadioOption = (props: RadioOptionProps) => {
                     return 0.0;
                   }
                 })}
-            </chakra.label>
+            </Stack>
           </Flex>
 
-          <Flex display={{ base: "none", md: "block" }} direction={"column"}>
-            <Box
+          <Flex
+            display={{ base: "none", md: "block" }}
+            direction={"column"}
+            pl={5}
+          >
+            <Checkbox
+              as={Box}
+              isChecked={state.isChecked}
               data-checked={state.isChecked ? "" : undefined}
               fontSize="xl"
-              _checked={{
-                color:
-                  checkboxColorScheme[
-                    marketOutcome.account.index % checkboxColorScheme.length
-                  ],
-              }}
-              color={mode("gray.300", "whiteAlpha.400")}
-            >
-              {state.isChecked ? <MdCheckCircle /> : <MdOutlineCircle />}
-            </Box>
+              colorScheme={
+                checkoxColorScheme[
+                  marketOutcome.account.index % checkoxColorScheme.length
+                ]
+              }
+            />
             <Text visibility={"hidden"}>&nbsp;</Text>
           </Flex>
         </Flex>
@@ -206,32 +163,12 @@ const RadioOption = (props: RadioOptionProps) => {
   );
 };
 
-export const OutcomesTest = ({ marketOutcomes }) => {
-  const [productId, setProductId] = useState(ProductIds.XBTUSD);
-  const [isFeedKilled, setIsFeedKilled] = useState(false);
-  const { isOpen, onToggle } = useDisclosure();
-  const dispatch = useDispatch(); // <-- calling the reducer
-
-  const toggleProductId = (): void => {
-    dispatch(clearOrdersState());
-    setProductId(ProductsMap[productId]);
-  };
-
-  const handleChange = (value) => {
-    toggleProductId();
-    onToggle();
-  };
-
-  const { getRootProps, getRadioProps } = useRadioGroup({
-    onChange: handleChange,
-  });
-
+const Outcomes = ({ outcomes }) => {
   return (
     <VStack
       mt={4}
       spacing={{ base: 2, md: 3 }}
       width={{ base: "83%", md: "full" }}
-      {...getRootProps()}
     >
       <Flex
         fontWeight={"bold"}
@@ -241,26 +178,37 @@ export const OutcomesTest = ({ marketOutcomes }) => {
         letterSpacing={"wider"}
         fontSize={{ base: "2xs", md: "xs" }}
         justifyContent={"space-between"}
-        textAlign={"center"}
       >
         <Text>OUTCOME / PROBABILITY</Text>
         <Text pl={{ md: 8 }}>PRICE (USDC)</Text>
         <Text pr={{ md: 10 }}>YOUR SHARES</Text>
       </Flex>
       <Stack width={"full"} spacing={3}>
-        {marketOutcomes?.map(
+        {outcomes?.map(
           (outcome: GetAccount<MarketOutcomeAccount>, index: number) => {
+            const [isOpen, setIsOpen] = useState(false);
+            const handleChange = (value) => {
+              setIsOpen(!isOpen);
+            };
+            const { value, getCheckboxProps } = useCheckboxGroup({
+              onChange: handleChange,
+            });
+
             return (
               <>
-                <RadioOption
+                <CheckboxOption
                   key={index}
                   marketOutcome={outcome}
-                  {...getRadioProps({
-                    value: index.toString(), // <-- getRadioProps value only accepts String type
+                  {...getCheckboxProps({
+                    value: index.toString(), // <-- getCheckboxProps value only accepts String
                   })}
                 />
-                <Collapse in={isOpen} animateOpacity>
-                  <OrderBook productId={productId} />
+                <Collapse
+                  style={{ overflow: "visible" }}
+                  in={isOpen}
+                  animateOpacity
+                >
+                  <OrderBook outcomeIndex={index} />
                 </Collapse>
               </>
             );
@@ -270,3 +218,5 @@ export const OutcomesTest = ({ marketOutcomes }) => {
     </VStack>
   );
 };
+
+export default Outcomes;

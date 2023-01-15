@@ -23,7 +23,8 @@ const colors = {
 const styles = {
   global: (props) => ({
     body: {
-      bg: mode("#F9FAFB", "#111927")(props),
+      bg: mode("#F8FBFC", "#111927")(props),
+      textColor: mode("gray.700", "gray.50")(props),
     },
   }),
 };

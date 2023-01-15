@@ -1,5 +1,13 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import useWebSocket from "react-use-websocket";
+import {
+  Divider,
+  Flex,
+  Heading,
+  Skeleton,
+  Stack,
+  Text,
+  useColorModeValue as mode,
+} from "@chakra-ui/react";
 import { useDispatch, useSelector } from "@/store/store";
 import {
   addAsks,
@@ -8,46 +16,28 @@ import {
   selectAsks,
   selectBids,
 } from "@/store/slices/orderbookSlice";
-import { PriceLevelRow, TitleRow } from "./HeaderRow";
+import { PriceLevelRow, TitleRow } from "./Rows";
 import Spread from "./Spread";
 import Loader from "./Loader";
 import DepthVisualizer from "./DepthVisualizer";
+import GroupingSelectBox from "./GroupingSelectBox";
 import { MOBILE_WIDTH, ORDERBOOK_LEVELS } from "@/utils/constants";
 import { formatNumber } from "@/utils/helpers";
-import { ProductsMap } from "../Outcomes";
-import GroupingSelectBox from "./GroupingSelectBox";
-import { Flex } from "@chakra-ui/react";
 
 import {
   OrderbookContainer,
   TableContainer,
   PriceLevelRowContainer,
-  ButtonContainer,
 } from "./styles";
+import { useRouter } from "next/router";
+import { PublicKey } from "@solana/web3.js";
+import { getPriceSummary } from "@/utils/monaco";
+import { useProgram } from "@/context/ProgramProvider";
+import { ResizablePanel } from "@/components/common/ResizablePanel";
 
-const WSS_FEED_URL: string = "wss://www.cryptofacilities.com/ws/v1";
-
-interface ButtonProps {
-  title: string;
-  backgroundColor: string;
-  callback: () => void;
-}
-
-const Button: FunctionComponent<ButtonProps> = ({
-  title,
-  backgroundColor = "#5741d9",
-  callback,
-}) => {
-  return (
-    <ButtonContainer backgroundColor={backgroundColor} onClick={callback}>
-      {title}
-    </ButtonContainer>
-  );
-};
-
-const groupingOptions: any = {
-  PI_XBTUSD: [0.5, 1, 2.5],
-  PI_ETHUSD: [0.05, 0.1, 0.25],
+const outcomeTickers: any = {
+  0: "YES / USD",
+  1: "NO / USD",
 };
 
 export enum OrderType {
@@ -55,117 +45,64 @@ export enum OrderType {
   ASKS,
 }
 
-// interface OrderBookProps {
-//   windowWidth: number;
-//   productId: string;
-//   isFeedKilled: boolean;
-// }
-
-interface Delta {
-  bids: number[][];
-  asks: number[][];
+interface OrderBookProps {
+  outcomeIndex: number;
 }
 
-let currentBids: number[][] = [];
-let currentAsks: number[][] = [];
-
-const OrderBook = ({ productId }) => {
+export const OrderBook: FunctionComponent<OrderBookProps> = ({
+  outcomeIndex,
+}) => {
+  const program = useProgram();
+  const { asPath } = useRouter();
+  const marketPk = asPath.split("/")[2];
   const [windowWidth, setWindowWidth] = useState(0);
+  const [data, setData] = useState<any>(null);
 
   const bids: number[][] = useSelector(selectBids);
   const asks: number[][] = useSelector(selectAsks);
   const dispatch = useDispatch();
-  const { sendJsonMessage, getWebSocket } = useWebSocket(WSS_FEED_URL, {
-    onOpen: () => console.log("WebSocket connection opened."),
-    onClose: () => console.log("WebSocket connection closed."),
-    shouldReconnect: (closeEvent) => true,
-    onMessage: (event: WebSocketEventMap["message"]) => processMessages(event),
-  });
-
-  const processMessages = (event: { data: string }) => {
-    const response = JSON.parse(event.data);
-
-    if (response.numLevels) {
-      dispatch(addExistingState(response));
-    } else {
-      process(response);
-    }
-  };
 
   useEffect(() => {
-    function connect(product: string) {
-      const unSubscribeMessage = {
-        event: "unsubscribe",
-        feed: "book_ui_1",
-        product_ids: [ProductsMap[product]],
-      };
-      sendJsonMessage(unSubscribeMessage);
-
-      const subscribeMessage = {
-        event: "subscribe",
-        feed: "book_ui_1",
-        product_ids: [product],
-      };
-      sendJsonMessage(JSON.parse(JSON.stringify(subscribeMessage)));
-    }
-
-    if (isFeedKilled) {
-      getWebSocket()?.close();
-    } else {
-      connect(productId);
-    }
-  }, [isFeedKilled, productId, sendJsonMessage, getWebSocket]);
-
-  const process = (data: Delta) => {
-    if (data?.bids?.length > 0) {
-      currentBids = [...currentBids, ...data.bids];
-
-      if (currentBids.length > ORDERBOOK_LEVELS) {
-        dispatch(addBids(currentBids));
-        currentBids = [];
-        currentBids.length = 0;
+    const fetchPriceSummary = async () => {
+      try {
+        const res = await getPriceSummary(new PublicKey(marketPk), program);
+        if (res) {
+          setData(res);
+        } else console.log("loading...");
+      } catch (error) {
+        console.log("error: ", error);
       }
-    }
-    if (data?.asks?.length >= 0) {
-      currentAsks = [...currentAsks, ...data.asks];
-
-      if (currentAsks.length > ORDERBOOK_LEVELS) {
-        dispatch(addAsks(currentAsks));
-        currentAsks = [];
-        currentAsks.length = 0;
-      }
-    }
-  };
+    };
+    fetchPriceSummary();
+  }, [program]);
 
   const formatPrice = (arg: number): string => {
     return arg.toLocaleString("en", {
       useGrouping: true,
-      minimumFractionDigits: 2,
+      minimumFractionDigits: 0,
     });
   };
 
   const buildPriceLevels = (
-    levels: number[][],
+    data,
     orderType: OrderType = OrderType.BIDS
   ): React.ReactNode => {
-    const sortedLevelsByPrice: number[][] = [...levels].sort(
-      (currentLevel: number[], nextLevel: number[]): number => {
-        let result: number = 0;
-        if (orderType === OrderType.BIDS || windowWidth < MOBILE_WIDTH) {
-          result = nextLevel[0] - currentLevel[0];
-        } else {
-          result = currentLevel[0] - nextLevel[0];
-        }
-        return result;
-      }
-    );
+    // sort the data in descending order of price
+    const sortedData = data?.sort((a, b) => b.price - a.price);
+    // create a variable to keep track of total liquidity
+    let totalLiquidity = 0;
+    // map over the sorted data and create new array with the desired format
+    const sortedPriceLevels = sortedData?.map((item) => {
+      totalLiquidity += item.liquidity;
+      return [item.price, item.liquidity, totalLiquidity];
+    });
 
-    return sortedLevelsByPrice.map((level, idx) => {
+    return sortedPriceLevels?.map((level, idx) => {
+      const price: string = formatPrice(level[0]);
+      const size: string = formatNumber(level[1]);
       const calculatedTotal: number = level[2];
       const total: string = formatNumber(calculatedTotal);
-      const depth = level[3];
-      const size: string = formatNumber(level[1]);
-      const price: string = formatPrice(level[0]);
+      const depth = level[2];
 
       return (
         <PriceLevelRowContainer key={idx + depth}>
@@ -180,7 +117,7 @@ const OrderBook = ({ productId }) => {
             total={total}
             size={size}
             price={price}
-            reversedFieldsOrder={orderType === OrderType.ASKS}
+            isRight={orderType === OrderType.BIDS}
             windowWidth={windowWidth}
           />
         </PriceLevelRowContainer>
@@ -196,37 +133,84 @@ const OrderBook = ({ productId }) => {
     setWindowWidth(() => window.innerWidth);
   }, []);
 
-  const toggleFeed = (): void => {
-    setIsFeedKilled(!isFeedKilled);
-  };
-
   return (
-    <>
-      <GroupingSelectBox options={groupingOptions[productId]} />
+    <ResizablePanel>
+      {/* <GroupingSelectBox options={groupingOptions[outcomeIndex]} /> */}
 
-      <OrderbookContainer>
-        {bids.length && asks.length ? (
+      <Stack
+        as={OrderbookContainer}
+        rounded={"2xl"}
+        borderWidth={1}
+        borderColor={mode("#E5E7EB", "rgb(255,255,255,0.1)")}
+        background={mode("whiteAlpha.800", "rgba(32, 34, 46, 0.2)")}
+        spacing={0}
+        boxShadow={"lg"}
+      >
+        <Flex
+          px={6}
+          py={4}
+          mb={-1}
+          justifyContent={"space-between"}
+          alignItems={"center"}
+        >
+          <Heading fontSize={"md"} fontWeight={"semibold"} color={"gray.500"}>
+            Order Book
+          </Heading>
+          <Heading fontSize={"md"} color={"gray.600"}>
+            {outcomeTickers[outcomeIndex]}
+          </Heading>
+        </Flex>
+        <Divider borderColor={"#E2E8F0"} />
+        {data ? (
           <>
+            <TitleRow windowWidth={windowWidth} reversedFieldsOrder={false} />
             <TableContainer>
-              {windowWidth > MOBILE_WIDTH && (
-                <TitleRow
-                  windowWidth={windowWidth}
-                  reversedFieldsOrder={false}
-                />
-              )}
-              <div>{buildPriceLevels(bids, OrderType.BIDS)}</div>
+              <div>
+                {buildPriceLevels(
+                  data?.marketPriceSummary[outcomeIndex].against,
+                  OrderType.ASKS
+                )}
+              </div>
             </TableContainer>
-            <Spread bids={bids} asks={asks} />
+            <Stack
+              display={"flex"}
+              direction={"row"}
+              borderWidth={"1px 0"}
+              py={1}
+              justifyContent={"center"}
+              fontSize={"md"}
+              spacing={6}
+            >
+              <Text fontWeight={"medium"} color={"#98a6af"}>
+                Last Matched Price
+              </Text>
+              <Text color={"#118860"}>
+                $
+                {formatPrice(
+                  data?.marketOutcomesSummary[outcomeIndex === 0 ? "Yes" : "No"]
+                    .latestMatchedPrice
+                )}
+              </Text>
+            </Stack>
             <TableContainer>
-              <TitleRow windowWidth={windowWidth} reversedFieldsOrder={true} />
-              <div>{buildPriceLevels(asks, OrderType.ASKS)}</div>
+              <div>
+                {buildPriceLevels(
+                  data?.marketPriceSummary[outcomeIndex].for,
+                  OrderType.BIDS
+                )}
+              </div>
             </TableContainer>
           </>
         ) : (
-          <Loader />
+          <Stack p={5}>
+            <Skeleton height="20px" />
+            <Skeleton height="20px" />
+            <Skeleton height="20px" />
+          </Stack>
         )}
-      </OrderbookContainer>
-    </>
+        <Spread bids={bids} asks={asks} />
+      </Stack>
+    </ResizablePanel>
   );
 };
 

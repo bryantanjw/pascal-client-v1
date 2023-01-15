@@ -15,6 +15,11 @@ a {
   box-sizing: border-box;
 }
 
+*::-webkit-scrollbar {
+  width: 0.2em;
+  background-color: transparent;
+}
+
 /* *:focus {
   box-shadow: none !important;
 } */

@@ -1,4 +1,5 @@
 import React, { FunctionComponent } from "react";
+import { Box, useColorModeValue as mode } from "@chakra-ui/react";
 import { OrderType } from "../Orderbook";
 import { MOBILE_WIDTH } from "@/utils/constants";
 
@@ -8,37 +9,32 @@ interface DepthVisualizerProps {
   windowWidth: number;
 }
 
-const DepthVisualizerColors = {
-  BIDS: "#113534",
-  ASKS: "#3d1e28",
-};
-
 const DepthVisualizer: FunctionComponent<DepthVisualizerProps> = ({
   windowWidth,
   depth,
   orderType,
 }) => {
+  const DepthVisualizerColors = {
+    BIDS: "rgb(0, 179, 60, 0.12)",
+    ASKS: "rgb(255, 77, 77, 0.12)",
+  };
+
   return (
-    <div
+    <Box
       data-testid="depth-visualizer"
-      style={{
-        backgroundColor: `${
-          orderType === OrderType.BIDS
-            ? DepthVisualizerColors.BIDS
-            : DepthVisualizerColors.ASKS
-        }`,
-        borderRadius:
-          orderType === OrderType.BIDS ? "6px 0 0 6px" : "0 6px 6px 0",
-        height: "1.250em",
+      backgroundColor={
+        orderType === OrderType.BIDS
+          ? DepthVisualizerColors.BIDS
+          : DepthVisualizerColors.ASKS
+      }
+      sx={{
+        borderRadius: "0 4px 4px 0",
+        height: "1.0em",
         width: `${depth}%`,
         position: "relative",
         top: 21,
-        left: `${
-          orderType === OrderType.BIDS && windowWidth > MOBILE_WIDTH
-            ? `${100 - depth}%`
-            : 0
-        }`,
-        marginTop: -24,
+        left: 0,
+        marginTop: -25,
         zIndex: 1,
       }}
     />

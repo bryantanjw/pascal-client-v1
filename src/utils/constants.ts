@@ -8,6 +8,14 @@ export const categories = [
   "Other",
 ];
 
+export const resolutionSources = [
+  { title: "Pyth", url: "https://pyth.network/" },
+  { title: "Coingecko", url: "https://www.coingecko.com/" },
+  { title: "Switchboard", url: "https://switchboard.xyz/" },
+  { title: "Human Protocol", url: "https://www.humanprotocol.org/" },
+  { title: "U.S. Bureau of Labor Statistics", url: "https://www.bls.gov/" },
+];
+
 export const tokenSwapStateAccount = new Web3.PublicKey(
   "EV7FEEq2EyTFtKx4ukp2QfW9mWLGcJckGGBNp5cjcHUe"
 );

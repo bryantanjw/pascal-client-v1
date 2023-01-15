@@ -24,7 +24,7 @@ import {
   poolMint,
   feeAccount,
   tokenAccountPool,
-} from "../../../utils/constants";
+} from "../../../../utils/constants";
 import { TokenSwap, TOKEN_SWAP_PROGRAM_ID } from "@solana/spl-token-swap";
 import * as token from "@solana/spl-token";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
