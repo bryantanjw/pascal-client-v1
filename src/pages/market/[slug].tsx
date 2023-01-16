@@ -2,7 +2,7 @@ import type { InferGetStaticPropsType } from "next";
 import { useRouter } from "next/router";
 import { Provider } from "react-redux";
 import { store } from "@/store/store";
-import MarketView from "components/Market";
+import Market from "components/Market";
 import clientPromise from "@/lib/mongodb";
 
 // This gets called at build time
@@ -50,7 +50,7 @@ export default function Slug({
     <h1>Loading...</h1>
   ) : (
     <Provider store={store}>
-      <MarketView market={market} />
+      <Market market={market} />
     </Provider>
   );
 }

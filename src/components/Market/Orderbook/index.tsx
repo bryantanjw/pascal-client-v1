@@ -1,4 +1,9 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, {
+  FunctionComponent,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import {
   Divider,
   Flex,
@@ -18,7 +23,6 @@ import {
 } from "@/store/slices/orderbookSlice";
 import { PriceLevelRow, TitleRow } from "./Rows";
 import Spread from "./Spread";
-import Loader from "./Loader";
 import DepthVisualizer from "./DepthVisualizer";
 import GroupingSelectBox from "./GroupingSelectBox";
 import { MOBILE_WIDTH, ORDERBOOK_LEVELS } from "@/utils/constants";
@@ -29,11 +33,9 @@ import {
   TableContainer,
   PriceLevelRowContainer,
 } from "./styles";
-import { useRouter } from "next/router";
-import { PublicKey } from "@solana/web3.js";
-import { getPriceSummary } from "@/utils/monaco";
 import { useProgram } from "@/context/ProgramProvider";
 import { ResizablePanel } from "@/components/common/ResizablePanel";
+import { PriceDataContext } from "..";
 
 const outcomeTickers: any = {
   0: "YES / USD",
@@ -53,28 +55,11 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
   outcomeIndex,
 }) => {
   const program = useProgram();
-  const { asPath } = useRouter();
-  const marketPk = asPath.split("/")[2];
+  const priceData = useContext(PriceDataContext);
   const [windowWidth, setWindowWidth] = useState(0);
-  const [data, setData] = useState<any>(null);
 
   const bids: number[][] = useSelector(selectBids);
   const asks: number[][] = useSelector(selectAsks);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    const fetchPriceSummary = async () => {
-      try {
-        const res = await getPriceSummary(new PublicKey(marketPk), program);
-        if (res) {
-          setData(res);
-        } else console.log("loading...");
-      } catch (error) {
-        console.log("error: ", error);
-      }
-    };
-    fetchPriceSummary();
-  }, [program]);
 
   const formatPrice = (arg: number): string => {
     return arg.toLocaleString("en", {
@@ -84,11 +69,11 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
   };
 
   const buildPriceLevels = (
-    data,
+    priceData,
     orderType: OrderType = OrderType.BIDS
   ): React.ReactNode => {
     // sort the data in descending order of price
-    const sortedData = data?.sort((a, b) => b.price - a.price);
+    const sortedData = priceData?.sort((a, b) => b.price - a.price);
     // create a variable to keep track of total liquidity
     let totalLiquidity = 0;
     // map over the sorted data and create new array with the desired format
@@ -161,13 +146,13 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
           </Heading>
         </Flex>
         <Divider borderColor={"#E2E8F0"} />
-        {data ? (
+        {priceData ? (
           <>
             <TitleRow windowWidth={windowWidth} reversedFieldsOrder={false} />
             <TableContainer>
               <div>
                 {buildPriceLevels(
-                  data?.marketPriceSummary[outcomeIndex].against,
+                  priceData?.marketPriceSummary[outcomeIndex].against,
                   OrderType.ASKS
                 )}
               </div>
@@ -187,15 +172,16 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
               <Text color={"#118860"}>
                 $
                 {formatPrice(
-                  data?.marketOutcomesSummary[outcomeIndex === 0 ? "Yes" : "No"]
-                    .latestMatchedPrice
+                  priceData?.marketOutcomesSummary[
+                    outcomeIndex === 0 ? "Yes" : "No"
+                  ].latestMatchedPrice
                 )}
               </Text>
             </Stack>
             <TableContainer>
               <div>
                 {buildPriceLevels(
-                  data?.marketPriceSummary[outcomeIndex].for,
+                  priceData?.marketPriceSummary[outcomeIndex].for,
                   OrderType.BIDS
                 )}
               </div>

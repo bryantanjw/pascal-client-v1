@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Progress,
   Text,
@@ -23,9 +23,12 @@ import {
   MarketOutcomeAccount,
   GetAccount,
   getTradesForProviderWallet,
+  Trade,
 } from "@monaco-protocol/client";
 
 import { OrderBook } from "./Orderbook";
+import { useProgram } from "@/context/ProgramProvider";
+import { useRouter } from "next/router";
 
 const fetcher = async (url) => {
   const res = await fetch(url);
@@ -48,10 +51,14 @@ interface CheckboxProps extends UseCheckboxProps {
 }
 
 const CheckboxOption = (props: CheckboxProps) => {
+  const program = useProgram();
   const { publicKey } = useWallet();
+  const { asPath } = useRouter();
+  const marketPk = asPath.split("/")[2];
+  const [userPositions, setUserPositions] = useState<GetAccount<Trade>[]>([]);
 
   const { marketOutcome, ...radioProps } = props;
-  const { state, getCheckboxProps, getInputProps, getLabelProps, htmlProps } =
+  const { state, getCheckboxProps, getInputProps, htmlProps } =
     useCheckbox(radioProps);
   const { data } = useSWR(
     publicKey ? `../api/user?pubKey=${publicKey?.toString()}` : null,
@@ -70,20 +77,43 @@ const CheckboxOption = (props: CheckboxProps) => {
     mode("#2C7C7C", "#81E6D9"),
   ];
 
+  useEffect(() => {
+    const getMatchingTradeAccounts = async () => {
+      try {
+        const response = await getTradesForProviderWallet(program);
+        const { tradeAccounts } = response.data;
+        console.log("tradeAccounts", tradeAccounts);
+        const matchingTradeAccounts = tradeAccounts.filter(
+          (tradeAccount) =>
+            tradeAccount.account.purchaser.toBase58() ===
+              publicKey?.toBase58() &&
+            tradeAccount.account.market.toBase58() === marketPk
+        );
+        setUserPositions(matchingTradeAccounts);
+        console.log("userPositions", userPositions);
+      } catch (error) {
+        console.log("getMatchingTradeAccounts", error);
+      }
+    };
+    getMatchingTradeAccounts();
+  }, [program, publicKey, marketPk]);
+
   return (
     <chakra.label {...htmlProps}>
       <input {...getInputProps()} hidden />
       <Box
         borderWidth="1px"
+        borderColor={mode("gray.300", "gray.700")}
         px="5"
         py="4"
         rounded="2xl"
         cursor="pointer"
         transition="all 0.2s"
         fontWeight={"medium"}
+        bg={mode("rgb(255,255,255,0.2)", "blackAlpha.200")}
         fontSize={{ base: "sm", md: "md" }}
         _hover={{
-          borderColor: "gray.400",
+          borderColor: "gray.500",
         }}
         _checked={{
           bg: bgColorScheme[marketOutcome.account.index % bgColorScheme.length],
@@ -204,7 +234,7 @@ const Outcomes = ({ outcomes }) => {
                   })}
                 />
                 <Collapse
-                  style={{ overflow: "visible" }}
+                  style={{ overflow: "visible", marginBottom: "15px" }}
                   in={isOpen}
                   animateOpacity
                 >

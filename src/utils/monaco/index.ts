@@ -13,7 +13,7 @@ import {
 } from "./mappers";
 import { parseMarketPricesAndPendingOrders } from "./parsers";
 
-export async function getPriceSummary(marketPk: PublicKey, program) {
+export async function getPriceData(marketPk: PublicKey, program) {
   console.log("getting price summary...");
   const response = await getMarketPrices(program, marketPk);
   const mintDetails = await getMintInfo(
@@ -76,6 +76,7 @@ export async function getPriceSummary(marketPk: PublicKey, program) {
     pendingOrderSummary, // { for: [], against: [] }
     marketPriceSummary,
     marketOutcomesSummary,
+    liquidityTotal,
   };
 
   return data;

@@ -1,5 +1,6 @@
 import {
-  Box, BoxProps,
+  Box,
+  BoxProps,
   HStack,
   Text,
   useCheckbox,
@@ -7,47 +8,48 @@ import {
   useColorModeValue,
   useId,
   Image,
-} from '@chakra-ui/react'
-import * as React from 'react'
+} from "@chakra-ui/react";
+import * as React from "react";
 
 interface ToggleButtonProps extends UseCheckboxProps {
-  iconUrl: string,
-  title: string
+  iconUrl: string;
+  title: string;
 }
 
 const ToggleButton = (props: BoxProps) => (
   <Box
     borderWidth="1px"
     py={1}
-    px={{ 'base': 1, 'md': 3 }}
+    px={{ base: 1, md: 3 }}
     borderRadius="3xl"
     cursor="pointer"
     transition="all 0.2s ease"
-    bg={useColorModeValue('gray.100', 'gray.700')}
+    bg={useColorModeValue("gray.100", "gray.700")}
     _hover={{
-      borderColor: useColorModeValue('black', 'white'),
-      bg: 'transparent'
+      borderColor: useColorModeValue("black", "white"),
+      bg: "transparent",
     }}
-    _focus={{ shadow: 'outline', boxShadow: 'none' }}
+    _focus={{ shadow: "outline", boxShadow: "none" }}
     _checked={{
-      bg: useColorModeValue('black', 'white'),
-      color: useColorModeValue('white', 'black'),
+      bg: useColorModeValue("black", "white"),
+      color: useColorModeValue("white", "black"),
     }}
     {...props}
   />
-)
-  
+);
+
 export const FilterToggle = (props: ToggleButtonProps) => {
-  const { iconUrl, title, ...rest } = props
-  const { getCheckboxProps, getInputProps, getLabelProps, state } = useCheckbox(rest)
-  const id = useId()
+  const { iconUrl, title, ...rest } = props;
+  const { getCheckboxProps, getInputProps, getLabelProps, state } =
+    useCheckbox(rest);
+  const id = useId();
 
   const toggledIcon = {
-      filter: useColorModeValue('invert(100%)', 'invert(0%)')
-  }
+    filter: useColorModeValue("invert(100%)", "invert(0%)"),
+  };
   const notToggledIcon = {
-      filter: useColorModeValue('invert(0%)', 'invert(100%)')
-  }
+    filter: useColorModeValue("invert(0%)", "invert(100%)"),
+  };
 
   return (
     <label {...getLabelProps()}>
@@ -55,17 +57,22 @@ export const FilterToggle = (props: ToggleButtonProps) => {
       <ToggleButton {...getCheckboxProps()} id={id}>
         <HStack spacing={1}>
           {/* change icon filter based on toggle checked state */}
-          <Image src={iconUrl} alt={title} width={{ 'base':'11px', 'md':'15px' }} 
-              sx={state.isChecked ? toggledIcon : notToggledIcon}
+          <Image
+            src={iconUrl}
+            alt={title}
+            width={{ base: "11px", md: "15px" }}
+            sx={state.isChecked ? toggledIcon : notToggledIcon}
           />
-          
+
           <Box>
-            <Text fontSize={{'base':'10px', 'md': 'sm'}} fontWeight="bold">{title}</Text>
+            <Text fontSize={{ base: "10px", md: "sm" }} fontWeight="bold">
+              {title}
+            </Text>
           </Box>
         </HStack>
       </ToggleButton>
     </label>
-  )
-}
+  );
+};
 
-export default FilterToggle
+export default FilterToggle;

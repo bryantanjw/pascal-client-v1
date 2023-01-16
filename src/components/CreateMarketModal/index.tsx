@@ -29,7 +29,7 @@ import {
 } from "@monaco-protocol/admin-client";
 import { Form1, Form2, SubmittedForm, FormStepper } from "./StepForms";
 import { useProgram } from "@/context/ProgramProvider";
-import { getPriceSummary, logResponse } from "@/utils/monaco";
+import { getPriceData, logResponse } from "@/utils/monaco";
 import { ResizablePanel } from "../common/ResizablePanel";
 
 enum CreateStatus {
@@ -226,7 +226,7 @@ export const CreateMarketModal = () => {
       const outcomeAccounts = outcomeResponse?.data.marketOutcomeAccounts;
       const trade = await getTradesForMarket(program, marketPk!);
       const tradeAccount = trade.data;
-      const priceSummary = await getPriceSummary(marketPk, program);
+      const priceSummary = await getPriceData(marketPk, program);
       const market = await getMarket(program, marketPk!);
       const marketAccount = market.data;
 

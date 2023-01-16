@@ -2,14 +2,14 @@
 const nextConfig = {
   reactStrictMode: true,
   webpack: (config, { isServer }) => {
-      config.resolve.fallback = {
-          "@solana/spl-token-swap": require.resolve("@solana/spl-token-swap"),
-          crypto: false,
-          stream: false,
-      }
+    config.resolve.fallback = {
+      "@solana/spl-token-swap": require.resolve("@solana/spl-token-swap"),
+      crypto: false,
+      stream: false,
+    };
 
-      return config
+    return config;
   },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

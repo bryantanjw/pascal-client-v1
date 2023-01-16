@@ -1,7 +1,6 @@
 import { Box } from "@chakra-ui/react";
 import useMeasure from "react-use-measure";
 import { motion, AnimatePresence } from "framer-motion";
-
 export const ResizablePanel = ({ children }) => {
   let [ref, { height }] = useMeasure();
 

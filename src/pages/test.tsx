@@ -59,7 +59,7 @@ const defaultFormValues = {
   stake: 0,
 };
 
-const MarketView = () => {
+const Market = () => {
   const dispatch = useDispatch();
   const program = useProgram();
   const [market, setMarket] = useState<GetAccount<MarketAccount>>();
@@ -339,7 +339,7 @@ const MarketView = () => {
 export default function Page() {
   return (
     <Provider store={store}>
-      <MarketView />
+      <Market />
     </Provider>
   );
 }

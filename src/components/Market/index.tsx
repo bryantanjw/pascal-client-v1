@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, createContext } from "react";
 import { useDispatch } from "react-redux";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -39,21 +39,38 @@ import Layout from "../Layout";
 import { setTitle } from "@/store/slices/outcomeSlice";
 
 import styles from "@/styles/Home.module.css";
+import { getPriceData } from "@/utils/monaco";
+import { PublicKey } from "@solana/web3.js";
+import { useProgram } from "@/context/ProgramProvider";
 
 // Dynamically load ResearchGraph component on client side
 const ResearchGraph = dynamic(import("./ResearchGraph"), {
   ssr: false,
 });
 
-const MarketView = ({ market }) => {
+export const PriceDataContext = createContext<any>({});
+
+const Market = ({ market }) => {
   const dispatch = useDispatch();
-  const { publicKey } = useWallet();
-  useState<GetAccount<MarketAccount>>(); // <-- using setMarketAccount for now
-  const [marketOutcomes, setMarketOucomes] =
-    useState<GetAccount<MarketOutcomeAccount>[]>();
-  const isOwner = publicKey
-    ? publicKey.toString() === process.env.NEXT_PUBLIC_OWNER_PUBLIC_KEY
-    : false;
+  const program = useProgram();
+  const { asPath } = useRouter();
+  const marketPk = asPath.split("/")[2];
+  const [priceData, setPriceData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchPriceSummary = async () => {
+      try {
+        const res = await getPriceData(new PublicKey(marketPk), program);
+        if (res) {
+          setPriceData(res);
+          console.log("priceData: ", priceData);
+        } else console.log("loading...");
+      } catch (error) {
+        console.log("error: ", error);
+      }
+    };
+    fetchPriceSummary();
+  }, [program]);
 
   // START: Style config //
   const dividerColor = mode("gray.300", "#464A54");
@@ -85,8 +102,8 @@ const MarketView = ({ market }) => {
   // END: Style config //
 
   const stats = [
-    { label: "Liquidity", value: market.liquidity },
-    { label: "Total Volume", value: market.volume },
+    { label: "Total Volume", value: `$${priceData?.liquidityTotal}` },
+    // { label: "Liquidity", value: market.volume },
     {
       label: "Closing Date - UTC",
       value: new Date(
@@ -96,148 +113,149 @@ const MarketView = ({ market }) => {
   ];
 
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>{market.title}</title>
-        <meta
-          name="description"
-          content="Trade directly on the outcome of events"
-        />
-        <meta property="og:title" content={market.title} />
-        <meta
-          property="og:description"
-          content="Trade directly on the outcome of events"
-        />
-        <meta property="og:image" content="/Preview.png" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    <PriceDataContext.Provider value={priceData}>
+      <div className={styles.container}>
+        <Head>
+          <title>{market.title}</title>
+          <meta
+            name="description"
+            content="Trade directly on the outcome of events"
+          />
+          <meta property="og:title" content={market.title} />
+          <meta
+            property="og:description"
+            content="Trade directly on the outcome of events"
+          />
+          <meta property="og:image" content="/Preview.png" />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
 
-      <WithSubnavigation />
+        <WithSubnavigation />
 
-      <Layout>
-        <Box
-          overflow={{ base: "hidden", lg: "visible" }}
-          maxW={{ base: "3xl", lg: "5xl" }}
-          mx="auto"
-          px={{ base: "1", md: "8", lg: "12" }}
-          py={{ base: "6", md: "8", lg: "12" }}
-        >
-          <ChakraNextLink
-            to={"/"}
-            _hover={{ textDecoration: "none" }}
-            display={"inline-block"}
+        <Layout>
+          <Box
+            overflow={{ base: "hidden", lg: "visible" }}
+            maxW={{ base: "3xl", lg: "5xl" }}
+            mx="auto"
+            px={{ base: "1", md: "8", lg: "12" }}
+            py={{ base: "6", md: "8", lg: "12" }}
           >
-            <Stack
-              mb={3}
-              align={"center"}
-              direction={"row"}
-              width={{ base: "full", md: "full" }}
+            <ChakraNextLink
+              to={"/"}
+              _hover={{ textDecoration: "none" }}
+              display={"inline-block"}
             >
-              <HStack
-                _hover={{ bg: mode("gray.200", "gray.700") }}
-                rounded={"lg"}
-                pr={4}
-                py={1}
-                transition={"all 0.2s ease"}
+              <Stack
+                mb={3}
+                align={"center"}
+                direction={"row"}
+                width={{ base: "full", md: "full" }}
               >
-                <IconButton
-                  aria-label="back"
-                  size={"lg"}
-                  icon={<ArrowBackIcon />}
-                  variant={"unstyled"}
-                />
-                <Heading
-                  _before={{ bg: mode("black", "white") }}
-                  fontSize={{ base: "xl", md: "2xl" }}
-                  fontWeight="extrabold"
+                <HStack
+                  _hover={{ bg: mode("gray.200", "gray.700") }}
+                  rounded={"lg"}
+                  pr={4}
+                  py={1}
+                  transition={"all 0.2s ease"}
                 >
-                  {/* {market.title} */}
-                </Heading>
-              </HStack>
-            </Stack>
-          </ChakraNextLink>
+                  <IconButton
+                    aria-label="back"
+                    size={"lg"}
+                    icon={<ArrowBackIcon />}
+                    variant={"unstyled"}
+                  />
+                  <Heading
+                    _before={{ bg: mode("black", "white") }}
+                    fontSize={{ base: "xl", md: "2xl" }}
+                    fontWeight="extrabold"
+                  >
+                    {/* {market.title} */}
+                  </Heading>
+                </HStack>
+              </Stack>
+            </ChakraNextLink>
 
-          <Stack
-            direction={{ base: "column", lg: "row" }}
-            align={{ lg: "flex-start" }}
-            spacing={5}
-          >
-            <Stack spacing={4} minW={"sm"} flex="2">
-              <Tabs colorScheme={"black"}>
-                <TabList>
-                  <Tab mr={7} sx={tabListStyle}>
-                    Outcomes
-                  </Tab>
-                  <Tab sx={tabListStyle}>Graph</Tab>
-                </TabList>
+            <Stack
+              direction={{ base: "column", lg: "row" }}
+              align={{ lg: "flex-start" }}
+              spacing={5}
+            >
+              <Stack spacing={4} minW={"sm"} flex="2">
+                <Tabs colorScheme={"black"}>
+                  <TabList>
+                    <Tab mr={7} sx={tabListStyle}>
+                      Outcomes
+                    </Tab>
+                    <Tab sx={tabListStyle}>Graph</Tab>
+                  </TabList>
 
-                <TabPanels>
-                  <TabPanel key={0} px={0}>
-                    <Outcomes outcomes={market.outcomeAccounts} />
-                  </TabPanel>
-                </TabPanels>
-              </Tabs>
+                  <TabPanels>
+                    <TabPanel key={0} px={0}>
+                      <Outcomes outcomes={market.outcomeAccounts} />
+                    </TabPanel>
+                  </TabPanels>
+                </Tabs>
 
-              <Tabs isLazy colorScheme={"black"}>
-                {" "}
-                {/* isLazy defers rendering until tab is selected */}
-                <TabList>
-                  <Tab sx={tabListStyle} mr={7}>
-                    About
-                  </Tab>
-                  <Tab sx={tabListStyle}>Research and News</Tab>
-                </TabList>
-                <TabPanels>
-                  <TabPanel key={0} px={0}>
-                    <Flex flexDirection={"column"}>
-                      <Stack>
-                        <MarketProgress account={market} />
+                <Tabs isLazy colorScheme={"black"}>
+                  {" "}
+                  {/* isLazy defers rendering until tab is selected */}
+                  <TabList>
+                    <Tab sx={tabListStyle} mr={7}>
+                      About
+                    </Tab>
+                    <Tab sx={tabListStyle}>Research and News</Tab>
+                  </TabList>
+                  <TabPanels>
+                    <TabPanel key={0} px={0}>
+                      <Flex flexDirection={"column"}>
+                        <Stack>
+                          <MarketProgress account={market} />
 
-                        <Divider borderColor={dividerColor} />
+                          <Divider borderColor={dividerColor} />
 
-                        {/* Statistics */}
-                        <Stack py={3} direction={"column"}>
-                          <HStack spacing={3}>
-                            <Image
-                              filter={iconColor}
-                              alt="Statistics"
-                              width={"18px"}
-                              src={`/Statistics.png`}
-                            />
-                            <Heading sx={sectionHeadingStyle}>
-                              Statistics
-                            </Heading>
-                          </HStack>
-                          <SimpleGrid columns={{ base: 2, md: 3 }}>
-                            {stats.map(({ label, value }) => (
-                              <Stat key={label} label={label} value={value} />
-                            ))}
-                          </SimpleGrid>
-                        </Stack>
+                          {/* Statistics */}
+                          <Stack py={3} direction={"column"}>
+                            <HStack spacing={3}>
+                              <Image
+                                filter={iconColor}
+                                alt="Statistics"
+                                width={"18px"}
+                                src={`/Statistics.png`}
+                              />
+                              <Heading sx={sectionHeadingStyle}>
+                                Statistics
+                              </Heading>
+                            </HStack>
+                            <SimpleGrid columns={{ base: 2, md: 3 }}>
+                              {stats.map(({ label, value }) => (
+                                <Stat key={label} label={label} value={value} />
+                              ))}
+                            </SimpleGrid>
+                          </Stack>
 
-                        <Divider borderColor={dividerColor} />
+                          <Divider borderColor={dividerColor} />
 
-                        {/* Market Resolution */}
-                        <Stack py={3} direction={"column"}>
-                          <HStack spacing={3}>
-                            <Image
-                              filter={iconColor}
-                              alt="Resolution"
-                              width={"18px"}
-                              src={`/Resolution.png`}
-                            />
-                            <Heading sx={sectionHeadingStyle}>
-                              Market Resolution
-                            </Heading>
-                          </HStack>
+                          {/* Market Resolution */}
+                          <Stack py={3} direction={"column"}>
+                            <HStack spacing={3}>
+                              <Image
+                                filter={iconColor}
+                                alt="Resolution"
+                                width={"18px"}
+                                src={`/Resolution.png`}
+                              />
+                              <Heading sx={sectionHeadingStyle}>
+                                Market Resolution
+                              </Heading>
+                            </HStack>
 
-                          <MarketResolution market={market} />
-                        </Stack>
+                            <MarketResolution market={market} />
+                          </Stack>
 
-                        <Divider borderColor={dividerColor} />
+                          <Divider borderColor={dividerColor} />
 
-                        {/* Discussion */}
-                        {/* <Stack py={3} direction={'column'}>
+                          {/* Discussion */}
+                          {/* <Stack py={3} direction={'column'}>
                                                 <HStack spacing={3}>
                                                     <Image filter={iconColor} alt='Discussion' width={'18px'} src={`/Discussion.png`} />
                                                     <Heading sx={sectionHeadingStyle}>Discussion</Heading>
@@ -246,46 +264,47 @@ const MarketView = ({ market }) => {
                                                 <DiscussionForm />
                                                 <DiscussionList />
                                             </Stack> */}
+                        </Stack>
+                      </Flex>
+                    </TabPanel>
+
+                    <TabPanel key={1} px={0}>
+                      <Stack marginTop={2}>
+                        {(market.category === "Financials" ||
+                          market.category === "Crypto" ||
+                          market.category === "Economics") && (
+                          <ResearchGraph market={market} />
+                        )}
+                        <NewsList market={market} />
                       </Stack>
-                    </Flex>
-                  </TabPanel>
+                    </TabPanel>
+                  </TabPanels>
+                </Tabs>
+              </Stack>
 
-                  <TabPanel key={1} px={0}>
-                    <Stack marginTop={2}>
-                      {(market.category === "Financials" ||
-                        market.category === "Crypto" ||
-                        market.category === "Economics") && (
-                        <ResearchGraph market={market} />
-                      )}
-                      <NewsList market={market} />
-                    </Stack>
-                  </TabPanel>
-                </TabPanels>
-              </Tabs>
+              <Flex
+                direction="column"
+                align={"center"}
+                position={{ sm: "relative", lg: "sticky" }}
+                top={{ base: "none", lg: "20" }}
+              >
+                <TradeForm market={market} />
+              </Flex>
+
+              <Image
+                sx={gradientBackgroundStyle}
+                src={"/gradient-bg1.png"}
+                // eslint-disable-next-line react-hooks/rules-of-hooks
+                alt={"background"}
+                right={"100px"}
+                transform={"rotate(280deg)"}
+              />
             </Stack>
-
-            <Flex
-              direction="column"
-              align={"center"}
-              position={{ sm: "relative", lg: "sticky" }}
-              top={{ base: "none", lg: "20" }}
-            >
-              <TradeForm market={market} />
-            </Flex>
-
-            <Image
-              sx={gradientBackgroundStyle}
-              src={"/gradient-bg1.png"}
-              // eslint-disable-next-line react-hooks/rules-of-hooks
-              alt={"background"}
-              right={"100px"}
-              transform={"rotate(280deg)"}
-            />
-          </Stack>
-        </Box>
-      </Layout>
-    </div>
+          </Box>
+        </Layout>
+      </div>
+    </PriceDataContext.Provider>
   );
 };
 
-export default MarketView;
+export default Market;
