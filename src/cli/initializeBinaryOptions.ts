@@ -28,7 +28,7 @@ let longTokenMintPk: PublicKey;
 let shortTokenMintPk: PublicKey;
 let escrowAuthorityPk: PublicKey;
 
-async function initializeBinaryOption() {
+async function initializeBinaryOption(provider, kp) {
   const program = await getProgram();
   const binaryOptionProgram = splBinaryOptionProgram({
     provider,
@@ -87,5 +87,5 @@ async function initializeBinaryOption() {
     .rpc();
 }
 
-getProcessArgs([], "npm run initializeBinaryOption");
-initializeBinaryOption();
+// getProcessArgs([], "npm run initializeBinaryOption");
+// initializeBinaryOption();
