@@ -101,9 +101,9 @@ const MarketCard = ({ market }) => {
                 height={17}
                 alt="liquidity"
               />
-              <h4>{market.liquidity}</h4>
+              <h4>{market.liquidityTotal}</h4>
             </HStack>
-            <HStack sx={statStyle}>
+            {/* <HStack sx={statStyle}>
               <Image
                 filter={iconColor}
                 src={"/traders.png"}
@@ -112,7 +112,7 @@ const MarketCard = ({ market }) => {
                 alt="traders"
               />
               <h4>{market.recurrence}</h4>
-            </HStack>
+            </HStack> */}
           </Stack>
         </Stack>
       </ScaleFade>

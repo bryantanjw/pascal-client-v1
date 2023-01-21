@@ -37,4 +37,4 @@ yarn-error.log*
 *.tsbuildinfo
 
 # keypair
-test-keypair.json
+market-operator-wallet.json

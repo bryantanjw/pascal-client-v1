@@ -33,7 +33,6 @@ import { Field, Formik } from "formik";
 import { motion } from "framer-motion";
 import Confetti from "react-dom-confetti";
 import { Step, Steps, useSteps } from "chakra-ui-steps";
-import { useSelector } from "@/store/store";
 import { TokenSwapForm } from "./TokenPool";
 import { Airdrop } from "./TokenPool/AirdropForm";
 import { getPriceData, logResponse } from "@/utils/monaco";
@@ -41,6 +40,25 @@ import { PublicKey } from "@solana/web3.js";
 import { useProgram } from "@/context/ProgramProvider";
 
 import styles from "@/styles/Home.module.css";
+
+type TradeFormItemProps = {
+  label: string | React.ReactNode;
+  value?: string | React.ReactNode;
+  children?: React.ReactNode;
+};
+
+const TradeFormItem = (props: TradeFormItemProps) => {
+  const { label, value, children } = props;
+
+  return (
+    <Flex justify="space-between" alignItems={"center"} fontSize="sm">
+      <Text as={"div"} fontWeight="medium" color={mode("gray.600", "gray.400")}>
+        {label}
+      </Text>
+      {value ? <Text fontWeight="medium">{value}</Text> : children}
+    </Flex>
+  );
+};
 
 async function placeOrder(
   program,
@@ -95,6 +113,7 @@ const Swap = ({ market }) => {
   const program = useProgram();
   const { publicKey } = useWallet();
   const [outcomeIndex, setOutcomeIndex] = useState<number>(0);
+  const [isMarketBuy, setIsMarketBuy] = useState<boolean>(true);
   const [isSuccess, setSuccess] = useState(false);
 
   const toast = useToast();
@@ -193,8 +212,9 @@ const Swap = ({ market }) => {
       )) ||
         (activeStep === 1 && (
           <Formik
-            initialValues={{ stake: 2 }}
+            initialValues={{ stake: 2, limitOrder: marketBuyPrice }}
             onSubmit={async (values) => {
+              console.log("values", values);
               // transferTo(values.contractAmount)
               try {
                 const txId = await placeOrder(
@@ -203,7 +223,7 @@ const Swap = ({ market }) => {
                   new PublicKey(market.publicKey),
                   outcomeIndex,
                   true,
-                  50, // <-- Test price; replace
+                  isMarketBuy ? marketBuyPrice : parseInt(values.limitOrder),
                   values.stake
                 );
                 setSuccess(true);
@@ -248,9 +268,51 @@ const Swap = ({ market }) => {
 
                   <Stack spacing="3">
                     <TradeFormItem
-                      label="Market buy price"
-                      value={`${marketBuyPrice} USDC`}
-                    />
+                      label={
+                        <Button
+                          size={"sm"}
+                          onClick={() => setIsMarketBuy(!isMarketBuy)}
+                        >
+                          {isMarketBuy ? `Market buy` : `Limit order`}
+                        </Button>
+                      }
+                    >
+                      {isMarketBuy ? (
+                        `$${marketBuyPrice}`
+                      ) : (
+                        <Field name="limitOrder">
+                          {({ field, form }) => (
+                            <NumberInput
+                              name="limitOrder"
+                              onChange={(val) =>
+                                form.setFieldValue(
+                                  field.name,
+                                  val.replace(/^\$/, "")
+                                )
+                              }
+                              onKeyPress={(e) => {
+                                e.which === 13 && e.preventDefault();
+                              }}
+                              size={"sm"}
+                              width={"35%"}
+                              min={1}
+                              max={99}
+                              value={`$` + values.limitOrder}
+                            >
+                              <NumberInputField
+                                fontSize={"sm"}
+                                textAlign={"end"}
+                                rounded={"md"}
+                              />
+                              <NumberInputStepper>
+                                <NumberIncrementStepper />
+                                <NumberDecrementStepper />
+                              </NumberInputStepper>
+                            </NumberInput>
+                          )}
+                        </Field>
+                      )}
+                    </TradeFormItem>
                     <TradeFormItem label="Stake">
                       <Field name="stake">
                         {({ field, form }) => (
@@ -281,7 +343,7 @@ const Swap = ({ market }) => {
                         )}
                       </Field>
                     </TradeFormItem>
-                    <TradeFormItem
+                    {/* <TradeFormItem
                       label={
                         <HStack>
                           <Text>Fees</Text>
@@ -295,7 +357,7 @@ const Swap = ({ market }) => {
                       }
                     >
                       1%
-                    </TradeFormItem>
+                    </TradeFormItem> */}
                     <Flex justify="space-between">
                       <Text fontSize="lg" fontWeight="semibold">
                         Total
@@ -371,25 +433,6 @@ const Swap = ({ market }) => {
         </Stack>
       )}
     </Stack>
-  );
-};
-
-type TradeFormItemProps = {
-  label: string | React.ReactNode;
-  value?: string;
-  children?: React.ReactNode;
-};
-
-const TradeFormItem = (props: TradeFormItemProps) => {
-  const { label, value, children } = props;
-
-  return (
-    <Flex justify="space-between" fontSize="sm">
-      <Text as={"div"} fontWeight="medium" color={mode("gray.600", "gray.400")}>
-        {label}
-      </Text>
-      {value ? <Text fontWeight="medium">{value}</Text> : children}
-    </Flex>
   );
 };
 

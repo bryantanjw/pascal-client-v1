@@ -10,8 +10,8 @@ import {
 export async function placeOrder(marketPk: PublicKey) {
   const program = await getProgram();
   const marketOutcomeIndex = 0;
-  const forOutcome = false;
-  const price = 55;
+  const forOutcome = true;
+  const price = 39;
   const stake = 1;
   const orderResponse = await createOrderUiStake(
     program,
