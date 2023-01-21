@@ -80,6 +80,7 @@ async function createVerboseMarket(
   const marketPk = marketResponse.data.marketPk;
 
   console.log(`Initialising market outcomes ⏱`);
+  // @ts-ignore
   const initialiseOutcomePoolsResponse = await initialiseOutcomes(
     program,
     marketPk,
@@ -96,6 +97,7 @@ async function createVerboseMarket(
   }
 
   console.log(`Adding prices to outcomes ⏱`);
+  // @ts-ignore
   const addPriceLaddersResponse = await batchAddPricesToAllOutcomePools(
     program,
     marketPk,
