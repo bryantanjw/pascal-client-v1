@@ -28,7 +28,7 @@ import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { ColorModeSwitcher } from "./ColorModeSwitcher";
 import ChakraNextLink from "./ChakraNextLink";
-// import { CreateMarketModal } from "./CreateMarketModal";
+import { CreateMarketModal } from "./CreateMarketModal";
 
 import styles from "@/styles/Home.module.css";
 
@@ -116,7 +116,7 @@ export default function WithSubnavigation() {
                 scrollBehavior={"inside"}
                 size={"xl"}
               >
-                {/* <CreateMarketModal /> */}
+                <CreateMarketModal />
               </Modal>
             </Flex>
           )}
