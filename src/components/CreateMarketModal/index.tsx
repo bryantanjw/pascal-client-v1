@@ -130,6 +130,7 @@ export const CreateMarketModal = () => {
       lockTimestamp,
       description,
       resolutionSource,
+      resolutionPrice,
       tag,
       program,
     } = values;
@@ -164,6 +165,7 @@ export const CreateMarketModal = () => {
         description,
         tag,
         resolutionSource,
+        resolutionPrice,
         marketCreateTimestamp,
         marketAccount,
         priceData,
@@ -193,6 +195,7 @@ export const CreateMarketModal = () => {
       .required(),
     description: yup.string().required("Resolution criteria is required"),
     resolutionSource: yup.string(),
+    resolutionPrice: yup.string(),
     tag: yup.string(),
   });
 
@@ -207,6 +210,7 @@ export const CreateMarketModal = () => {
           description: "",
           tag: "",
           resolutionSource: "",
+          resolutionPrice: "",
           program,
         }}
         validationSchema={validationSchema}

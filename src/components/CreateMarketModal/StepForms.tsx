@@ -22,6 +22,8 @@ import {
   Button,
   IconButton,
   useColorModeValue as mode,
+  Collapse,
+  useDisclosure,
 } from "@chakra-ui/react";
 import {
   ExternalLinkIcon,
@@ -99,6 +101,7 @@ export const Form1 = () => {
 };
 
 export const Form2 = ({ title }) => {
+  const { isOpen, onToggle } = useDisclosure();
   return (
     <Stack>
       <Heading mt={6} mb={5} size="lg" fontWeight="semibold">
@@ -135,7 +138,7 @@ export const Form2 = ({ title }) => {
             pt={5}
           >
             <FormLabel htmlFor="tag" fontWeight={"normal"}>
-              Resolution Source
+              Resolution source
             </FormLabel>
             <Select {...field} placeholder={"-"}>
               {resolutionSources.map((source) => (
@@ -166,6 +169,29 @@ export const Form2 = ({ title }) => {
           </FormControl>
         )}
       </Field>
+
+      <Text
+        pt={6}
+        pb={2}
+        textDecoration={"underline"}
+        cursor={"pointer"}
+        onClick={onToggle}
+      >
+        Advanced Options
+      </Text>
+      <Collapse in={isOpen} animateOpacity>
+        <Field name="resolutionPrice">
+          {({ field, form }) => (
+            <FormControl>
+              <FormLabel htmlFor="resolutionPrice" fontWeight={"normal"}>
+                Resolution target price
+              </FormLabel>
+              <Input {...field} id="tag" placeholder=" " autoComplete="off" />
+              <FormErrorMessage>{form.errors.keyword}</FormErrorMessage>
+            </FormControl>
+          )}
+        </Field>
+      </Collapse>
     </Stack>
   );
 };
