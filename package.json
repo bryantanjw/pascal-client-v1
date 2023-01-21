@@ -37,6 +37,8 @@
     "@solana/wallet-adapter-react-ui": "^0.9.16",
     "@solana/wallet-adapter-wallets": "^0.18.5",
     "@solana/web3.js": "^1.59.0",
+    "@typescript-eslint/eslint-plugin": "^5.48.2",
+    "@typescript-eslint/parser": "^5.48.2",
     "@vercel/analytics": "^0.1.5",
     "apexcharts": "^3.35.2",
     "chakra-react-select": "^4.2.1",
