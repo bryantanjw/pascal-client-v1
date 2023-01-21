@@ -1,5 +1,7 @@
 # Pascal Protocol Client
 Trade directly on the outcome of events and across AMM pools.
+![Preview](https://user-images.githubusercontent.com/34775928/213886123-589b7df0-b5e5-41f5-99d2-1b37f012b6c1.png)
+
 
 ## Getting Started
 
