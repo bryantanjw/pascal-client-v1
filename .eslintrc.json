@@ -2,10 +2,7 @@
   "extends": "next",
   "rules": {
     "react/no-unescaped-entities": "off",
-    "react/no-unknown-property": 0,
+    "react/no-unknown-property": "off",
     "@next/next/no-page-custom-font": "off"
-  },
-  "parserOptions": {
-    "project": "./tsconfig.json"
   }
 }
