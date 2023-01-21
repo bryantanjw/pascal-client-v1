@@ -31,7 +31,6 @@ const gradientBackgroundStyle = {
 //  2. Search bar
 
 const MarketList = ({ markets }) => {
-  console.log(markets);
   // FilterToggle state management ignored for the time being
   const { value, getCheckboxProps } = useCheckboxGroup({ defaultValue: [] });
 
@@ -52,7 +51,7 @@ const MarketList = ({ markets }) => {
   }
 
   return (
-    <Box>
+    <Box pt={3}>
       <HStack py={5}>
         {categories.map((category, index) => (
           <Stack key={index}>
@@ -77,13 +76,13 @@ const MarketList = ({ markets }) => {
         <SimpleGrid columns={{ base: 1, md: 3 }} spacing={5}>
           {filteredMarkets.length != 0
             ? filteredMarkets.map((market: any) => (
-                <Stack key={market.marketId}>
+                <Stack key={market.publicKey}>
                   <MarketCard market={market} />
                 </Stack>
               ))
             : markets &&
               markets.map((market: any) => (
-                <Stack key={market.marketId}>
+                <Stack key={market.publicKey}>
                   <MarketCard market={market} />
                 </Stack>
               ))}

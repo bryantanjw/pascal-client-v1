@@ -14,7 +14,7 @@ import {
 import clientPromise from "@/lib/mongodb";
 import Layout from "components/Layout";
 import WithSubnavigation from "components/TopBar";
-import MarketList from "@/components/Trade";
+import MarketList from "@/components/Home";
 
 import styles from "@/styles/Home.module.css";
 

@@ -286,6 +286,15 @@
 }
 /* END: Three Button */
 
-.test {
-  background-color: #0070f3;
+.scroll_container::-webkit-scrollbar {
+  display: none;
+}
+
+.activity_container::-webkit-scrollbar {
+  height: 0.4em;
+  background: transparent;
+}
+.activity_container::-webkit-scrollbar-thumb {
+  background: #c5c5c5;
+  border-radius: 10px;
 }

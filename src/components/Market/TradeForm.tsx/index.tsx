@@ -20,33 +20,82 @@ import {
   TabPanel,
   HStack,
   useToast,
+  Link,
 } from "@chakra-ui/react";
-import { ArrowBackIcon, InfoOutlineIcon } from "@chakra-ui/icons";
+import {
+  ArrowBackIcon,
+  ExternalLinkIcon,
+  InfoOutlineIcon,
+} from "@chakra-ui/icons";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { createOrderUiStake, Orders } from "@monaco-protocol/client";
 import { Field, Formik } from "formik";
+import { motion } from "framer-motion";
 import Confetti from "react-dom-confetti";
 import { Step, Steps, useSteps } from "chakra-ui-steps";
-import { getOutcomeState } from "@/store/slices/outcomeSlice";
 import { useSelector } from "@/store/store";
 import { TokenSwapForm } from "./TokenPool";
 import { Airdrop } from "./TokenPool/AirdropForm";
+import { getPriceData, logResponse } from "@/utils/monaco";
+import { PublicKey } from "@solana/web3.js";
+import { useProgram } from "@/context/ProgramProvider";
 
 import styles from "@/styles/Home.module.css";
 
-type TradeFormItemProps = {
-  label: string | React.ReactNode;
-  value?: string;
-  children?: React.ReactNode;
-};
+async function placeOrder(
+  program,
+  publicKey,
+  marketPk: PublicKey,
+  marketOutcomeIndex: number,
+  orderSide: boolean,
+  price: number,
+  stake: number
+) {
+  // Create order
+  const orderResponse = await createOrderUiStake(
+    program,
+    marketPk,
+    marketOutcomeIndex,
+    orderSide,
+    price,
+    stake
+  );
+  logResponse(orderResponse);
+  if (orderResponse.success) {
+    console.log(`Order placed ✅`);
+  } else {
+    throw new Error(orderResponse[0].error);
+  }
+  // Get all of user's orders
+  const orderData = await Orders.orderQuery(program)
+    .filterByPurchaser(publicKey)
+    .fetch();
+  const priceData = await getPriceData(program, marketPk);
+  const data = {
+    publicKey,
+    orderData,
+    marketPk,
+    marketOutcomeIndex,
+    priceData,
+  };
+  // Send data to db
+  const response = await fetch("../api/placeOrder", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  console.log("response", response);
+  return orderResponse.data.tnxID;
+}
 
 const Swap = ({ market }) => {
-  const { marketLockTimestamp, outcomeAccounts } = market;
-  const [outcome, setOutcome] = useState<number>(0);
-  const [isLoading, setLoading] = useState(false);
-  const [isSuccess, setSuccess] = useState(false);
-
-  const { title, index } = useSelector(getOutcomeState);
+  const { marketLockTimestamp, outcomes, prices } = market;
+  const program = useProgram();
   const { publicKey } = useWallet();
+  const [outcomeIndex, setOutcomeIndex] = useState<number>(0);
+  const [isSuccess, setSuccess] = useState(false);
 
   const toast = useToast();
   const steps = [{ label: "" }, { label: "" }];
@@ -58,6 +107,10 @@ const Swap = ({ market }) => {
   const day = dt.getDate().toString();
   const month = dt.toLocaleString("default", { month: "long" });
   const year = dt.getFullYear().toString();
+
+  const marketBuyPrice =
+    prices[outcomeIndex].against[prices[outcomeIndex].against.length - 1]
+      ?.price;
 
   return (
     <Stack>
@@ -76,8 +129,8 @@ const Swap = ({ market }) => {
               fontWeight={"semibold"}
               color={mode("purple.500", "purple.200")}
             >
-              {`${outcomeAccounts[0].account.title}
-              ${outcomeAccounts[0].account.latestMatchedPrice}%`}
+              {`${outcomes[0].outcome}
+              ${marketBuyPrice}%`}
             </Heading>
           </Flex>
 
@@ -110,7 +163,7 @@ const Swap = ({ market }) => {
                   width={"full"}
                   textColor={mode("white", "#353535")}
                   bg={mode("#353535", "gray.50")}
-                  onClick={() => setOutcome(0)}
+                  onClick={() => setOutcomeIndex(0)}
                 >
                   Yes
                 </Button>
@@ -122,14 +175,14 @@ const Swap = ({ market }) => {
                   fontSize={"xl"}
                   rounded={"xl"}
                   width="full"
-                  textColor={mode("gray.500", "whiteAlpha.700")}
+                  textColor={mode("gray.600", "whiteAlpha.700")}
                   borderColor={mode("gray.400", "whiteAlpha.700")}
                   transition={"all 0.3s ease"}
                   _hover={{
                     textColor: mode("gray.800", "white"),
                     borderColor: mode("gray.800", "white"),
                   }}
-                  onClick={() => setOutcome(1)}
+                  onClick={() => setOutcomeIndex(1)}
                 >
                   No
                 </Button>
@@ -140,30 +193,69 @@ const Swap = ({ market }) => {
       )) ||
         (activeStep === 1 && (
           <Formik
-            initialValues={{ contractAmount: 2 }}
-            onSubmit={(values) => {
+            initialValues={{ stake: 2 }}
+            onSubmit={async (values) => {
               // transferTo(values.contractAmount)
-              nextStep;
-              setTimeout(() => {
+              try {
+                const txId = await placeOrder(
+                  program,
+                  publicKey,
+                  new PublicKey(market.publicKey),
+                  outcomeIndex,
+                  true,
+                  50, // <-- Test price; replace
+                  values.stake
+                );
+                setSuccess(true);
+                toast({
+                  title: "Order placed",
+                  description: (
+                    <Link
+                      href={`https://solscan.io/tx/${txId}?cluster=devnet`}
+                      isExternal
+                    >
+                      <HStack>
+                        <Text>View transaction</Text>
+                        <ExternalLinkIcon />
+                      </HStack>
+                    </Link>
+                  ),
+                  status: "success",
+                  duration: 9000,
+                  isClosable: true,
+                  position: "bottom-right",
+                  containerStyle: { marginBottom: "25px" },
+                });
+                nextStep;
+              } catch (e) {
                 setSuccess(false);
-              }, 6000);
+                toast({
+                  title: "Order failed",
+                  description: e.message,
+                  status: "error",
+                  duration: 9000,
+                  isClosable: true,
+                  position: "bottom-right",
+                  containerStyle: { marginBottom: "25px" },
+                });
+              }
             }}
           >
-            {({ values, errors, handleChange, handleSubmit }) => (
+            {({ values, errors, handleChange, handleSubmit, isSubmitting }) => (
               <form onSubmit={handleSubmit}>
                 <Stack spacing={6}>
                   <Heading size="md">Swap summary</Heading>
 
                   <Stack spacing="3">
                     <TradeFormItem
-                      label="Price per contract"
-                      value={`${outcomeAccounts[outcome].account.latestMatchedPrice}`}
+                      label="Market buy price"
+                      value={`${marketBuyPrice} USDC`}
                     />
-                    <TradeFormItem label="No. of contracts">
-                      <Field name="contractAmount">
+                    <TradeFormItem label="Stake">
+                      <Field name="stake">
                         {({ field, form }) => (
                           <NumberInput
-                            name="contractAmount"
+                            name="stake"
                             onChange={(val) =>
                               form.setFieldValue(field.name, val)
                             }
@@ -174,7 +266,7 @@ const Swap = ({ market }) => {
                             width={"35%"}
                             min={0}
                             max={100}
-                            value={values.contractAmount}
+                            value={values.stake}
                           >
                             <NumberInputField
                               fontSize={"sm"}
@@ -194,7 +286,7 @@ const Swap = ({ market }) => {
                         <HStack>
                           <Text>Fees</Text>
                           <Tooltip
-                            label={"A 2% fee goes to liquidity providers"}
+                            label={"A 1% fee goes to liquidity providers"}
                             p={3}
                           >
                             <InfoOutlineIcon cursor={"help"} />
@@ -209,10 +301,7 @@ const Swap = ({ market }) => {
                         Total
                       </Text>
                       <Text fontSize="xl" fontWeight="extrabold">
-                        {values.contractAmount *
-                          outcomeAccounts[outcome].account
-                            .latestMatchedPrice}{" "}
-                        USDC
+                        {values.stake} USDC
                       </Text>
                     </Flex>
                   </Stack>
@@ -237,13 +326,15 @@ const Swap = ({ market }) => {
                     </Button>
 
                     <Button
+                      as={motion.button}
+                      whileTap={{ scale: 0.9 }}
                       type={"submit"}
                       className={mode(
                         styles.wallet_adapter_button_trigger_light_mode,
                         styles.wallet_adapter_button_trigger_dark_mode
                       )}
-                      isDisabled={!publicKey || values.contractAmount == 0}
-                      isLoading={isLoading}
+                      isDisabled={!publicKey || values.stake == 0}
+                      isLoading={isSubmitting}
                       textColor={mode("white", "#353535")}
                       bg={mode("#353535", "gray.50")}
                       boxShadow={"xl"}
@@ -281,6 +372,12 @@ const Swap = ({ market }) => {
       )}
     </Stack>
   );
+};
+
+type TradeFormItemProps = {
+  label: string | React.ReactNode;
+  value?: string;
+  children?: React.ReactNode;
 };
 
 const TradeFormItem = (props: TradeFormItemProps) => {

@@ -126,7 +126,14 @@ export const TableContent = ({ user }, error) => {
   ];
 
   return (
-    <Box my={4} rounded={"lg"} borderWidth="1px" overflowX={"auto"}>
+    <Box
+      bg={mode("whiteAlpha.800", "rgba(32, 34, 46, 0.2)")}
+      boxShadow={"lg"}
+      my={4}
+      rounded={"lg"}
+      borderWidth="1px"
+      overflowX={"auto"}
+    >
       <Table fontSize="sm">
         <Thead bg={mode("gray.50", "gray.800")}>
           <Tr>

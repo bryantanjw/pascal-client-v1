@@ -1,5 +1,4 @@
 import React, { useState, useEffect, createContext } from "react";
-import { useDispatch } from "react-redux";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
@@ -22,26 +21,19 @@ import {
 } from "@chakra-ui/react";
 import ChakraNextLink from "../ChakraNextLink";
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import { useWallet } from "@solana/wallet-adapter-react";
-import {
-  GetAccount,
-  MarketAccount,
-  MarketOutcomeAccount,
-} from "@monaco-protocol/client";
 import MarketProgress from "./MarketProgress";
 import { Stat } from "./Stat";
 import NewsList from "./NewsList";
-import { TradeForm } from "../Trade/TradeForm.tsx";
+import { TradeForm } from "./TradeForm.tsx";
 import WithSubnavigation from "../TopBar";
 import MarketResolution from "./MarketResolution";
 import Outcomes from "./Outcomes";
 import Layout from "../Layout";
-import { setTitle } from "@/store/slices/outcomeSlice";
+import { useProgram } from "@/context/ProgramProvider";
 
 import styles from "@/styles/Home.module.css";
 import { getPriceData } from "@/utils/monaco";
 import { PublicKey } from "@solana/web3.js";
-import { useProgram } from "@/context/ProgramProvider";
 
 // Dynamically load ResearchGraph component on client side
 const ResearchGraph = dynamic(import("./ResearchGraph"), {
@@ -51,26 +43,10 @@ const ResearchGraph = dynamic(import("./ResearchGraph"), {
 export const PriceDataContext = createContext<any>({});
 
 const Market = ({ market }) => {
-  const dispatch = useDispatch();
   const program = useProgram();
   const { asPath } = useRouter();
   const marketPk = asPath.split("/")[2];
   const [priceData, setPriceData] = useState<any>(null);
-
-  useEffect(() => {
-    const fetchPriceSummary = async () => {
-      try {
-        const res = await getPriceData(new PublicKey(marketPk), program);
-        if (res) {
-          setPriceData(res);
-          console.log("priceData: ", priceData);
-        } else console.log("loading...");
-      } catch (error) {
-        console.log("error: ", error);
-      }
-    };
-    fetchPriceSummary();
-  }, [program]);
 
   // START: Style config //
   const dividerColor = mode("gray.300", "#464A54");
@@ -87,6 +63,9 @@ const Market = ({ market }) => {
     _hover: {
       textColor: mode("gray.600", "gray.200"),
     },
+    _active: {
+      bg: "none",
+    },
   };
   const sectionHeadingStyle = {
     fontSize: "lg",
@@ -102,15 +81,29 @@ const Market = ({ market }) => {
   // END: Style config //
 
   const stats = [
-    { label: "Total Volume", value: `$${priceData?.liquidityTotal}` },
+    { label: "Total Volume", value: `$${market.liquidityTotal}` },
     // { label: "Liquidity", value: market.volume },
     {
       label: "Closing Date - UTC",
       value: new Date(
-        parseInt(market.marketLockTimestamp, 16)
+        parseInt(market.marketLockTimestamp, 16) * 1000
       ).toLocaleString(),
     },
   ];
+
+  useEffect(() => {
+    const fetchPriceData = async () => {
+      try {
+        const res = await getPriceData(program, new PublicKey(marketPk));
+        if (res) {
+          setPriceData(res);
+        } else console.log("loading...");
+      } catch (error) {
+        console.log("fetchPriceData error: ", error);
+      }
+    };
+    fetchPriceData();
+  }, [program]);
 
   return (
     <PriceDataContext.Provider value={priceData}>
@@ -154,7 +147,6 @@ const Market = ({ market }) => {
                 <HStack
                   _hover={{ bg: mode("gray.200", "gray.700") }}
                   rounded={"lg"}
-                  pr={4}
                   py={1}
                   transition={"all 0.2s ease"}
                 >
@@ -183,7 +175,7 @@ const Market = ({ market }) => {
               <Stack spacing={4} minW={"sm"} flex="2">
                 <Tabs colorScheme={"black"}>
                   <TabList>
-                    <Tab mr={7} sx={tabListStyle}>
+                    <Tab mr={8} sx={tabListStyle}>
                       Outcomes
                     </Tab>
                     <Tab sx={tabListStyle}>Graph</Tab>
@@ -191,7 +183,10 @@ const Market = ({ market }) => {
 
                   <TabPanels>
                     <TabPanel key={0} px={0}>
-                      <Outcomes outcomes={market.outcomeAccounts} />
+                      <Outcomes market={market} />
+                    </TabPanel>
+                    <TabPanel key={1} px={0}>
+                      Price graph coming soon!
                     </TabPanel>
                   </TabPanels>
                 </Tabs>
@@ -200,7 +195,7 @@ const Market = ({ market }) => {
                   {" "}
                   {/* isLazy defers rendering until tab is selected */}
                   <TabList>
-                    <Tab sx={tabListStyle} mr={7}>
+                    <Tab sx={tabListStyle} mr={8}>
                       About
                     </Tab>
                     <Tab sx={tabListStyle}>Research and News</Tab>

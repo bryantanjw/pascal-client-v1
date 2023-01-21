@@ -11,7 +11,7 @@ export const OrderbookContainer = styled.div`
 `;
 
 export const TableContainer = styled.div`
-  padding-top: 9px;
+  padding-top: 15px;
   font-size: 0.9rem;
   display: flex;
   width: 100%;
@@ -19,6 +19,10 @@ export const TableContainer = styled.div`
   height: 120px;
   overflow: auto;
   overflow-scrolling: touch;
+  ::-webkit-scrollbar {
+    width: 0.2em;
+    background-color: transparent;
+  }
 
   background:
     /* Shadow Cover TOP */ linear-gradient(
@@ -59,9 +63,11 @@ interface PriceButtonContainerProps {
 export const TitleContainer = styled.div`
   display: flex;
   justify-content: space-around;
-  color: #98a6af;
-  padding-top: 0.5em;
-  font-size: 0.9em;
+  color: #616262;
+  padding-top: 0.4em;
+  padding-bottom: 0.4em;
+  font-size: 0.8em;
+  background-color: #f3f5f6;
 
   span {
     min-width: 5rem;

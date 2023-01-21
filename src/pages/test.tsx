@@ -34,7 +34,7 @@ import {
 import MarketProgress from "@/components/Market/MarketProgress";
 import { Stat } from "@/components/Market/Stat";
 import NewsList from "@/components/Market/NewsList";
-import { TradeForm } from "@/components/Trade/TradeForm.tsx";
+import { TradeForm } from "@/components/Market/TradeForm.tsx";
 import WithSubnavigation from "@/components/TopBar";
 import MarketResolution from "@/components/Market/MarketResolution";
 import Outcomes from "@/components/Market/Outcomes";

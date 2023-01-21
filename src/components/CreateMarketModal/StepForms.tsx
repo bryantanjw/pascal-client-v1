@@ -112,7 +112,7 @@ export const Form2 = ({ title }) => {
           <FormControl
             isInvalid={form.errors.description && form.touched.description}
           >
-            <FormLabel mt={8} htmlFor="description" fontWeight={"normal"}>
+            <FormLabel mt={5} htmlFor="description" fontWeight={"normal"}>
               Description
             </FormLabel>
             <Textarea
@@ -132,7 +132,7 @@ export const Form2 = ({ title }) => {
         {({ field, form }) => (
           <FormControl
             isInvalid={form.errors.keyword && form.touched.keyword}
-            pt={7}
+            pt={5}
           >
             <FormLabel htmlFor="tag" fontWeight={"normal"}>
               Resolution Source
@@ -208,6 +208,7 @@ export const SubmittedForm = ({ publicKey, success, isSubmitting, status }) => {
         size={"xs"}
         value={100}
         bgClip={"bar"}
+        transition={"background 0.8s ease-in-out"}
         sx={{
           "& > div": {
             background: isSubmitting
@@ -249,8 +250,7 @@ export const SubmittedForm = ({ publicKey, success, isSubmitting, status }) => {
 };
 
 export const FormStepper = ({ success, marketPk, children, ...props }) => {
-  const { isSubmitting, handleSubmit, errors, values } = props;
-  console.log(values);
+  const { isSubmitting, handleSubmit, errors, values, setSubmitting } = props;
   const stepsArray = React.Children.toArray(children);
   const [currentStep, setCurrentStep] = useState(0);
   const currentChild = stepsArray[currentStep];
@@ -268,7 +268,7 @@ export const FormStepper = ({ success, marketPk, children, ...props }) => {
     <Form>
       <Stack spacing={4}>{currentChild}</Stack>
 
-      <Flex justifyContent={"flex-end"} mt={14} py={2} textAlign={"center"}>
+      <Flex justifyContent={"flex-end"} mt={10} py={2} textAlign={"center"}>
         {currentStep !== 2 && (
           <Button
             disabled={
@@ -340,6 +340,18 @@ export const FormStepper = ({ success, marketPk, children, ...props }) => {
               href={`/market/${marketPk}`}
               as={Link}
             />
+            {isSubmitting && (
+              <Button
+                mt={-3}
+                mx={"auto"}
+                onClick={() => {
+                  setCurrentStep(1);
+                  setSubmitting(false);
+                }}
+              >
+                Cancel
+              </Button>
+            )}
           </>
         )}
       </Flex>

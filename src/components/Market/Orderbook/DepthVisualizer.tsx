@@ -6,7 +6,7 @@ import { MOBILE_WIDTH } from "@/utils/constants";
 interface DepthVisualizerProps {
   depth: number;
   orderType: OrderType;
-  windowWidth: number;
+  windowWidth?: number;
 }
 
 const DepthVisualizer: FunctionComponent<DepthVisualizerProps> = ({

@@ -13,8 +13,6 @@ import {
   SkeletonText,
 } from "@chakra-ui/react";
 
-import styles from "@/styles/Home.module.css";
-
 // Style config //
 const statStyle = {
   align: "center",
@@ -25,7 +23,7 @@ const statStyle = {
 
 const MarketCard = ({ market }) => {
   const iconColor = mode("invert(0%)", "invert(100%)");
-  const { outcomeAccounts, marketLockTimestamp } = market;
+  const { outcomes, prices, marketLockTimestamp } = market;
 
   const dt = new Date(parseInt(marketLockTimestamp, 16) * 1000);
 
@@ -87,10 +85,7 @@ const MarketCard = ({ market }) => {
           >
             <Stack direction={"row"} spacing={3}>
               <Text color={"purple.500"}>
-                Yes ${outcomeAccounts[0].account.latestMatchedPrice}
-              </Text>
-              <Text color={"teal.500"}>
-                No ${outcomeAccounts[1].account.latestMatchedPrice}
+                Yes ${prices[0].against[prices[0].against.length - 1]?.price}
               </Text>
             </Stack>
           </Flex>

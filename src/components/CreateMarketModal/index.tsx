@@ -10,26 +10,19 @@ import {
 } from "@chakra-ui/react";
 import { Formik } from "formik";
 import * as yup from "yup";
-import useMeasure from "react-use-measure";
-import { AnimatePresence, motion, MotionConfig } from "framer-motion";
-import {
-  createOrderUiStake,
-  getMarket,
-  getMarketOutcomesByMarket,
-  getTradesForMarket,
-} from "@monaco-protocol/client";
+import { MotionConfig } from "framer-motion";
+import { getMarket } from "@monaco-protocol/client";
 import { openMarket } from "@monaco-protocol/admin-client";
 import { PublicKey, Keypair } from "@solana/web3.js";
 import {
   createMarket,
   MarketType,
-  DEFAULT_PRICE_LADDER,
   initialiseOutcomes,
   batchAddPricesToAllOutcomePools,
 } from "@monaco-protocol/admin-client";
 import { Form1, Form2, SubmittedForm, FormStepper } from "./StepForms";
 import { useProgram } from "@/context/ProgramProvider";
-import { getPriceData, logResponse } from "@/utils/monaco";
+import { getPriceData, logResponse, makeMarket } from "@/utils/monaco";
 import { ResizablePanel } from "../common/ResizablePanel";
 
 enum CreateStatus {
@@ -37,82 +30,15 @@ enum CreateStatus {
   InitialisingOutcomes = "Initialising Outcomes",
   AddingPrices = "Adding Prices",
   OpeningMarket = "Opening Market",
+  MakingMarket = "Making Market",
   Success = "Success",
-}
-
-/* To maintain a non-informative distribution while
- * still ensuring that the market price settles at 0.5,
- * we use a combination of both random and uniform distributions.
- * We generate random prices using a uniform distribution, with a range of 0 to 1,
- * and then apply a bias to the prices so that the mean of the prices is 0.5.
- *
- * Note: market price might not exactly settle at 0.5 prob after all market operations
- * so should increase number of orders so the bias will have a cumulative effect over
- * a larger number of orders.
- */
-async function makeMarket(program, marketPk: PublicKey) {
-  const numOrders = 20;
-  const minPrice = 20;
-  const maxPrice = 70;
-  const minSize = 1;
-  const maxSize = 2;
-
-  const buyOrders: Array<{ price: number; size: number }> = [];
-  const sellOrders: Array<{ price: number; size: number }> = [];
-
-  let totalPrice = 0;
-  for (let i = 0; i < numOrders; i++) {
-    // Generate a random price with uniform distribution
-    let price = Math.round(minPrice + Math.random() * (maxPrice - minPrice));
-    totalPrice += price;
-    // Generate a random size between the min and max size
-    const size = minSize + Math.floor(Math.random() * (maxSize - minSize + 1));
-    // 50% chance of placing a buy order or a sell order
-    if (Math.random() < 0.5) {
-      buyOrders.push({ price, size });
-    } else {
-      sellOrders.push({ price, size });
-    }
-  }
-  const meanPrice = totalPrice / numOrders;
-  const bias = Math.round(50 - meanPrice);
-  buyOrders.forEach((order) => (order.price += bias));
-  sellOrders.forEach((order) => (order.price += bias));
-  console.log("buyOrders", buyOrders);
-  console.log("sellOrders", sellOrders);
-
-  // Place the orders for buy and sell side for one outcome (first)
-  for (const order of buyOrders) {
-    const response = await createOrderUiStake(
-      program,
-      marketPk,
-      0, // outcome index
-      true, // buy side
-      order.price,
-      order.size // stake
-    );
-    logResponse(response);
-  }
-
-  for (const order of sellOrders) {
-    const response = await createOrderUiStake(
-      program,
-      marketPk,
-      0, // outcome index
-      false, // sell side
-      order.price,
-      order.size // stake
-    );
-    logResponse(response);
-  }
 }
 
 async function createVerboseMarket(
   program,
   marketName,
   lockTimestamp,
-  setCreateStatus,
-  toast
+  setCreateStatus
 ) {
   const mintToken = new PublicKey(
     "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU" // <-- USDC devnet token address
@@ -138,7 +64,7 @@ async function createVerboseMarket(
     eventPk
   );
   // returns CreateMarketResponse: market account public key, creation transaction id, and market account
-  logResponse(toast, marketResponse);
+  logResponse(marketResponse);
   if (marketResponse.success) {
     console.log(
       `MarketAccount ${marketResponse.data.marketPk.toString()} created ✅`
@@ -159,7 +85,7 @@ async function createVerboseMarket(
     outcomes
   );
   // returns OutcomeInitialisationsResponse: list of outcomes, their pdas, and transaction id
-  logResponse(toast, initialiseOutcomePoolsResponse);
+  logResponse(initialiseOutcomePoolsResponse);
   if (initialiseOutcomePoolsResponse.success) {
     console.log(`Outcomes added to market ✅`);
     setCreateStatus(CreateStatus.AddingPrices);
@@ -176,7 +102,7 @@ async function createVerboseMarket(
     batchSize
   );
   // returns BatchAddPricesToOutcomeResponse: transaction id, and confirmation
-  logResponse(toast, addPriceLaddersResponse);
+  logResponse(addPriceLaddersResponse);
   if (addPriceLaddersResponse.success) {
     console.log(`Prices added to outcomes ✅`);
   } else {
@@ -190,7 +116,6 @@ async function createVerboseMarket(
 
 export const CreateMarketModal = () => {
   const program = useProgram();
-  const toast = useToast();
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const [marketPk, setMarketPk] = useState<PublicKey>();
   const [createStatus, setCreateStatus] = useState<CreateStatus>(
@@ -199,16 +124,22 @@ export const CreateMarketModal = () => {
   let duration = 0.5;
 
   const addMarket = async (values) => {
-    const { title, category, lockTimestamp, description, tag, program } =
-      values;
+    const {
+      title,
+      category,
+      lockTimestamp,
+      description,
+      resolutionSource,
+      tag,
+      program,
+    } = values;
 
     try {
       const marketPk = await createVerboseMarket(
         program,
         title,
         lockTimestamp,
-        setCreateStatus,
-        toast
+        setCreateStatus
       );
       if (!marketPk) {
         throw new Error("Error creating market");
@@ -216,30 +147,26 @@ export const CreateMarketModal = () => {
       // Set market status from 'initializing' to 'open'
       setCreateStatus(CreateStatus.OpeningMarket);
       await openMarket(program, marketPk);
-      const marketCreationTimestamp = new Date().getTime().toString(16);
-
-      // Get accounts
-      const outcomeResponse = await getMarketOutcomesByMarket(
-        program,
-        marketPk!
-      );
-      const outcomeAccounts = outcomeResponse?.data.marketOutcomeAccounts;
-      const trade = await getTradesForMarket(program, marketPk!);
-      const tradeAccount = trade.data;
-      const priceSummary = await getPriceData(marketPk, program);
+      // Get market creation timestamp
+      const marketCreateTimestamp = (new Date().getTime() / 1000).toString(16);
+      // Make market
+      setCreateStatus(CreateStatus.MakingMarket);
+      await makeMarket(program, marketPk);
+      // Get market account
       const market = await getMarket(program, marketPk!);
       const marketAccount = market.data;
+      // Get price data
+      const priceData = await getPriceData(program, marketPk);
 
       // Add accounts to database
       const data = {
         category,
         description,
         tag,
-        marketCreationTimestamp,
+        resolutionSource,
+        marketCreateTimestamp,
         marketAccount,
-        outcomeAccounts,
-        tradeAccount,
-        priceSummary,
+        priceData,
       };
       const response = await fetch("../api/createMarket", {
         method: "POST",
@@ -253,6 +180,7 @@ export const CreateMarketModal = () => {
       setMarketPk(marketPk);
     } catch (error) {
       setIsSuccess(false);
+      console.log("addMarket", error);
     }
   };
 

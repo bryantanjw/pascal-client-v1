@@ -4,7 +4,7 @@ import { TitleContainer, PriceContainer } from "./styles";
 
 interface TitleRowProps {
   reversedFieldsOrder?: boolean;
-  windowWidth: number;
+  windowWidth?: number;
 }
 
 export const TitleRow: FunctionComponent<TitleRowProps> = ({
@@ -13,9 +13,9 @@ export const TitleRow: FunctionComponent<TitleRowProps> = ({
 }) => {
   return (
     <TitleContainer>
-      <span>Price (USD)</span>
-      <span>Size</span>
-      <span>Total</span>
+      <span>PRICE (USD)</span>
+      <span>SIZE</span>
+      <span>TOTAL</span>
     </TitleContainer>
   );
 };
@@ -25,7 +25,7 @@ interface PriceLevelRowProps {
   size: string;
   price: string;
   isRight: boolean;
-  windowWidth: number;
+  windowWidth?: number;
 }
 
 export const PriceLevelRow: FunctionComponent<PriceLevelRowProps> = ({

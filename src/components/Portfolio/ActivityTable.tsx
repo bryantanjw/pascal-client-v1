@@ -16,6 +16,8 @@ import {
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { Position } from "./PositionsTable";
 
+import styles from "@/styles/Home.module.css";
+
 // TODO: add sorting table column function using react-table
 // example: https://codesandbox.io/s/mjk1v?file=/src/makeData.js:19-24
 
@@ -29,10 +31,6 @@ const ActivityTable = ({ user }) => {
       {
         Header: "Amount",
         accessor: "size",
-      },
-      {
-        Header: "Action",
-        accessor: "action",
       },
       {
         Header: "Time",
@@ -54,9 +52,13 @@ const ActivityTable = ({ user }) => {
   );
 
   return (
-    <Box my={4} rounded={"lg"} borderWidth="1px" overflowX={"auto"}>
-      <Table fontSize="sm">
-        <Thead bg={mode("gray.50", "gray.800")}>
+    <Box
+      rounded={"lg"}
+      overflowX={"auto"}
+      className={styles.activity_container}
+    >
+      <Table fontSize="sm" variant={"unstyled"}>
+        <Thead bg={mode("gray.100", "gray.800")}>
           <Tr>
             {columns.map((column, index) => (
               <Th whiteSpace="nowrap" scope="col" key={index}>

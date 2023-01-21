@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import useSWR from "swr";
 import {
   Progress,
   Text,
@@ -17,18 +18,13 @@ import {
   Checkbox,
   useCheckbox,
 } from "@chakra-ui/react";
-import useSWR from "swr";
+import { BN } from "@project-serum/anchor";
 import { useWallet } from "@solana/wallet-adapter-react";
-import {
-  MarketOutcomeAccount,
-  GetAccount,
-  getTradesForProviderWallet,
-  Trade,
-} from "@monaco-protocol/client";
-
 import { OrderBook } from "./Orderbook";
+import { PublicKey } from "@solana/web3.js";
+import { getPriceData } from "@/utils/monaco";
 import { useProgram } from "@/context/ProgramProvider";
-import { useRouter } from "next/router";
+import { PriceDataContext } from ".";
 
 const fetcher = async (url) => {
   const res = await fetch(url);
@@ -36,7 +32,7 @@ const fetcher = async (url) => {
   // If the status code is not in the range 200-299,
   // we still try to parse and throw it.
   if (!res.ok) {
-    const error: any = new Error("An error occurred while fetching the data.");
+    const error: any = new Error("An error occurred while fetching user data.");
     // Attach extra info to the error object.
     error.info = await res.json();
     error.status = res.status;
@@ -47,21 +43,24 @@ const fetcher = async (url) => {
 };
 
 interface CheckboxProps extends UseCheckboxProps {
-  marketOutcome: GetAccount<MarketOutcomeAccount>;
+  outcome: {
+    index: number;
+    outcome: string;
+    latestMatchedPrice: number;
+    matchedTotal: BN;
+  };
+  marketBuyPrice: number;
 }
 
 const CheckboxOption = (props: CheckboxProps) => {
-  const program = useProgram();
   const { publicKey } = useWallet();
-  const { asPath } = useRouter();
-  const marketPk = asPath.split("/")[2];
-  const [userPositions, setUserPositions] = useState<GetAccount<Trade>[]>([]);
 
-  const { marketOutcome, ...radioProps } = props;
+  const { outcome, marketBuyPrice, ...radioProps } = props;
   const { state, getCheckboxProps, getInputProps, htmlProps } =
     useCheckbox(radioProps);
+
   const { data } = useSWR(
-    publicKey ? `../api/user?pubKey=${publicKey?.toString()}` : null,
+    publicKey ? `../api/user?publicKey=${publicKey?.toString()}` : null,
     fetcher
   );
 
@@ -77,27 +76,6 @@ const CheckboxOption = (props: CheckboxProps) => {
     mode("#2C7C7C", "#81E6D9"),
   ];
 
-  useEffect(() => {
-    const getMatchingTradeAccounts = async () => {
-      try {
-        const response = await getTradesForProviderWallet(program);
-        const { tradeAccounts } = response.data;
-        console.log("tradeAccounts", tradeAccounts);
-        const matchingTradeAccounts = tradeAccounts.filter(
-          (tradeAccount) =>
-            tradeAccount.account.purchaser.toBase58() ===
-              publicKey?.toBase58() &&
-            tradeAccount.account.market.toBase58() === marketPk
-        );
-        setUserPositions(matchingTradeAccounts);
-        console.log("userPositions", userPositions);
-      } catch (error) {
-        console.log("getMatchingTradeAccounts", error);
-      }
-    };
-    getMatchingTradeAccounts();
-  }, [program, publicKey, marketPk]);
-
   return (
     <chakra.label {...htmlProps}>
       <input {...getInputProps()} hidden />
@@ -108,7 +86,6 @@ const CheckboxOption = (props: CheckboxProps) => {
         py="4"
         rounded="2xl"
         cursor="pointer"
-        transition="all 0.2s"
         fontWeight={"medium"}
         bg={mode("rgb(255,255,255,0.2)", "blackAlpha.200")}
         fontSize={{ base: "sm", md: "md" }}
@@ -116,11 +93,9 @@ const CheckboxOption = (props: CheckboxProps) => {
           borderColor: "gray.500",
         }}
         _checked={{
-          bg: bgColorScheme[marketOutcome.account.index % bgColorScheme.length],
+          bg: bgColorScheme[outcome.index % bgColorScheme.length],
           borderColor:
-            borderColorScheme[
-              marketOutcome.account.index % borderColorScheme.length
-            ],
+            borderColorScheme[outcome.index % borderColorScheme.length],
         }}
         {...getCheckboxProps()}
       >
@@ -129,43 +104,39 @@ const CheckboxOption = (props: CheckboxProps) => {
             <Box flex={1.8}>
               <Stack>
                 <HStack justifyContent={"space-between"}>
-                  <Text>{marketOutcome.account.title}</Text>
-                  <Text>{marketOutcome.account.latestMatchedPrice}%</Text>
+                  <Text>{outcome.outcome}</Text>
+                  <Text>{marketBuyPrice}%</Text>
                 </HStack>
                 <Progress
-                  value={marketOutcome.account.latestMatchedPrice}
+                  value={marketBuyPrice}
                   size={"sm"}
                   rounded={"xl"}
                   opacity={state.isChecked ? "100%" : "40%"}
                   transition={"all 0.2s ease"}
                   colorScheme={
                     progressBarColorScheme[
-                      marketOutcome.account.index %
-                        progressBarColorScheme.length
+                      outcome.index % progressBarColorScheme.length
                     ]
                   }
                 />
               </Stack>
             </Box>
             <Spacer />
-            <Text>{marketOutcome.account.latestMatchedPrice}</Text>
+            <Text>{marketBuyPrice}</Text>
             <Spacer />
             <Stack>
               {!publicKey && <Text>0.00</Text>}
-              {data &&
+              {/* {data &&
                 data.positions.map((position, index) => {
                   let found = false;
-                  if (
-                    position.marketId === marketOutcome.account.market &&
-                    position.outcome === marketOutcome.account.title
-                  ) {
+                  if (position.outcome === outcome.outcome) {
                     found = true;
                     return position.shares;
                   }
                   if (index == position.length - 1 && !found) {
                     return 0.0;
                   }
-                })}
+                })} */}
             </Stack>
           </Flex>
 
@@ -180,9 +151,7 @@ const CheckboxOption = (props: CheckboxProps) => {
               data-checked={state.isChecked ? "" : undefined}
               fontSize="xl"
               colorScheme={
-                checkoxColorScheme[
-                  marketOutcome.account.index % checkoxColorScheme.length
-                ]
+                checkoxColorScheme[outcome.index % checkoxColorScheme.length]
               }
             />
             <Text visibility={"hidden"}>&nbsp;</Text>
@@ -193,7 +162,9 @@ const CheckboxOption = (props: CheckboxProps) => {
   );
 };
 
-const Outcomes = ({ outcomes }) => {
+const Outcomes = ({ market }) => {
+  const { outcomes, prices } = market;
+
   return (
     <VStack
       mt={4}
@@ -211,39 +182,43 @@ const Outcomes = ({ outcomes }) => {
       >
         <Text>OUTCOME / PROBABILITY</Text>
         <Text pl={{ md: 8 }}>PRICE (USDC)</Text>
-        <Text pr={{ md: 10 }}>YOUR SHARES</Text>
+        <Text pr={{ md: 10 }}>YOUR POSITION</Text>
       </Flex>
       <Stack width={"full"} spacing={3}>
-        {outcomes?.map(
-          (outcome: GetAccount<MarketOutcomeAccount>, index: number) => {
-            const [isOpen, setIsOpen] = useState(false);
-            const handleChange = (value) => {
-              setIsOpen(!isOpen);
-            };
-            const { value, getCheckboxProps } = useCheckboxGroup({
-              onChange: handleChange,
-            });
+        {outcomes?.map((outcome, index: number) => {
+          const [isOpen, setIsOpen] = useState(false);
+          const handleChange = (value) => {
+            setIsOpen(!isOpen);
+          };
+          const { value, getCheckboxProps } = useCheckboxGroup({
+            onChange: handleChange,
+          });
 
-            return (
-              <>
-                <CheckboxOption
-                  key={index}
-                  marketOutcome={outcome}
-                  {...getCheckboxProps({
-                    value: index.toString(), // <-- getCheckboxProps value only accepts String
-                  })}
-                />
-                <Collapse
-                  style={{ overflow: "visible", marginBottom: "15px" }}
-                  in={isOpen}
-                  animateOpacity
-                >
-                  <OrderBook outcomeIndex={index} />
-                </Collapse>
-              </>
-            );
-          }
-        )}
+          return (
+            <>
+              <CheckboxOption
+                key={index}
+                outcome={outcome}
+                marketBuyPrice={
+                  prices[index].against[prices[index].against.length - 1]?.price // <-- lowest sell price
+                }
+                {...getCheckboxProps({
+                  value: index.toString(), // <-- getCheckboxProps value only accepts String
+                })}
+              />
+              <Collapse
+                style={{
+                  overflow: "visible",
+                  marginBottom: "15px",
+                }}
+                in={isOpen}
+                animateOpacity
+              >
+                <OrderBook outcomes={outcomes} outcomeIndex={index} />
+              </Collapse>
+            </>
+          );
+        })}
       </Stack>
     </VStack>
   );

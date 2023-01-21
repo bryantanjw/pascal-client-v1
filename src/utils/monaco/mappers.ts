@@ -5,14 +5,19 @@ export function mapPricesToOutcomesAndForAgainst(
   marketPrices: MarketPrice[]
 ) {
   const mapping = outcomeTitles.map((outcomeTitle) => {
-    const forOutcome = marketPrices.filter(
-      (marketPrice) =>
-        marketPrice.forOutcome && marketPrice.marketOutcome === outcomeTitle
-    );
-    const againstOutcome = marketPrices.filter(
-      (marketPrice) =>
-        !marketPrice.forOutcome && marketPrice.marketOutcome === outcomeTitle
-    );
+    const forOutcome = marketPrices
+      .filter(
+        (marketPrice) =>
+          marketPrice.forOutcome && marketPrice.marketOutcome === outcomeTitle
+      )
+      // Sort the prices array in descending order of price
+      .sort((a, b) => b.price - a.price);
+    const againstOutcome = marketPrices
+      .filter(
+        (marketPrice) =>
+          !marketPrice.forOutcome && marketPrice.marketOutcome === outcomeTitle
+      )
+      .sort((a, b) => b.price - a.price);
     return {
       for: forOutcome.map((price) => {
         return {

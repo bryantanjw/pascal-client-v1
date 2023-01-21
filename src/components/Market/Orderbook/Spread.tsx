@@ -27,7 +27,6 @@ const Spread: FunctionComponent<SpreadProps> = ({ bids, asks }) => {
   return (
     <Text
       color={"#98a6af"}
-      fontWeight={"medium"}
       fontSize={"sm"}
       px={8}
       py={2}

@@ -36,7 +36,6 @@ export async function findAssociatedTokenAddress(
       ASSOCIATED_TOKEN_PROGRAM_ID
     )
   )[0];
-  // console.log("User's associated token address", associatedAddress.toBase58())
 
   return associatedAddress;
 }
@@ -91,7 +90,6 @@ export const TokenSwapForm = () => {
 
         setAccountLiquidity(balance?.toLocaleString());
       } catch (err) {
-        // console.log("fetchUserPoolBalance", err)
         setAccountLiquidity(0);
       }
     };

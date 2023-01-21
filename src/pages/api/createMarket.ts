@@ -8,13 +8,19 @@ export default async function handler(req, res) {
         category,
         description,
         resolutionSource,
-        marketCreationTimestamp,
+        marketCreateTimestamp,
         tag,
         marketAccount,
-        outcomeAccounts,
-        tradeAccount,
+        priceData,
       } = req.body;
       const { publicKey, account } = marketAccount;
+      const {
+        marketPriceSummary,
+        marketOutcomesSummary,
+        liquidityTotal,
+        matchedTotal,
+        totalUnmatchedOrders,
+      } = priceData;
 
       // Add market to db
       const client = await clientPromise;
@@ -22,7 +28,14 @@ export default async function handler(req, res) {
       const market = await markets.insertOne({
         publicKey,
         ...account,
-        outcomeAccounts,
+        category,
+        description,
+        resolutionSource,
+        marketCreateTimestamp,
+        tag,
+        liquidityTotal,
+        matchedTotal,
+        totalUnmatchedOrders,
       });
       console.log(
         `A document is inserted into markets with the _id: ${market.insertedId}`
@@ -33,23 +46,10 @@ export default async function handler(req, res) {
         { _id: market.insertedId },
         {
           $set: {
-            category: category,
-            description: description,
-            resolutionSource,
-            marketCreationTimestamp,
-            tag: tag,
+            prices: marketPriceSummary,
+            outcomes: marketOutcomesSummary,
           },
         }
-      );
-
-      // Add market's (empty) trade accounts to db
-      const trades = client.db("pascal").collection("trades");
-      const trade = await trades.insertOne({
-        marketId: market.insertedId,
-        tradeAccount,
-      });
-      console.log(
-        `A document is inserted into trades with the _id: ${trade.insertedId}`
       );
 
       res.status(200).send({ status: "success" });

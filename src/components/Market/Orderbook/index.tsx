@@ -1,9 +1,4 @@
-import React, {
-  FunctionComponent,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { FunctionComponent, useContext } from "react";
 import {
   Divider,
   Flex,
@@ -13,18 +8,13 @@ import {
   Text,
   useColorModeValue as mode,
 } from "@chakra-ui/react";
-import { useDispatch, useSelector } from "@/store/store";
-import {
-  addAsks,
-  addBids,
-  addExistingState,
-  selectAsks,
-  selectBids,
-} from "@/store/slices/orderbookSlice";
+import { useSelector } from "@/store/store";
+import { selectAsks, selectBids } from "@/store/slices/orderbookSlice";
 import { PriceLevelRow, TitleRow } from "./Rows";
 import Spread from "./Spread";
 import DepthVisualizer from "./DepthVisualizer";
 import GroupingSelectBox from "./GroupingSelectBox";
+import { ResizablePanel } from "@/components/common/ResizablePanel";
 import { MOBILE_WIDTH, ORDERBOOK_LEVELS } from "@/utils/constants";
 import { formatNumber } from "@/utils/helpers";
 
@@ -33,8 +23,6 @@ import {
   TableContainer,
   PriceLevelRowContainer,
 } from "./styles";
-import { useProgram } from "@/context/ProgramProvider";
-import { ResizablePanel } from "@/components/common/ResizablePanel";
 import { PriceDataContext } from "..";
 
 const outcomeTickers: any = {
@@ -48,16 +36,14 @@ export enum OrderType {
 }
 
 interface OrderBookProps {
+  outcomes: any;
   outcomeIndex: number;
 }
 
 export const OrderBook: FunctionComponent<OrderBookProps> = ({
   outcomeIndex,
 }) => {
-  const program = useProgram();
   const priceData = useContext(PriceDataContext);
-  const [windowWidth, setWindowWidth] = useState(0);
-
   const bids: number[][] = useSelector(selectBids);
   const asks: number[][] = useSelector(selectAsks);
 
@@ -91,32 +77,18 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
 
       return (
         <PriceLevelRowContainer key={idx + depth}>
-          <DepthVisualizer
-            key={depth}
-            windowWidth={windowWidth}
-            depth={depth}
-            orderType={orderType}
-          />
+          <DepthVisualizer key={depth} depth={depth} orderType={orderType} />
           <PriceLevelRow
             key={size + total}
             total={total}
             size={size}
             price={price}
             isRight={orderType === OrderType.BIDS}
-            windowWidth={windowWidth}
           />
         </PriceLevelRowContainer>
       );
     });
   };
-
-  // Window width detection
-  useEffect(() => {
-    window.onresize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-    setWindowWidth(() => window.innerWidth);
-  }, []);
 
   return (
     <ResizablePanel>
@@ -127,7 +99,7 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
         rounded={"2xl"}
         borderWidth={1}
         borderColor={mode("#E5E7EB", "rgb(255,255,255,0.1)")}
-        background={mode("whiteAlpha.800", "rgba(32, 34, 46, 0.2)")}
+        background={mode("#F8F9FA", "rgba(32, 34, 46, 0.2)")}
         spacing={0}
         boxShadow={"lg"}
       >
@@ -138,53 +110,47 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
           justifyContent={"space-between"}
           alignItems={"center"}
         >
-          <Heading fontSize={"md"} fontWeight={"semibold"} color={"gray.500"}>
+          <Heading fontSize={"md"} fontWeight={"semibold"} color={"gray.700"}>
             Order Book
           </Heading>
-          <Heading fontSize={"md"} color={"gray.600"}>
+          <Heading fontSize={"md"} color={"gray.700"}>
             {outcomeTickers[outcomeIndex]}
           </Heading>
         </Flex>
         <Divider borderColor={"#E2E8F0"} />
         {priceData ? (
           <>
-            <TitleRow windowWidth={windowWidth} reversedFieldsOrder={false} />
+            <TitleRow reversedFieldsOrder={false} />
             <TableContainer>
-              <div>
-                {buildPriceLevels(
-                  priceData?.marketPriceSummary[outcomeIndex].against,
-                  OrderType.ASKS
-                )}
-              </div>
+              {buildPriceLevels(
+                priceData?.marketPriceSummary[outcomeIndex].against,
+                OrderType.ASKS
+              )}
             </TableContainer>
             <Stack
               display={"flex"}
               direction={"row"}
-              borderWidth={"1px 0"}
               py={1}
               justifyContent={"center"}
               fontSize={"md"}
               spacing={6}
             >
-              <Text fontWeight={"medium"} color={"#98a6af"}>
+              <Text fontWeight={"normal"} color={"#616262"}>
                 Last Matched Price
               </Text>
               <Text color={"#118860"}>
                 $
-                {formatPrice(
-                  priceData?.marketOutcomesSummary[
-                    outcomeIndex === 0 ? "Yes" : "No"
-                  ].latestMatchedPrice
-                )}
+                {
+                  priceData?.marketOutcomesSummary[outcomeIndex]
+                    .latestMatchedPrice
+                }
               </Text>
             </Stack>
             <TableContainer>
-              <div>
-                {buildPriceLevels(
-                  priceData?.marketPriceSummary[outcomeIndex].for,
-                  OrderType.BIDS
-                )}
-              </div>
+              {buildPriceLevels(
+                priceData?.marketPriceSummary?.[outcomeIndex].for,
+                OrderType.BIDS
+              )}
             </TableContainer>
           </>
         ) : (

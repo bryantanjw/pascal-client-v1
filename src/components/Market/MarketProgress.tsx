@@ -10,18 +10,28 @@ function addDays(date, days) {
 }
 
 export const MarketProgress = ({ account }) => {
-  const { marketLockTimestamp, marketSettleTimestamp } = account;
-  const formattedLockTimestamp = new Date(parseInt(marketLockTimestamp, 16));
+  const { marketCreateTimestamp, marketLockTimestamp, marketSettleTimestamp } =
+    account;
+  const formattedLockTimestamp = new Date(
+    parseInt(marketLockTimestamp, 16) * 1000
+  );
 
   const steps = [
-    { label: "Market opened", description: "{market_opened_time}" },
+    {
+      label: "Market opened",
+      description: new Date(
+        parseInt(marketCreateTimestamp, 16) * 1000
+      ).toUTCString(),
+    },
     {
       label: "Finalizing",
       description: formattedLockTimestamp.toUTCString(),
     },
     {
-      label: "Closed",
-      description: formattedLockTimestamp.toUTCString(),
+      label: "Settled",
+      description: marketSettleTimestamp
+        ? new Date(parseInt(marketSettleTimestamp, 16) * 1000).toUTCString()
+        : "",
     },
   ];
 
