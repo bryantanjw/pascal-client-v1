@@ -13,6 +13,7 @@ import * as yup from "yup";
 import { MotionConfig } from "framer-motion";
 import { getMarket } from "@monaco-protocol/client";
 import { PublicKey, Keypair } from "@solana/web3.js";
+// @ts-ignore
 import {
   createMarket,
   openMarket,
