@@ -13,14 +13,13 @@ import * as yup from "yup";
 import { MotionConfig } from "framer-motion";
 import { getMarket } from "@monaco-protocol/client";
 import { PublicKey, Keypair } from "@solana/web3.js";
-// @ts-ignore
-import {
-  createMarket,
-  openMarket,
-  MarketType,
-  initialiseOutcomes,
-  batchAddPricesToAllOutcomePools,
-} from "@monaco-protocol/admin-client";
+// import {
+//   createMarket,
+//   openMarket,
+//   MarketType,
+//   initialiseOutcomes,
+//   batchAddPricesToAllOutcomePools,
+// } from "@monaco-protocol/admin-client";
 import { Form1, Form2, SubmittedForm, FormStepper } from "./StepForms";
 import { useProgram } from "@/context/ProgramProvider";
 import { getPriceData, logResponse, makeMarket } from "@/utils/monaco";
@@ -35,87 +34,85 @@ enum CreateStatus {
   Success = "Success",
 }
 
-async function createVerboseMarket(
-  program,
-  marketName,
-  lockTimestamp,
-  setCreateStatus
-) {
-  const mintToken = new PublicKey(
-    "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU" // <-- USDC devnet token address
-  );
-  // Generate a publicKey to represent the event
-  const eventAccountKeyPair = Keypair.generate();
-  const eventPk = eventAccountKeyPair.publicKey;
+// async function createVerboseMarket(
+//   program,
+//   marketName,
+//   lockTimestamp,
+//   setCreateStatus
+// ) {
+//   const mintToken = new PublicKey(
+//     "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU" // <-- USDC devnet token address
+//   );
+//   // Generate a publicKey to represent the event
+//   const eventAccountKeyPair = Keypair.generate();
+//   const eventPk = eventAccountKeyPair.publicKey;
 
-  const marketLock = Date.parse(lockTimestamp) / 1000; // <-- lockTimestamp in seconds
-  const type = MarketType.EventResultWinner;
-  const outcomes = ["Yes", "No"];
-  // Create a prob 1-100 price ladder
-  const priceLadder = Array.from({ length: 101 }, (_, i) => i);
-  const batchSize = 50;
+//   const marketLock = Date.parse(lockTimestamp) / 1000; // <-- lockTimestamp in seconds
+//   const type = MarketType.EventResultWinner;
+//   const outcomes = ["Yes", "No"];
+//   // Create a prob 1-100 price ladder
+//   const priceLadder = Array.from({ length: 101 }, (_, i) => i);
+//   const batchSize = 50;
 
-  console.log(`Creating market ⏱`);
-  const marketResponse = await createMarket(
-    program,
-    marketName,
-    type,
-    mintToken,
-    marketLock,
-    eventPk
-  );
-  // returns CreateMarketResponse: market account public key, creation transaction id, and market account
-  logResponse(marketResponse);
-  if (marketResponse.success) {
-    console.log(
-      `MarketAccount ${marketResponse.data.marketPk.toString()} created ✅`
-    );
-    console.log(`TransactionId: ${marketResponse.data.tnxId}`);
-    setCreateStatus(CreateStatus.InitialisingOutcomes);
-  } else {
-    console.log("Error creating market");
-    return;
-  }
+//   console.log(`Creating market ⏱`);
+//   const marketResponse = await createMarket(
+//     program,
+//     marketName,
+//     type,
+//     mintToken,
+//     marketLock,
+//     eventPk
+//   );
+//   // returns CreateMarketResponse: market account public key, creation transaction id, and market account
+//   logResponse(marketResponse);
+//   if (marketResponse.success) {
+//     console.log(
+//       `MarketAccount ${marketResponse.data.marketPk.toString()} created ✅`
+//     );
+//     console.log(`TransactionId: ${marketResponse.data.tnxId}`);
+//     setCreateStatus(CreateStatus.InitialisingOutcomes);
+//   } else {
+//     console.log("Error creating market");
+//     return;
+//   }
 
-  const marketPk = marketResponse.data.marketPk;
+//   const marketPk = marketResponse.data.marketPk;
 
-  console.log(`Initialising market outcomes ⏱`);
-  // @ts-ignore
-  const initialiseOutcomePoolsResponse = await initialiseOutcomes(
-    program,
-    marketPk,
-    outcomes
-  );
-  // returns OutcomeInitialisationsResponse: list of outcomes, their pdas, and transaction id
-  logResponse(initialiseOutcomePoolsResponse);
-  if (initialiseOutcomePoolsResponse.success) {
-    console.log(`Outcomes added to market ✅`);
-    setCreateStatus(CreateStatus.AddingPrices);
-  } else {
-    console.log("Error initialising outcomes");
-    return;
-  }
+//   console.log(`Initialising market outcomes ⏱`);
+//   const initialiseOutcomePoolsResponse = await initialiseOutcomes(
+//     program,
+//     marketPk,
+//     outcomes
+//   );
+//   // returns OutcomeInitialisationsResponse: list of outcomes, their pdas, and transaction id
+//   logResponse(initialiseOutcomePoolsResponse);
+//   if (initialiseOutcomePoolsResponse.success) {
+//     console.log(`Outcomes added to market ✅`);
+//     setCreateStatus(CreateStatus.AddingPrices);
+//   } else {
+//     console.log("Error initialising outcomes");
+//     return;
+//   }
 
-  console.log(`Adding prices to outcomes ⏱`);
-  // @ts-ignore
-  const addPriceLaddersResponse = await batchAddPricesToAllOutcomePools(
-    program,
-    marketPk,
-    priceLadder,
-    batchSize
-  );
-  // returns BatchAddPricesToOutcomeResponse: transaction id, and confirmation
-  logResponse(addPriceLaddersResponse);
-  if (addPriceLaddersResponse.success) {
-    console.log(`Prices added to outcomes ✅`);
-  } else {
-    console.log("Error adding prices to outcomes");
-    return;
-  }
+//   console.log(`Adding prices to outcomes ⏱`);
+//   const addPriceLaddersResponse = await batchAddPricesToAllOutcomePools(
+//     program,
+//     marketPk,
+//     priceLadder,
+//     batchSize
+//   );
+//   // returns BatchAddPricesToOutcomeResponse: transaction id, and confirmation
+//   logResponse(addPriceLaddersResponse);
+//   if (addPriceLaddersResponse.success) {
+//     console.log(`Prices added to outcomes ✅`);
+//   } else {
+//     console.log("Error adding prices to outcomes");
+//     return;
+//   }
 
-  console.log(`Market ${marketPk.toString()} creation complete ✨`);
-  return marketResponse.data.marketPk;
-}
+//   console.log(`Market ${marketPk.toString()} creation complete ✨`);
+//   return marketResponse.data.marketPk;
+// }
 
 export const CreateMarketModal = () => {
   const program = useProgram();
@@ -138,55 +135,55 @@ export const CreateMarketModal = () => {
       program,
     } = values;
 
-    try {
-      const marketPk = await createVerboseMarket(
-        program,
-        title,
-        lockTimestamp,
-        setCreateStatus
-      );
-      if (!marketPk) {
-        throw new Error("Error creating market");
-      }
-      // Set market status from 'initializing' to 'open'
-      setCreateStatus(CreateStatus.OpeningMarket);
-      await openMarket(program, marketPk);
-      // Get market creation timestamp
-      const marketCreateTimestamp = (new Date().getTime() / 1000).toString(16);
-      // Make market
-      setCreateStatus(CreateStatus.MakingMarket);
-      await makeMarket(program, marketPk);
-      // Get market account
-      const market = await getMarket(program, marketPk!);
-      const marketAccount = market.data;
-      // Get price data
-      const priceData = await getPriceData(program, marketPk);
+    // try {
+    //   const marketPk = await createVerboseMarket(
+    //     program,
+    //     title,
+    //     lockTimestamp,
+    //     setCreateStatus
+    //   );
+    //   if (!marketPk) {
+    //     throw new Error("Error creating market");
+    //   }
+    //   // Set market status from 'initializing' to 'open'
+    //   setCreateStatus(CreateStatus.OpeningMarket);
+    //   await openMarket(program, marketPk);
+    //   // Get market creation timestamp
+    //   const marketCreateTimestamp = (new Date().getTime() / 1000).toString(16);
+    //   // Make market
+    //   setCreateStatus(CreateStatus.MakingMarket);
+    //   await makeMarket(program, marketPk);
+    //   // Get market account
+    //   const market = await getMarket(program, marketPk!);
+    //   const marketAccount = market.data;
+    //   // Get price data
+    //   const priceData = await getPriceData(program, marketPk);
 
-      // Add accounts to database
-      const data = {
-        category,
-        description,
-        tag,
-        resolutionSource,
-        resolutionPrice,
-        marketCreateTimestamp,
-        marketAccount,
-        priceData,
-      };
-      const response = await fetch("../api/createMarket", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-      setIsSuccess(true);
-      setCreateStatus(CreateStatus.Success);
-      setMarketPk(marketPk);
-    } catch (error) {
-      setIsSuccess(false);
-      console.log("addMarket", error);
-    }
+    //   // Add accounts to database
+    //   const data = {
+    //     category,
+    //     description,
+    //     tag,
+    //     resolutionSource,
+    //     resolutionPrice,
+    //     marketCreateTimestamp,
+    //     marketAccount,
+    //     priceData,
+    //   };
+    //   const response = await fetch("../api/createMarket", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify(data),
+    //   });
+    //   setIsSuccess(true);
+    //   setCreateStatus(CreateStatus.Success);
+    //   setMarketPk(marketPk);
+    // } catch (error) {
+    //   setIsSuccess(false);
+    //   console.log("addMarket", error);
+    // }
   };
 
   const validationSchema = yup.object().shape({
