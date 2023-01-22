@@ -12,9 +12,10 @@ export default async function handler(
       const client = await clientPromise;
       const markets = client.db("pascal").collection("markets");
       // Extract the value of the publicKey field from each of the documents
-      const documents = await markets.find({}).toArray();
+      const documents = await markets
+        .find({ "marketStatus.open": { $exists: true } })
+        .toArray();
       const pubKeys = documents.map((doc) => doc.publicKey);
-      console.log(pubKeys);
 
       const program = getProgram();
       for (const pubKey of pubKeys) {
