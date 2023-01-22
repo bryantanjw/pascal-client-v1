@@ -41,6 +41,7 @@ export default async function handler(
             },
           }
         );
+        console.log("Updated market", pubKey);
       }
     } catch (err) {
       console.error("Cron job price data update error");
