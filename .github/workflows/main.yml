@@ -8,4 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Update Price Data
-        run: curl -X POST https://www.pascal.fi/api/updatePriceData
+      - run: |
+        export ANCHOR_WALLET=${{ secrets.ANCHOR_WALLET }}
+        export ANCHOR_PROVIDER_URL=https://api.devnet.solana.com
+        export PROTOCOL_TYPE=stable 
+        curl -X POST https://www.pascal.fi/api/updatePriceData
+      - run: echo "End updata-price-data"
