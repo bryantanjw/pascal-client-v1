@@ -15,7 +15,6 @@
     "jsx": "preserve",
     "isolatedModules": true,
     "incremental": true,
-    "allowSyntheticDefaultImports": true,
     "baseUrl": "src",
     "paths": {
       "@/*": ["./*"]
@@ -23,11 +22,5 @@
     "strictNullChecks": true
   },
   "exclude": ["node_modules", ".next", "out", "public/datafeeds"],
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.js",
-    "!src/components/CreateMarketModal.tsx"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.js"]
 }
