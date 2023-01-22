@@ -24,29 +24,6 @@ export const TableContainer = styled.div`
     background-color: transparent;
   }
 
-  background:
-    /* Shadow Cover TOP */ linear-gradient(
-        white 30%,
-        rgba(255, 255, 255, 0)
-      )
-      center top,
-    /* Shadow Cover BOTTOM */ linear-gradient(rgba(255, 255, 255, 0), white 70%)
-      center bottom,
-    /* Shadow TOP */
-      radial-gradient(
-        farthest-side at 50% 0,
-        rgba(0, 0, 0, 0.1),
-        rgba(0, 0, 0, 0)
-      )
-      center top,
-    /* Shadow BOTTOM */
-      radial-gradient(
-        farthest-side at 50% 100%,
-        rgba(0, 0, 0, 0.1),
-        rgba(0, 0, 0, 0)
-      )
-      center bottom;
-
   background-repeat: no-repeat;
   background-size: 100% 40px, 100% 40px, 100% 14px, 100% 14px;
   background-attachment: local, local, scroll, scroll;
@@ -63,11 +40,9 @@ interface PriceButtonContainerProps {
 export const TitleContainer = styled.div`
   display: flex;
   justify-content: space-around;
-  color: #616262;
   padding-top: 0.4em;
   padding-bottom: 0.4em;
   font-size: 0.8em;
-  background-color: #f3f5f6;
 
   span {
     min-width: 5rem;

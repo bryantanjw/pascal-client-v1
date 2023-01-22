@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   FormControl,
   FormLabel,
@@ -17,9 +18,16 @@ import {
   Box,
   Img,
   Badge,
+  Skeleton,
+  Icon,
+  TableContainer,
 } from "@chakra-ui/react";
+import { GetAccount, Order, Orders } from "@monaco-protocol/client";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { Select as ReactSelect, chakraComponents } from "chakra-react-select";
 import { BsSearch } from "react-icons/bs";
+import { useProgram } from "@/context/ProgramProvider";
+import { FaCircle } from "react-icons/fa";
 
 // Custom style config for ReactSelect
 // Documentation: https://github.com/csandman/chakra-react-select
@@ -37,12 +45,12 @@ const ReactSelectMenuItem = {
 const statusOptions = [
   {
     label: "ACTIVE",
-    value: "active",
+    value: "matched",
     colorScheme: "green",
   },
   {
-    label: "RESOLVING",
-    value: "resolving",
+    label: "PENDING",
+    value: "open",
     colorScheme: "orange",
   },
   {
@@ -82,48 +90,42 @@ export const Position = (props: MarketPositionProps) => {
 };
 
 export const badgeEnum: Record<string, string> = {
-  active: "green",
-  resolving: "orange",
+  matched: "green",
+  open: "orange",
   closed: "gray",
 };
 
-export const TableContent = ({ user }, error) => {
-  const columns = [
-    // TODO: Add category icon to Market column. why tf is it not working??
-    {
-      Header: "Market",
-      accessor: "market",
-      // Cell: function MarketCell(data: any) {
-      //     return <Position data={data} />
-      // },
-    },
-    {
-      Header: "Shares",
-      accessor: "shares",
-    },
-    {
-      Header: "Value",
-    },
-    {
-      Header: "Net return",
-      accessor: "unrealizedPnl",
-    },
-    {
-      Header: "Tokens",
-      accessor: "tokenBalance",
-    },
-    {
-      Header: "Status",
-      accessor: "status",
-      Cell: function StatusCell(data: any) {
-        return (
-          <Badge variant={"subtle"} fontSize="xs" colorScheme={badgeEnum[data]}>
-            {data}
-          </Badge>
-        );
-      },
-    },
-  ];
+const TableContent = ({ user }, error) => {
+  const program = useProgram();
+  const { publicKey } = useWallet();
+  const [positions, setPositions] = useState<GetAccount<Order>[]>();
+
+  useEffect(() => {
+    if (publicKey) {
+      const fetchUserPositions = async () => {
+        try {
+          const response = await Orders.orderQuery(program)
+            .filterByPurchaser(publicKey)
+            // .filterByStatus(status)
+            .fetch();
+          const sortedData = response.data.orderAccounts
+            .filter((d) => d.account.forOutcome === true)
+            .sort((a, b) => {
+              return (
+                parseInt(b.account.creationTimestamp.toString(16), 16) * 1000 -
+                parseInt(a.account.creationTimestamp.toString(16), 16) * 1000
+              );
+            });
+          setPositions(sortedData);
+        } catch (error) {
+          console.log("fetchUserPositions error: ", error);
+        }
+      };
+      fetchUserPositions();
+    }
+  }, [program]);
+
+  if (positions) console.log("positions: ", positions);
 
   return (
     <Box
@@ -134,43 +136,89 @@ export const TableContent = ({ user }, error) => {
       borderWidth="1px"
       overflowX={"auto"}
     >
-      <Table fontSize="sm">
-        <Thead bg={mode("gray.50", "gray.800")}>
-          <Tr>
-            {columns.map((column, index) => (
-              <Th whiteSpace="nowrap" scope="col" key={index}>
-                {column.Header}
-              </Th>
-            ))}
-          </Tr>
-        </Thead>
-        <Tbody>
-          {user &&
-            user.positions.map((row, index) => (
-              <Tr key={index}>
-                {columns.map((column, index) => {
-                  const cell = row[column.accessor as keyof typeof row];
-                  const element = column.Cell?.(cell) ?? cell;
-                  return (
-                    <Td whiteSpace="nowrap" key={index}>
-                      {element}
+      <TableContainer>
+        <Table alignContent={"start"}>
+          <Thead bg={mode("gray.50", "gray.800")}>
+            <Tr>
+              <Th></Th>
+              <Th pl={0}>Market</Th>
+              <Th>Stake</Th>
+              <Th>Status</Th>
+              <Th>Timestamp</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {positions ? (
+              positions.map((pos, index) => (
+                <Tr key={index}>
+                  <Td>
+                    <HStack>
+                      <Icon
+                        as={FaCircle}
+                        boxSize={2}
+                        opacity={0.5}
+                        color={
+                          pos.account.marketOutcomeIndex === 0
+                            ? "purple.500"
+                            : "teal.500"
+                        }
+                      />
+                      <Text fontSize={"sm"} fontWeight={"medium"}>
+                        {pos.account.marketOutcomeIndex === 0 ? "Yes" : "No"}
+                      </Text>
+                    </HStack>
+                  </Td>
+                  <Td pl={0}>
+                    <Text>
+                      {pos.account.market.toBase58().substring(0, 20)}...
+                    </Text>
+                  </Td>
+                  <Td>
+                    {parseInt(pos.account.stake.toString(16), 16) / 10 ** 6}
+                  </Td>
+                  <Td>
+                    <Badge
+                      variant={"subtle"}
+                      fontSize="xs"
+                      colorScheme={
+                        badgeEnum[Object.keys(pos.account.orderStatus)[0]]
+                      }
+                    >
+                      {Object.keys(pos.account.orderStatus)[0]}
+                    </Badge>
+                  </Td>
+                  <Td>
+                    {new Date(
+                      parseInt(pos.account.creationTimestamp.toString(16), 16) *
+                        1000
+                    ).toUTCString()}
+                  </Td>
+                </Tr>
+              ))
+            ) : (
+              <Tr>
+                {Array(5)
+                  .fill(0)
+                  .map((_, i) => (
+                    <Td key={i}>
+                      <Skeleton height="20px" />
                     </Td>
-                  );
-                })}
+                  ))}
               </Tr>
-            ))}
-        </Tbody>
-      </Table>
-      {!user && (
-        <Text color={mode("gray.600", "gray.700")} p={6} textAlign={"center"}>
-          No positions found
-        </Text>
-      )}
+            )}
+          </Tbody>
+        </Table>
+        {positions?.length === 0 && (
+          <Text color={mode("gray.600", "gray.700")} p={6} textAlign={"center"}>
+            No positions found
+          </Text>
+        )}
+      </TableContainer>
     </Box>
   );
 };
 
-export const TableActions = () => {
+const TableActions = () => {
   return (
     <Stack spacing="4" mt={8}>
       <HStack>
@@ -206,7 +254,7 @@ export const TableActions = () => {
   );
 };
 
-export const PositionsTable = ({ user }) => {
+const PositionsTable = ({ user }) => {
   return (
     <>
       <TableActions />
@@ -214,3 +262,5 @@ export const PositionsTable = ({ user }) => {
     </>
   );
 };
+
+export default PositionsTable;

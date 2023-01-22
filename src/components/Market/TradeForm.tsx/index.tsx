@@ -488,9 +488,9 @@ export const TradeForm = ({ market }) => {
             <Tab ml={3} sx={tabListStyle}>
               Pool
             </Tab>
-            <Tab ml={3} sx={tabListStyle}>
+            {/* <Tab ml={3} sx={tabListStyle}>
               Airdrop
-            </Tab>
+            </Tab> */}
           </TabList>
 
           <TabPanels>

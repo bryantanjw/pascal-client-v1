@@ -1,11 +1,13 @@
 import React, { FunctionComponent, useContext } from "react";
 import {
+  Box,
   Divider,
   Flex,
   Heading,
   Skeleton,
   Stack,
   Text,
+  useColorMode,
   useColorModeValue as mode,
 } from "@chakra-ui/react";
 import { useSelector } from "@/store/store";
@@ -43,6 +45,7 @@ interface OrderBookProps {
 export const OrderBook: FunctionComponent<OrderBookProps> = ({
   outcomeIndex,
 }) => {
+  const { colorMode } = useColorMode();
   const priceData = useContext(PriceDataContext);
   const bids: number[][] = useSelector(selectBids);
   const asks: number[][] = useSelector(selectAsks);
@@ -90,6 +93,13 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
     });
   };
 
+  const tableContainerStyle = {
+    background:
+      colorMode === "light"
+        ? "linear-gradient(white 30%, rgba(255, 255, 255, 0)) center top, linear-gradient(rgba(255, 255, 255, 0), white 70%) center bottom, radial-gradient( farthest-side at 50% 0, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0)) center top, radial-gradient( farthest-side at 50% 100%, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0)) center bottom"
+        : "linear-gradient(rgba(32, 34, 46, 0.2) 30%, rgba(255, 255, 255, 0)) center top, linear-gradient(rgba(255, 255, 255, 0), rgba(32, 34, 46, 0.2) 70%) center bottom, radial-gradient( farthest-side at 50% 0, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0)) center top, radial-gradient( farthest-side at 50% 100%, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0)) center bottom",
+  };
+
   return (
     <ResizablePanel>
       {/* <GroupingSelectBox options={groupingOptions[outcomeIndex]} /> */}
@@ -110,23 +120,33 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
           justifyContent={"space-between"}
           alignItems={"center"}
         >
-          <Heading fontSize={"md"} fontWeight={"semibold"} color={"gray.700"}>
+          <Heading
+            fontSize={"md"}
+            fontWeight={"semibold"}
+            color={mode("gray.700", "gray.200")}
+          >
             Order Book
           </Heading>
-          <Heading fontSize={"md"} color={"gray.700"}>
+          <Heading fontSize={"md"} color={mode("gray.700", "gray.200")}>
             {outcomeTickers[outcomeIndex]}
           </Heading>
         </Flex>
         <Divider borderColor={"#E2E8F0"} />
         {priceData ? (
           <>
-            <TitleRow reversedFieldsOrder={false} />
-            <TableContainer>
+            <Box
+              as={TitleRow}
+              reversedFieldsOrder={false}
+              bgColor={mode("#F8F9FA", "gray.700")}
+              borderColor={mode("#F8F9FA", "gray.600")}
+              textColor={mode("#616262", "gray.200")}
+            />
+            <Box as={TableContainer} sx={tableContainerStyle}>
               {buildPriceLevels(
                 priceData?.marketPriceSummary[outcomeIndex].against,
                 OrderType.ASKS
               )}
-            </TableContainer>
+            </Box>
             <Stack
               display={"flex"}
               direction={"row"}
@@ -134,8 +154,11 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
               justifyContent={"center"}
               fontSize={"md"}
               spacing={6}
+              borderWidth={"1px 0 1px 0"}
+              borderColor={mode("#F8F9FA", "rgb(255,255,255,0.1)")}
+              bgColor={mode("#F8F9FA", "transparent")}
             >
-              <Text fontWeight={"normal"} color={"#616262"}>
+              <Text fontWeight={"normal"} color={mode("#616262", "gray.200")}>
                 Last Matched Price
               </Text>
               <Text color={"#118860"}>
@@ -146,12 +169,12 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
                 }
               </Text>
             </Stack>
-            <TableContainer>
+            <Box as={TableContainer} sx={tableContainerStyle}>
               {buildPriceLevels(
                 priceData?.marketPriceSummary?.[outcomeIndex].for,
                 OrderType.BIDS
               )}
-            </TableContainer>
+            </Box>
           </>
         ) : (
           <Stack p={5}>

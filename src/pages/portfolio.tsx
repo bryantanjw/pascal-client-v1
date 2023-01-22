@@ -18,7 +18,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import WithSubnavigation from "components/TopBar";
 import { Stats } from "components/Portfolio/Stat";
-import { PositionsTable } from "components/Portfolio/PositionsTable";
+import PositionsTable from "components/Portfolio/PositionsTable";
 import { ReturnsGraph } from "components/Portfolio/ReturnsGraph";
 import ActivityTable from "components/Portfolio/ActivityTable";
 import Layout from "components/Layout";
@@ -68,31 +68,35 @@ const Portfolio = () => {
       <WithSubnavigation />
 
       <Layout>
-        <Box as="section" py="12" blur={"15px"}>
-          <Box maxW={{ base: "3xl", lg: "5xl" }} mx="auto">
-            <Box overflowX="auto">
-              <Heading size="xl" mb="8">
-                Your Portfolio_ &nbsp; 👋🏼
-              </Heading>
+        <Box
+          as="section"
+          py="12"
+          blur={"15px"}
+          maxW={{ base: "3xl", lg: "5xl" }}
+          mx="auto"
+        >
+          <Heading size="xl" mb="8">
+            Your Portfolio_ &nbsp; 👋🏼
+          </Heading>
 
-              {!publicKey && (
-                <Center py={12} flexDirection={"column"}>
-                  <Text py={4} fontSize={"lg"}>
-                    Connect your wallet to view your portfolio
-                  </Text>
-                  <WalletMultiButton
-                    // eslint-disable-next-line react-hooks/rules-of-hooks
-                    className={mode(
-                      styles.wallet_adapter_button_trigger_light_mode,
-                      styles.wallet_adapter_button_trigger_dark_mode
-                    )}
-                  />
-                </Center>
-              )}
+          {!publicKey && (
+            <Center py={12} flexDirection={"column"}>
+              <Text py={4} fontSize={"lg"}>
+                Connect your wallet to view your portfolio
+              </Text>
+              <WalletMultiButton
+                // eslint-disable-next-line react-hooks/rules-of-hooks
+                className={mode(
+                  styles.wallet_adapter_button_trigger_light_mode,
+                  styles.wallet_adapter_button_trigger_dark_mode
+                )}
+              />
+            </Center>
+          )}
 
-              {publicKey && (
-                <>
-                  <Grid
+          {publicKey && (
+            <>
+              {/* <Grid
                     templateRows="repeat(4)"
                     templateColumns={{
                       base: "repeat(1, 1fr)",
@@ -122,7 +126,6 @@ const Portfolio = () => {
                         <TabPanels>
                           <TabPanel key={1} px={0}>
                             <ReturnsGraph user={data} />
-                            <PositionsTable user={data} />
                           </TabPanel>
 
                           <TabPanel key={2} px={0}>
@@ -131,11 +134,10 @@ const Portfolio = () => {
                         </TabPanels>
                       </Tabs>
                     </GridItem>
-                  </Grid>
-                </>
-              )}
-            </Box>
-          </Box>
+                  </Grid> */}
+              <PositionsTable user={data} />
+            </>
+          )}
         </Box>
       </Layout>
     </div>

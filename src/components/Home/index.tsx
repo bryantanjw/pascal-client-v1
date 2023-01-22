@@ -48,7 +48,7 @@ const MarketList = ({ markets }) => {
   }
 
   return (
-    <Box pt={3}>
+    <Box pt={1}>
       <HStack py={5}>
         {categories.map((category, index) => (
           <Stack key={index}>

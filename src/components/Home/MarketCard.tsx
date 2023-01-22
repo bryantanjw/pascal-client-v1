@@ -87,6 +87,9 @@ const MarketCard = ({ market }) => {
               <Text color={"purple.500"}>
                 Yes ${prices[0].against[prices[0].against.length - 1]?.price}
               </Text>
+              <Text color={"teal.500"}>
+                No ${prices[1].against[prices[1].against.length - 1]?.price}
+              </Text>
             </Stack>
           </Flex>
 

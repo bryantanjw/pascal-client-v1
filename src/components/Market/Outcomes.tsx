@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
 import {
   Progress,
@@ -22,9 +22,8 @@ import { BN } from "@project-serum/anchor";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { OrderBook } from "./Orderbook";
 import { PublicKey } from "@solana/web3.js";
-import { getPriceData } from "@/utils/monaco";
 import { useProgram } from "@/context/ProgramProvider";
-import { PriceDataContext } from ".";
+import { getMarketPosition, MarketPosition } from "@monaco-protocol/client";
 
 const fetcher = async (url) => {
   const res = await fetch(url);
@@ -50,19 +49,19 @@ interface CheckboxProps extends UseCheckboxProps {
     matchedTotal: BN;
   };
   marketBuyPrice: number;
+  userPosition: any;
 }
 
 const CheckboxOption = (props: CheckboxProps) => {
   const { publicKey } = useWallet();
-
-  const { outcome, marketBuyPrice, ...radioProps } = props;
+  const { outcome, marketBuyPrice, userPosition, ...radioProps } = props;
   const { state, getCheckboxProps, getInputProps, htmlProps } =
     useCheckbox(radioProps);
 
-  const { data } = useSWR(
-    publicKey ? `../api/user?publicKey=${publicKey?.toString()}` : null,
-    fetcher
-  );
+  // const { data } = useSWR(
+  //   publicKey ? `../api/user?publicKey=${publicKey?.toString()}` : null,
+  //   fetcher
+  // );
 
   const progressBarColorScheme = ["purple", "teal", "pink"];
   const checkoxColorScheme = ["purple", "teal", "pink"];
@@ -125,7 +124,11 @@ const CheckboxOption = (props: CheckboxProps) => {
             <Text>{marketBuyPrice}</Text>
             <Spacer />
             <Stack>
-              {!publicKey && <Text>0.00</Text>}
+              <Text>
+                {userPosition && publicKey
+                  ? Math.abs(parseInt(userPosition.toString(16), 16)) / 1000000
+                  : 0.0}
+              </Text>
               {/* {data &&
                 data.positions.map((position, index) => {
                   let found = false;
@@ -163,7 +166,28 @@ const CheckboxOption = (props: CheckboxProps) => {
 };
 
 const Outcomes = ({ market }) => {
+  const program = useProgram();
+  const { publicKey } = useWallet();
   const { outcomes, prices } = market;
+  const [marketPosition, setMarketPosition] = useState<MarketPosition>();
+
+  useEffect(() => {
+    if (publicKey) {
+      const fetchUserMarketPositions = async () => {
+        try {
+          const res = await getMarketPosition(
+            program,
+            new PublicKey(market.publicKey),
+            publicKey
+          );
+          setMarketPosition(res.data);
+        } catch (error) {
+          console.log("fetchUserMarketPositions error: ", error);
+        }
+      };
+      fetchUserMarketPositions();
+    }
+  }, [program]);
 
   return (
     <VStack
@@ -181,8 +205,8 @@ const Outcomes = ({ market }) => {
         justifyContent={"space-between"}
       >
         <Text>OUTCOME / PROBABILITY</Text>
-        <Text pl={{ md: 8 }}>PRICE (USDC)</Text>
-        <Text pr={{ md: 10 }}>YOUR POSITION</Text>
+        <Text pl={{ md: 16 }}>PRICE (USDC)</Text>
+        <Text pr={{ md: 7 }}>YOUR POSITION</Text>
       </Flex>
       <Stack width={"full"} spacing={3}>
         {outcomes?.map((outcome, index: number) => {
@@ -202,6 +226,7 @@ const Outcomes = ({ market }) => {
                 marketBuyPrice={
                   prices[index].against[prices[index].against.length - 1]?.price // <-- lowest sell price
                 }
+                userPosition={marketPosition?.marketOutcomeSums[index]}
                 {...getCheckboxProps({
                   value: index.toString(), // <-- getCheckboxProps value only accepts String
                 })}
