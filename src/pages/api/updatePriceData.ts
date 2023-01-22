@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import clientPromise from "@/lib/mongodb";
 import { getPriceData, getProgram, logResponse } from "@/utils/monaco";
+import { PublicKey } from "@solana/web3.js";
 
 // Run job every 10 minutes
 export default async function handler(
@@ -19,9 +20,9 @@ export default async function handler(
       console.log("Updating price data for markets", pubKeys);
 
       const program = await getProgram();
-      console.log("program", program);
+
       for (const pubKey of pubKeys) {
-        const priceData = await getPriceData(program, pubKey);
+        const priceData = await getPriceData(program, new PublicKey(pubKey));
         const {
           marketPriceSummary,
           marketOutcomesSummary,
@@ -30,7 +31,7 @@ export default async function handler(
           totalUnmatchedOrders,
         } = priceData;
 
-        await markets.updateOne(
+        const market = await markets.updateOne(
           { publicKey: pubKey },
           {
             $set: {
@@ -45,12 +46,14 @@ export default async function handler(
         );
         console.log("Updated market", pubKey);
       }
+      res
+        .status(200)
+        .json({ statusCode: 200, message: "updatePriceData succeeded" });
     } catch (err) {
       console.error("Cron job price data update error");
       res.status(500).json({ statusCode: 500, message: err.message });
     }
   } else {
-    res.setHeader("Allow", "POST");
     res.status(405).end("Method Not Allowed");
   }
 }
