@@ -1,4 +1,4 @@
-import { PublicKey } from "@solana/web3.js";
+import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import {
   getMarketPrices,
   getMintInfo,
@@ -222,7 +222,22 @@ function logJson(json: object) {
 }
 
 export async function getProgram() {
-  const provider = AnchorProvider.env();
+  const secret = JSON.parse(
+    process.env.NEXT_PUBLIC_USER_PRIVATE_KEY as string
+  ) as number[];
+  const secretKey = Uint8Array.from(secret);
+  const keypairFromSecretKey = Keypair.fromSecretKey(secretKey);
+  const connection = new Connection(
+    "https://api.devnet.solana.com",
+    "confirmed"
+  );
+  const wallet = {
+    publicKey: keypairFromSecretKey.publicKey,
+    signTransaction: () => Promise.reject(),
+    signAllTransactions: () => Promise.reject(),
+  };
+  const provider = new AnchorProvider(connection, wallet, {});
+  console.log("provider", provider);
   setProvider(provider);
   const protocol = process.env.PROTOCOL_TYPE;
 
