@@ -18,7 +18,7 @@ export default async function handler(
       const pubKeys = documents.map((doc) => doc.publicKey);
       console.log("Updating price data for markets", pubKeys);
 
-      const program = getProgram();
+      const program = await getProgram();
       console.log("program", program);
       for (const pubKey of pubKeys) {
         const priceData = await getPriceData(program, pubKey);
