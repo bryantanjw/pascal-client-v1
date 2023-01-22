@@ -1,11 +1,11 @@
 name: Scheduled Tasks
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: "*/5 * * * *"
 
 jobs:
   update-price-data:
     runs-on: ubuntu-latest
     steps:
-    - name: Update Price Data
-      run: curl -X POST https://pascal.fi/api/updatePriceData
+      - name: Update Price Data
+        run: curl -X POST https://www.pascal.fi/api/updatePriceData
