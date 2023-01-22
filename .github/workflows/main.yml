@@ -1,0 +1,16 @@
+name: Scheduled Tasks
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+
+jobs:
+  update-price-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update Price Data
+        run: |  
+          export ANCHOR_WALLET=${{ secrets.ANCHOR_WALLET }}
+          export ANCHOR_PROVIDER_URL=https://api.devnet.solana.com
+          export PROTOCOL_TYPE=stable
+          curl -X POST https://www.pascal.fi/api/updatePriceData
+          echo "End updata-price-data"
