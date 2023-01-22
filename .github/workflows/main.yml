@@ -13,4 +13,4 @@ jobs:
           export ANCHOR_PROVIDER_URL=https://api.devnet.solana.com
           export PROTOCOL_TYPE=stable
           curl -X POST https://www.pascal.fi/api/updatePriceData
-      - run: echo "End updata-price-data"
+          echo "End updata-price-data"
