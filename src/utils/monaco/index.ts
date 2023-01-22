@@ -222,8 +222,6 @@ function logJson(json: object) {
 }
 
 export async function getProgram() {
-  console.log("AnchorProvider", AnchorProvider);
-  console.log("AnchorProvider.env()", AnchorProvider.env());
   const provider = AnchorProvider.env();
   setProvider(provider);
   const protocol = process.env.PROTOCOL_TYPE;
