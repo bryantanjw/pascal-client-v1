@@ -227,38 +227,22 @@ export async function getProgram() {
   ) as number[];
   const secretKey = Uint8Array.from(secret);
   const keypairFromSecretKey = Keypair.fromSecretKey(secretKey);
-  const connection = new Connection(
-    "https://api.devnet.solana.com",
-    "confirmed"
-  );
   const wallet = {
     publicKey: keypairFromSecretKey.publicKey,
     signTransaction: () => Promise.reject(),
     signAllTransactions: () => Promise.reject(),
   };
+  const connection = new Connection(
+    "https://api.devnet.solana.com",
+    "confirmed"
+  );
   const provider = new AnchorProvider(connection, wallet, {});
-  console.log("provider", provider);
   setProvider(provider);
-  const protocol = process.env.PROTOCOL_TYPE;
-
-  let protocolAddress: PublicKey;
-  switch (protocol) {
-    case "stable":
-      protocolAddress = new PublicKey(ProtocolAddresses.DEVNET_STABLE);
-      break;
-    case "release":
-      protocolAddress = new PublicKey(ProtocolAddresses.RELEASE);
-      break;
-    default:
-      console.log(
-        "⚠️  PROTOCOL_TYPE env variable not set ⚠️\n\nSet with:\n\nexport PROTOCOL_TYPE=stable\nexport PROTOCOL_TYPE=release"
-      );
-      process.exit(1);
-  }
+  const protocolAddress = new PublicKey(ProtocolAddresses.DEVNET_STABLE);
 
   const program = await Program.at(protocolAddress, provider);
 
-  console.log(`Protocol type: ${protocol}`);
+  console.log(`Protocol type: stable`);
   console.log(`RPC node: ${program.provider.connection.rpcEndpoint}`);
   console.log(`Wallet PublicKey: ${program.provider.publicKey}`);
 
