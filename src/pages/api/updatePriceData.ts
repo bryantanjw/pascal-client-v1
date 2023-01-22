@@ -16,8 +16,10 @@ export default async function handler(
         .find({ "marketStatus.open": { $exists: true } })
         .toArray();
       const pubKeys = documents.map((doc) => doc.publicKey);
+      console.log("Updating price data for markets", pubKeys);
 
       const program = getProgram();
+      console.log("program", program);
       for (const pubKey of pubKeys) {
         const priceData = await getPriceData(program, pubKey);
         const {

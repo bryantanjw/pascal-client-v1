@@ -1,4 +1,4 @@
-import { Connection, Keypair, PublicKey } from "@solana/web3.js";
+import { clusterApiUrl, Connection, Keypair, PublicKey } from "@solana/web3.js";
 import {
   getMarketPrices,
   getMintInfo,
@@ -232,10 +232,7 @@ export async function getProgram() {
     signTransaction: () => Promise.reject(),
     signAllTransactions: () => Promise.reject(),
   };
-  const connection = new Connection(
-    "https://api.devnet.solana.com",
-    "confirmed"
-  );
+  const connection = new Connection(clusterApiUrl("devnet"));
   const provider = new AnchorProvider(connection, wallet, {});
   setProvider(provider);
   const protocolAddress = new PublicKey(ProtocolAddresses.DEVNET_STABLE);
