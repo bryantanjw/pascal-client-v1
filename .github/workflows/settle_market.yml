@@ -1,0 +1,13 @@
+name: Check and/or Settle Market
+on:
+  schedule:
+    - cron: "59 23 * * *"
+
+jobs:
+  update-price-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check and/or Settle Market
+        run: |
+          curl -X POST https://www.pascal.fi/api/settleMarket
+          echo "End settleMarket job"
