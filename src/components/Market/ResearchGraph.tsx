@@ -53,9 +53,9 @@ const ResearchGraph = ({ market }) => {
 };
 
 const FinancialsChart = ({ market }) => {
-  const { tag } = market;
+  const { ticker } = market;
   const { data, error } = useSWR(
-    `/api/research/fetchFinancialData?ticker=${tag}`,
+    `/api/research/fetchFinancialData?ticker=${ticker}`,
     fetcher
   );
 
@@ -106,7 +106,7 @@ const FinancialsChart = ({ market }) => {
         <>
           <Stack>
             <Heading fontSize={"xl"} fontWeight={"extrabold"}>
-              {tag.toUpperCase()}
+              {ticker.toUpperCase()}
             </Heading>
             <HStack spacing={3}>
               <Text fontSize={"md"} fontWeight={"bold"}>
@@ -176,9 +176,9 @@ const FinancialsChart = ({ market }) => {
 };
 
 const CoinChart = ({ market }) => {
-  const { tag } = market;
+  const { ticker } = market;
   const { data, error } = useSWR(
-    `https://api.coingecko.com/api/v3/coins/${tag}/market_chart?vs_currency=usd&days=6`,
+    `https://api.coingecko.com/api/v3/coins/${ticker}/market_chart?vs_currency=usd&days=6`,
     fetcher
   );
 
@@ -227,7 +227,7 @@ const CoinChart = ({ market }) => {
         <>
           <Stack>
             <Heading fontSize={"xl"} fontWeight={"extrabold"}>
-              {tag.toUpperCase()}
+              {ticker.toUpperCase()}
             </Heading>
             <HStack spacing={3}>
               <Text fontSize={"md"} fontWeight={"bold"}>
@@ -297,11 +297,11 @@ const CoinChart = ({ market }) => {
 };
 
 const EconomicsChart = ({ market }) => {
-  const { tag } = market;
+  const { ticker } = market;
   const thisYear = new Date().getFullYear();
 
   const { data, error } = useSWR(
-    `/api/research/fetchEconomicData?ticker=${tag}&year=${thisYear}`,
+    `/api/research/fetchEconomicData?ticker=${ticker}&year=${thisYear}`,
     fetcher
   );
 
@@ -415,18 +415,13 @@ const EconomicsChart = ({ market }) => {
   };
 
   return (
-    <Stack spacing={5} width={{ base: "87%", md: "full" }} mb={4}>
+    <Stack mt={2} spacing={5} width={{ base: "87%", md: "full" }} mb={4}>
       {data && (
         <>
           <Stack>
-            <Heading fontSize={"xl"} fontWeight={"extrabold"}>
-              {tag}
+            <Heading fontSize={"lg"} fontWeight={"extrabold"}>
+              CPI - Year over year change
             </Heading>
-            <HStack spacing={3}>
-              <Text fontSize={"md"} fontWeight={"bold"}>
-                CPI - Year over year change
-              </Text>
-            </HStack>
           </Stack>
 
           <ResponsiveContainer width="100%" aspect={2}>
