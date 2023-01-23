@@ -16,7 +16,7 @@ export const Stat = (props: Props) => {
       width={"full"}
       {...boxProps}
     >
-      <Text mb={-1} fontSize="md" color="muted">
+      <Text mb={1} fontSize="md" color="muted">
         {label}
       </Text>
       <Text fontWeight={"semibold"} size={{ base: "sm", md: "md" }}>

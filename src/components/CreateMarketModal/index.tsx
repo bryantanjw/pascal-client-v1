@@ -158,11 +158,11 @@ export const CreateMarketModal = () => {
     //   // setCreateStatus(CreateStatus.MakingMarket);
     //   // await makeMarket(program, marketPk);
 
+    //   // Get price data
+    //   const priceData = await getPriceData(program, marketPk);
     //   // Get market account
     //   const market = await getMarket(program, marketPk!);
     //   const marketAccount = market.data;
-    //   // Get price data
-    //   const priceData = await getPriceData(program, marketPk);
 
     //   // Add accounts to database
     //   const data = {

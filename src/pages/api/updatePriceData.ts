@@ -31,7 +31,7 @@ export default async function handler(
           totalUnmatchedOrders,
         } = priceData;
 
-        const market = await markets.updateOne(
+        await markets.updateOne(
           { publicKey: pubKey },
           {
             $set: {

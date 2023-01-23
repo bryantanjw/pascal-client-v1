@@ -19,6 +19,7 @@ import {
   Image,
   IconButton,
 } from "@chakra-ui/react";
+import { PublicKey } from "@solana/web3.js";
 import ChakraNextLink from "../ChakraNextLink";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import MarketProgress from "./MarketProgress";
@@ -30,10 +31,9 @@ import MarketResolution from "./MarketResolution";
 import Outcomes from "./Outcomes";
 import Layout from "../Layout";
 import { useProgram } from "@/context/ProgramProvider";
+import { getPriceData } from "@/utils/monaco";
 
 import styles from "@/styles/Home.module.css";
-import { getPriceData } from "@/utils/monaco";
-import { PublicKey } from "@solana/web3.js";
 
 // Dynamically load ResearchGraph component on client side
 const ResearchGraph = dynamic(import("./ResearchGraph"), {
@@ -87,7 +87,7 @@ const Market = ({ market }) => {
       label: "Closing Date - UTC",
       value: new Date(
         parseInt(market.marketLockTimestamp, 16) * 1000
-      ).toLocaleString(),
+      ).toUTCString(),
     },
   ];
 
@@ -221,11 +221,11 @@ const Market = ({ market }) => {
                                 Statistics
                               </Heading>
                             </HStack>
-                            <SimpleGrid columns={{ base: 2, md: 3 }}>
+                            <Stack direction={"row"}>
                               {stats.map(({ label, value }) => (
                                 <Stat key={label} label={label} value={value} />
                               ))}
-                            </SimpleGrid>
+                            </Stack>
                           </Stack>
 
                           <Divider borderColor={dividerColor} />
