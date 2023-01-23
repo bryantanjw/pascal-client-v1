@@ -10,4 +10,4 @@ jobs:
       - name: Update Price Data
         run: |
           curl -X POST https://www.pascal.fi/api/updatePriceData
-          echo "End updata-price-data"
+          echo "End updatePriceData job"
