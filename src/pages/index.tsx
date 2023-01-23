@@ -77,7 +77,7 @@ const Home: NextPage = ({
                 color={mode("gray.500", "gray.200")}
                 fontSize={{ base: "xl", md: "2xl" }}
               >
-                A commodity derivative powered by automated market makers.
+                An on-chain commodity derivative of real-world events
               </Text>
 
               <MarketList markets={markets} />
