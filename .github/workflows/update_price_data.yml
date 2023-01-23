@@ -1,4 +1,4 @@
-name: Scheduled Tasks
+name: Update Price Data
 on:
   schedule:
     - cron: "*/5 * * * *"
