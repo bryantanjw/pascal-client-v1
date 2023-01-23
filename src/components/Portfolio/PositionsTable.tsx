@@ -21,8 +21,10 @@ import {
   Skeleton,
   Icon,
   TableContainer,
+  Tooltip,
+  Link,
 } from "@chakra-ui/react";
-import { GetAccount, Order, Orders } from "@monaco-protocol/client";
+import { GetAccount, getMarket, Order, Orders } from "@monaco-protocol/client";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { Select as ReactSelect, chakraComponents } from "chakra-react-select";
 import { BsSearch } from "react-icons/bs";
@@ -98,17 +100,16 @@ export const badgeEnum: Record<string, string> = {
 const TableContent = ({ user }, error) => {
   const program = useProgram();
   const { publicKey } = useWallet();
-  const [positions, setPositions] = useState<GetAccount<Order>[]>();
+  const [positions, setPositions] = useState<any>();
 
   useEffect(() => {
     if (publicKey) {
       const fetchUserPositions = async () => {
         try {
-          const response = await Orders.orderQuery(program)
+          const orderResponse = await Orders.orderQuery(program)
             .filterByPurchaser(publicKey)
-            // .filterByStatus(status)
             .fetch();
-          const sortedData = response.data.orderAccounts
+          const filteredData = orderResponse.data.orderAccounts
             .filter((d) => d.account.forOutcome === true)
             .sort((a, b) => {
               return (
@@ -116,7 +117,17 @@ const TableContent = ({ user }, error) => {
                 parseInt(a.account.creationTimestamp.toString(16), 16) * 1000
               );
             });
-          setPositions(sortedData);
+          const withTitle = await Promise.all(
+            filteredData.map(async (d) => {
+              const market = await getMarket(program, d.account.market);
+              console.log("market: ", market);
+              return {
+                ...d,
+                marketTitle: market.data.account.title,
+              };
+            })
+          );
+          setPositions(withTitle);
         } catch (error) {
           console.log("fetchUserPositions error: ", error);
         }
@@ -124,8 +135,6 @@ const TableContent = ({ user }, error) => {
       fetchUserPositions();
     }
   }, [program]);
-
-  if (positions) console.log("positions: ", positions);
 
   return (
     <Box
@@ -169,9 +178,11 @@ const TableContent = ({ user }, error) => {
                     </HStack>
                   </Td>
                   <Td pl={0}>
-                    <Text>
-                      {pos.account.market.toBase58().substring(0, 20)}...
-                    </Text>
+                    <Link href={`/market/${pos.account.market}`}>
+                      <Tooltip p={2} label={pos.marketTitle}>
+                        <Text>{pos.marketTitle.substring(0, 28)}...</Text>
+                      </Tooltip>
+                    </Link>
                   </Td>
                   <Td>
                     {parseInt(pos.account.stake.toString(16), 16) / 10 ** 6}

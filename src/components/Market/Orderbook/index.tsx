@@ -131,7 +131,7 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
             {outcomeTickers[outcomeIndex]}
           </Heading>
         </Flex>
-        <Divider borderColor={"#E2E8F0"} />
+        <Divider borderColor={mode("#E2E8F0", "rgb(255,255,255,0.1)")} />
         {priceData ? (
           <>
             <Box
