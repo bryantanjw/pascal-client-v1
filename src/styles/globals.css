@@ -18,7 +18,3 @@ a {
 /* *:focus {
   box-shadow: none !important;
 } */
-
-.scroll_container::-webkit-scrollbar {
-  display: none;
-}

@@ -172,25 +172,51 @@ export const Form2 = ({ title }) => {
 
       <Text
         pt={6}
-        pb={2}
+        pb={3}
         textDecoration={"underline"}
         cursor={"pointer"}
         onClick={onToggle}
       >
-        Advanced Options
+        Advanced options
       </Text>
       <Collapse in={isOpen} animateOpacity>
-        <Field name="resolutionPrice">
-          {({ field, form }) => (
-            <FormControl>
-              <FormLabel htmlFor="resolutionPrice" fontWeight={"normal"}>
-                Resolution target price
-              </FormLabel>
-              <Input {...field} id="tag" placeholder=" " autoComplete="off" />
-              <FormErrorMessage>{form.errors.keyword}</FormErrorMessage>
-            </FormControl>
-          )}
-        </Field>
+        <Stack spacing={5}>
+          <Field name="ticker">
+            {({ field, form }) => (
+              <FormControl>
+                <FormLabel htmlFor="ticker" fontWeight={"normal"}>
+                  Ticker
+                </FormLabel>
+                <Input {...field} id="tag" placeholder=" " autoComplete="off" />
+                <FormErrorMessage>{form.errors.keyword}</FormErrorMessage>
+              </FormControl>
+            )}
+          </Field>
+
+          <Field name="oracleSymbol">
+            {({ field, form }) => (
+              <FormControl>
+                <FormLabel htmlFor="oracleSymbol" fontWeight={"normal"}>
+                  Oracle symbol
+                </FormLabel>
+                <Input {...field} id="tag" placeholder=" " autoComplete="off" />
+                <FormErrorMessage>{form.errors.keyword}</FormErrorMessage>
+              </FormControl>
+            )}
+          </Field>
+
+          <Field name="resolutionValue">
+            {({ field, form }) => (
+              <FormControl>
+                <FormLabel htmlFor="resolutionValue" fontWeight={"normal"}>
+                  Resolution target value
+                </FormLabel>
+                <Input {...field} id="tag" placeholder=" " autoComplete="off" />
+                <FormErrorMessage>{form.errors.keyword}</FormErrorMessage>
+              </FormControl>
+            )}
+          </Field>
+        </Stack>
       </Collapse>
     </Stack>
   );
