@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import type { NextPage } from "next";
+import Balancer from "react-wrap-balancer";
 import { InferGetStaticPropsType } from "next";
 import Head from "next/head";
 import {

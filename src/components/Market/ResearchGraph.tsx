@@ -54,6 +54,7 @@ const ResearchGraph = ({ market }) => {
 
 const FinancialsChart = ({ market }) => {
   const { ticker } = market;
+  console.log("FinancialsChart", ticker);
   const { data, error } = useSWR(
     `/api/research/fetchFinancialData?ticker=${ticker}`,
     fetcher

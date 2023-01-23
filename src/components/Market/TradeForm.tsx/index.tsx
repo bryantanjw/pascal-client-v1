@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Balancer from "react-wrap-balancer";
 import {
   Button,
   ButtonGroup,
@@ -160,7 +161,7 @@ const Swap = ({ market }) => {
               fontWeight={"semibold"}
               textColor={mode("gray.800", "gray.100")}
             >
-              {market.title}
+              <Balancer>{market.title}</Balancer>
             </Heading>
             <Stack pt={2}>
               <ButtonGroup

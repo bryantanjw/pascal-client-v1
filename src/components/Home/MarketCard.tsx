@@ -1,4 +1,5 @@
 import ChakraNextLink from "../ChakraNextLink";
+import Balancer from "react-wrap-balancer";
 import React, { Suspense } from "react";
 import {
   Flex,
@@ -68,8 +69,10 @@ const MarketCard = ({ market }) => {
           <Suspense
             fallback={<SkeletonText width={{ base: "80%", md: "100px" }} />}
           >
-            <Stack spacing={1}>
-              <Heading size={"md"}>{market.title}</Heading>
+            <Stack spacing={2}>
+              <Heading size={"md"}>
+                <Balancer>{market.title}</Balancer>
+              </Heading>
               <h3>
                 {`on ${dt.getDate()} ${dt.toLocaleString("default", {
                   month: "long",
