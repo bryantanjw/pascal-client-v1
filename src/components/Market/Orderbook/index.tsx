@@ -40,10 +40,12 @@ export enum OrderType {
 interface OrderBookProps {
   outcomes: any;
   outcomeIndex: number;
+  prices: any;
 }
 
 export const OrderBook: FunctionComponent<OrderBookProps> = ({
   outcomeIndex,
+  prices,
 }) => {
   const { colorMode } = useColorMode();
   const priceData = useContext(PriceDataContext);
@@ -92,6 +94,11 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
       );
     });
   };
+
+  const lowestAskPrice =
+    prices[outcomeIndex].against[prices[outcomeIndex].against.length - 1]
+      ?.price;
+  const highestBidPrice = prices[outcomeIndex].for[0]?.price;
 
   const tableContainerStyle = {
     background:
@@ -183,7 +190,7 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
             <Skeleton height="20px" />
           </Stack>
         )}
-        <Spread bids={bids} asks={asks} />
+        <Spread highestBid={highestBidPrice} lowestAsk={lowestAskPrice} />
       </Stack>
     </ResizablePanel>
   );

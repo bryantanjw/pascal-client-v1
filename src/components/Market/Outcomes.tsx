@@ -48,13 +48,13 @@ interface CheckboxProps extends UseCheckboxProps {
     latestMatchedPrice: number;
     matchedTotal: BN;
   };
-  marketBuyPrice: number;
+  lowestAskPrice: number;
   userPosition: any;
 }
 
 const CheckboxOption = (props: CheckboxProps) => {
   const { publicKey } = useWallet();
-  const { outcome, marketBuyPrice, userPosition, ...radioProps } = props;
+  const { outcome, lowestAskPrice, userPosition, ...radioProps } = props;
   const { state, getCheckboxProps, getInputProps, htmlProps } =
     useCheckbox(radioProps);
 
@@ -104,10 +104,10 @@ const CheckboxOption = (props: CheckboxProps) => {
               <Stack>
                 <HStack justifyContent={"space-between"}>
                   <Text>{outcome.outcome}</Text>
-                  <Text>{marketBuyPrice}%</Text>
+                  <Text>{lowestAskPrice}%</Text>
                 </HStack>
                 <Progress
-                  value={marketBuyPrice}
+                  value={lowestAskPrice}
                   size={"sm"}
                   rounded={"xl"}
                   opacity={state.isChecked ? "100%" : "40%"}
@@ -121,7 +121,7 @@ const CheckboxOption = (props: CheckboxProps) => {
               </Stack>
             </Box>
             <Spacer />
-            <Text>{marketBuyPrice}</Text>
+            <Text>{lowestAskPrice}</Text>
             <Spacer />
             <Stack>
               <Text>
@@ -223,8 +223,8 @@ const Outcomes = ({ market }) => {
               <CheckboxOption
                 key={index}
                 outcome={outcome}
-                marketBuyPrice={
-                  prices[index].against[prices[index].against.length - 1]?.price // <-- lowest sell price
+                lowestAskPrice={
+                  prices[index].against[prices[index].against.length - 1]?.price // <-- market buy price
                 }
                 userPosition={marketPosition?.marketOutcomeSums[index]}
                 {...getCheckboxProps({
@@ -239,7 +239,11 @@ const Outcomes = ({ market }) => {
                 in={isOpen}
                 animateOpacity
               >
-                <OrderBook outcomes={outcomes} outcomeIndex={index} />
+                <OrderBook
+                  outcomes={outcomes}
+                  outcomeIndex={index}
+                  prices={prices}
+                />
               </Collapse>
             </>
           );
