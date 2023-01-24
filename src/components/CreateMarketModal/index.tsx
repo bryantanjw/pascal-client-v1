@@ -25,6 +25,7 @@ import { getPriceData, logResponse, makeMarket } from "@/utils/monaco";
 import { ResizablePanel } from "../common/ResizablePanel";
 
 import styles from "@/styles/Home.module.css";
+import { PRICE_LADDER } from "@/utils/constants";
 
 enum CreateStatus {
   CreatingMarket = "Creating Market",
@@ -51,8 +52,6 @@ enum CreateStatus {
 //   const marketLock = Date.parse(lockTimestamp) / 1000; // <-- lockTimestamp in seconds
 //   const type = MarketType.EventResultWinner;
 //   const outcomes = ["Yes", "No"];
-//   // Create a prob 1-100 price ladder
-//   const priceLadder = Array.from({ length: 101 }, (_, i) => i);
 //   const batchSize = 50;
 
 //   console.log(`Creating market ⏱`);
@@ -99,7 +98,7 @@ enum CreateStatus {
 //   const addPriceLaddersResponse = await batchAddPricesToAllOutcomePools(
 //     program,
 //     marketPk,
-//     priceLadder,
+//     PRICE_LADDER,
 //     batchSize
 //   );
 //   // returns BatchAddPricesToOutcomeResponse: transaction id, and confirmation

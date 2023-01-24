@@ -10,8 +10,6 @@ import {
   useColorMode,
   useColorModeValue as mode,
 } from "@chakra-ui/react";
-import { useSelector } from "@/store/store";
-import { selectAsks, selectBids } from "@/store/slices/orderbookSlice";
 import { PriceLevelRow, TitleRow } from "./Rows";
 import Spread from "./Spread";
 import DepthVisualizer from "./DepthVisualizer";
@@ -48,9 +46,7 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
   prices,
 }) => {
   const { colorMode } = useColorMode();
-  const priceData = useContext(PriceDataContext);
-  const bids: number[][] = useSelector(selectBids);
-  const asks: number[][] = useSelector(selectAsks);
+  const { priceData } = useContext(PriceDataContext);
 
   const formatPrice = (arg: number): string => {
     return arg.toLocaleString("en", {

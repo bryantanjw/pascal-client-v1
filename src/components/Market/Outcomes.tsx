@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { useEffect, useState } from "react";
-import useSWR from "swr";
+import { useContext, useEffect, useState } from "react";
 import {
   Progress,
   Text,
@@ -22,24 +21,9 @@ import { BN } from "@project-serum/anchor";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { OrderBook } from "./Orderbook";
 import { PublicKey } from "@solana/web3.js";
-import { useProgram } from "@/context/ProgramProvider";
 import { getMarketPosition, MarketPosition } from "@monaco-protocol/client";
-
-const fetcher = async (url) => {
-  const res = await fetch(url);
-
-  // If the status code is not in the range 200-299,
-  // we still try to parse and throw it.
-  if (!res.ok) {
-    const error: any = new Error("An error occurred while fetching user data.");
-    // Attach extra info to the error object.
-    error.info = await res.json();
-    error.status = res.status;
-    throw error;
-  }
-
-  return res.json();
-};
+import { useProgram } from "@/context/ProgramProvider";
+import { PriceDataContext } from ".";
 
 interface CheckboxProps extends UseCheckboxProps {
   outcome: {
@@ -48,20 +32,16 @@ interface CheckboxProps extends UseCheckboxProps {
     latestMatchedPrice: number;
     matchedTotal: BN;
   };
-  lowestAskPrice: number;
+  prices: any;
   userPosition: any;
 }
 
 const CheckboxOption = (props: CheckboxProps) => {
   const { publicKey } = useWallet();
-  const { outcome, lowestAskPrice, userPosition, ...radioProps } = props;
+  const { outcome, prices, userPosition, ...radioProps } = props;
   const { state, getCheckboxProps, getInputProps, htmlProps } =
     useCheckbox(radioProps);
-
-  // const { data } = useSWR(
-  //   publicKey ? `../api/user?publicKey=${publicKey?.toString()}` : null,
-  //   fetcher
-  // );
+  const { probA, probB } = useContext(PriceDataContext);
 
   const progressBarColorScheme = ["purple", "teal", "pink"];
   const checkoxColorScheme = ["purple", "teal", "pink"];
@@ -104,10 +84,10 @@ const CheckboxOption = (props: CheckboxProps) => {
               <Stack>
                 <HStack justifyContent={"space-between"}>
                   <Text>{outcome.outcome}</Text>
-                  <Text>{lowestAskPrice}%</Text>
+                  <Text>{(outcome.index === 0 ? probA : probB) * 100}</Text>
                 </HStack>
                 <Progress
-                  value={lowestAskPrice}
+                  value={(outcome.index === 0 ? probA : probB) * 100}
                   size={"sm"}
                   rounded={"xl"}
                   opacity={state.isChecked ? "100%" : "40%"}
@@ -121,25 +101,20 @@ const CheckboxOption = (props: CheckboxProps) => {
               </Stack>
             </Box>
             <Spacer />
-            <Text>{lowestAskPrice}</Text>
+            <Text>
+              {
+                prices[outcome.index].against[
+                  prices[outcome.index].against.length - 1
+                ]?.price
+              }
+            </Text>
             <Spacer />
             <Stack>
               <Text>
                 {userPosition && publicKey
-                  ? Math.abs(parseInt(userPosition.toString(16), 16)) / 1000000
+                  ? Math.abs(parseInt(userPosition.toString(16), 16)) / 10 ** 6
                   : 0.0}
               </Text>
-              {/* {data &&
-                data.positions.map((position, index) => {
-                  let found = false;
-                  if (position.outcome === outcome.outcome) {
-                    found = true;
-                    return position.shares;
-                  }
-                  if (index == position.length - 1 && !found) {
-                    return 0.0;
-                  }
-                })} */}
             </Stack>
           </Flex>
 
@@ -223,9 +198,7 @@ const Outcomes = ({ market }) => {
               <CheckboxOption
                 key={index}
                 outcome={outcome}
-                lowestAskPrice={
-                  prices[index].against[prices[index].against.length - 1]?.price // <-- market buy price
-                }
+                prices={prices}
                 userPosition={marketPosition?.marketOutcomeSums[index]}
                 {...getCheckboxProps({
                   value: index.toString(), // <-- getCheckboxProps value only accepts String
