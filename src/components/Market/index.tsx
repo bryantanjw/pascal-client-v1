@@ -92,14 +92,14 @@ const Market = ({ market }) => {
     },
   ];
 
-  const probA = Math.round(
-    calculateProbability(
-      prices[0].against[prices[0].against.length - 1]?.price,
-      prices[1].against[prices[1].against.length - 1]?.price
-    )
-  );
+  const probA = calculateProbability(
+    prices[0].against[prices[0].against.length - 1]?.price,
+    prices[1].against[prices[1].against.length - 1]?.price
+  ).toFixed(2);
   const probB = 1 - probA;
+  probB.toFixed(2);
 
+  console.log("probA", probA);
   useEffect(() => {
     const fetchPriceData = async () => {
       try {
