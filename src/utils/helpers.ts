@@ -59,3 +59,10 @@ export const groupByTicketSize = (
 export const formatNumber = (arg: number): string => {
   return new Intl.NumberFormat("en-US").format(arg);
 };
+
+export const calculateProbability = (
+  bidPriceA: number,
+  bidPriceB: number
+): number => {
+  return bidPriceA / (bidPriceA + bidPriceB);
+};

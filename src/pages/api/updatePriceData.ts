@@ -35,7 +35,6 @@ export default async function handler(
           { publicKey: pubKey },
           {
             $set: {
-              marketPriceSummary: marketPriceSummary,
               liquidityTotal: liquidityTotal,
               matchedTotal: matchedTotal,
               totalUnmatchedOrders: totalUnmatchedOrders,

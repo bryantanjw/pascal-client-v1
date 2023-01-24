@@ -7,7 +7,6 @@ import {
   Divider,
   Stack,
   HStack,
-  SimpleGrid,
   Heading,
   Flex,
   Tab,
@@ -34,6 +33,7 @@ import { useProgram } from "@/context/ProgramProvider";
 import { getPriceData } from "@/utils/monaco";
 
 import styles from "@/styles/Home.module.css";
+import { calculateProbability } from "@/utils/helpers";
 
 // Dynamically load ResearchGraph component on client side
 const ResearchGraph = dynamic(import("./ResearchGraph"), {
@@ -43,6 +43,7 @@ const ResearchGraph = dynamic(import("./ResearchGraph"), {
 export const PriceDataContext = createContext<any>({});
 
 const Market = ({ market }) => {
+  const { prices } = market;
   const program = useProgram();
   const { asPath } = useRouter();
   const marketPk = asPath.split("/")[2];
@@ -91,6 +92,14 @@ const Market = ({ market }) => {
     },
   ];
 
+  const probA = Math.round(
+    calculateProbability(
+      prices[0].against[prices[0].against.length - 1]?.price,
+      prices[1].against[prices[1].against.length - 1]?.price
+    )
+  );
+  const probB = 1 - probA;
+
   useEffect(() => {
     const fetchPriceData = async () => {
       try {
@@ -106,7 +115,7 @@ const Market = ({ market }) => {
   }, [program]);
 
   return (
-    <PriceDataContext.Provider value={priceData}>
+    <PriceDataContext.Provider value={{ priceData, probA, probB }}>
       <div className={styles.container}>
         <Head>
           <title>{market.title}</title>
@@ -156,13 +165,6 @@ const Market = ({ market }) => {
                     icon={<ArrowBackIcon />}
                     variant={"unstyled"}
                   />
-                  <Heading
-                    _before={{ bg: mode("black", "white") }}
-                    fontSize={{ base: "xl", md: "2xl" }}
-                    fontWeight="extrabold"
-                  >
-                    {/* {market.title} */}
-                  </Heading>
                 </HStack>
               </Stack>
             </ChakraNextLink>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Balancer from "react-wrap-balancer";
 import {
   Button,
@@ -41,6 +41,7 @@ import { PublicKey } from "@solana/web3.js";
 import { useProgram } from "@/context/ProgramProvider";
 
 import styles from "@/styles/Home.module.css";
+import { PriceDataContext } from "..";
 
 type TradeFormItemProps = {
   label: string | React.ReactNode;
@@ -113,6 +114,7 @@ const Swap = ({ market }) => {
   const { marketLockTimestamp, outcomes, prices } = market;
   const program = useProgram();
   const { publicKey } = useWallet();
+  const { probA } = useContext(PriceDataContext);
   const [outcomeIndex, setOutcomeIndex] = useState<number>(0);
   const [isMarketBuy, setIsMarketBuy] = useState<boolean>(true);
   const [isSuccess, setSuccess] = useState(false);
@@ -150,7 +152,7 @@ const Swap = ({ market }) => {
               color={mode("purple.500", "purple.200")}
             >
               {`${outcomes[0].outcome}
-              ${marketBuyPrice}%`}
+              ${probA * 100}%`}
             </Heading>
           </Flex>
 
