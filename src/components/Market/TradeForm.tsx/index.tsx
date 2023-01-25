@@ -226,7 +226,7 @@ const Swap = ({ market }) => {
                   new PublicKey(market.publicKey),
                   outcomeIndex,
                   true,
-                  isMarketBuy ? marketBuyPrice : parseInt(values.limitOrder),
+                  isMarketBuy ? marketBuyPrice : values.limitOrder,
                   values.stake
                 );
                 setSuccess(true);
@@ -281,26 +281,26 @@ const Swap = ({ market }) => {
                       }
                     >
                       {isMarketBuy ? (
-                        `$${marketBuyPrice}`
+                        marketBuyPrice
                       ) : (
                         <Field name="limitOrder">
                           {({ field, form }) => (
                             <NumberInput
                               name="limitOrder"
-                              onChange={(val) =>
-                                form.setFieldValue(
-                                  field.name,
-                                  val.replace(/^\$/, "")
-                                )
-                              }
+                              onChange={(val) => {
+                                val.replace(/^\$/, "");
+                                form.setFieldValue(Number(field.name));
+                              }}
                               onKeyPress={(e) => {
                                 e.which === 13 && e.preventDefault();
                               }}
                               size={"sm"}
                               width={"35%"}
-                              min={1}
-                              max={99}
-                              value={`$` + values.limitOrder}
+                              min={1.01}
+                              max={1.99}
+                              precision={2}
+                              step={0.01}
+                              value={values.limitOrder}
                             >
                               <NumberInputField
                                 fontSize={"sm"}

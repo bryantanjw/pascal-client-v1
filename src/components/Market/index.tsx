@@ -96,7 +96,7 @@ const Market = ({ market }) => {
     prices[0].against[prices[0].against.length - 1]?.price,
     prices[1].against[prices[1].against.length - 1]?.price
   ).toFixed(2);
-  const probB = 1 - probA;
+  const probB = 1 - Number(probA);
   probB.toFixed(2);
 
   console.log("probA", probA);
