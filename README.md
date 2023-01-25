@@ -29,5 +29,5 @@ Note: market outcome probabilities might not exactly settle at 50% after all the
 MVP Demo is live on devnet at [pascal.fi](https://www.pascal.fi/)
 
 ## To-Dos
-- [] Integration with Human Protocol for resolving arbitrary markets
-- [] Comprehensive Portfolio page
+- [ ] Integration with Human Protocol for resolving arbitrary markets
+- [ ] Comprehensive Portfolio page
