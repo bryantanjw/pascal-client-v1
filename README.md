@@ -1,6 +1,14 @@
 # Pascal Protocol Client
 Trade directly on the outcome of events on chain. A community derivative tied to real-world financial and economic events.
 
+### Features
+- Fast and secure trading engine built on top of Solana
+- Ability to trade on the outcomes of financial, crypto, and economic events
+- Market buys and limit orders available for users
+- Markets arbitrated using Pyth Network
+- Stay informed with up-to-date news and data regarding the markets
+
+
 <img width="800" alt="Home" src="https://user-images.githubusercontent.com/34775928/213886123-589b7df0-b5e5-41f5-99d2-1b37f012b6c1.png">
 <img width="800" alt="Creating market" src="https://user-images.githubusercontent.com/34775928/214466087-259fb3fd-2404-4b0e-b76b-bd2992bb7f1f.png">
 
