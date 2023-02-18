@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import clientPromise from "@/lib/mongodb";
-import { getPriceData, getProgram, logResponse } from "@/utils/monaco";
+import { getPriceData, getProgram } from "@/utils/monaco";
 import { PublicKey } from "@solana/web3.js";
 
 // Run job every 10 minutes

@@ -21,11 +21,11 @@ import { PublicKey, Keypair } from "@solana/web3.js";
 // } from "@monaco-protocol/admin-client";
 import { Form1, Form2, SubmittedForm, FormStepper } from "./StepForms";
 import { useProgram } from "@/context/ProgramProvider";
-import { getPriceData, logResponse, makeMarket } from "@/utils/monaco";
+import { getPriceData, logResponse, marketMake } from "@/utils/monaco";
 import { ResizablePanel } from "../common/ResizablePanel";
+import { PRICE_LADDER } from "@/utils/constants";
 
 import styles from "@/styles/Home.module.css";
-import { PRICE_LADDER } from "@/utils/constants";
 
 enum CreateStatus {
   CreatingMarket = "Creating Market",
@@ -155,7 +155,7 @@ export const CreateMarketModal = () => {
 
     //   // Make market
     //   // setCreateStatus(CreateStatus.MakingMarket);
-    //   // await makeMarket(program, marketPk);
+    //   // await marketMake(program, marketPk);
 
     //   // Get price data
     //   const priceData = await getPriceData(program, marketPk);

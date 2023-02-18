@@ -1,15 +1,5 @@
 import styled from "styled-components";
 
-export const OrderbookContainer = styled.div`
-  display: flex;
-  direction={"column"};
-  backdrop-filter: blur(5px);
-
-  @media only screen and (min-width: 800px) {
-    justify-content: center;
-  }
-`;
-
 export const TableContainer = styled.div`
   padding-top: 15px;
   font-size: 0.9rem;
@@ -36,18 +26,6 @@ interface PriceButtonContainerProps {
   isRight: boolean;
   windowWidth: number;
 }
-
-export const TitleContainer = styled.div`
-  display: flex;
-  justify-content: space-around;
-  padding-top: 0.4em;
-  padding-bottom: 0.4em;
-  font-size: 0.8em;
-
-  span {
-    min-width: 5rem;
-  }
-`;
 
 export const PriceContainer = styled.div<PriceButtonContainerProps>`
   display: flex;
@@ -84,30 +62,6 @@ export const PriceContainer = styled.div<PriceButtonContainerProps>`
 
   .price {
     color: ${(props) => (props.isRight ? "#118860" : "#bb3336")};
-  }
-`;
-
-export const PriceLevelRowContainer = styled.div`
-  margin: 0 0;
-`;
-
-interface ButtonContainerProps {
-  backgroundColor: string;
-}
-
-export const ButtonContainer = styled.button<ButtonContainerProps>`
-  padding: 0.3em 0.7em;
-  margin: 1em;
-  border-radius: 4px;
-  border: none;
-  color: white;
-  background: ${(props) => props.backgroundColor};
-  font-family: "Calibri", sans-serif;
-  font-size: 1.2em;
-
-  &:hover {
-    cursor: pointer;
-    opacity: 0.8;
   }
 `;
 

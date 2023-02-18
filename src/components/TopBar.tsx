@@ -144,14 +144,18 @@ const DesktopNav = () => {
 
   return (
     <Stack
+      zIndex={1}
       direction={"row"}
       spacing={2}
       rounded={"full"}
       px={2}
       py={4}
       boxShadow={"xl"}
-      border={useColorModeValue("1px solid #CFDAE1", "1px solid transparent")}
-      bg={useColorModeValue("#F9FAFB", "gray.800")}
+      border={useColorModeValue(
+        "1px solid #CFDAE1",
+        "1px solid rgba(255, 255, 255, 0.08)"
+      )}
+      bg={useColorModeValue("#FBFBFD", "rgb(26,32,44,0.6)")}
     >
       {NAV_ITEMS.map((navItem) => (
         <Box key={navItem.label}>
@@ -172,9 +176,12 @@ const DesktopNav = () => {
                   color: linkHoverColor,
                 }}
                 activeProps={{
-                  fontWeight: "bold",
+                  fontWeight: "medium",
                   // eslint-disable-next-line react-hooks/rules-of-hooks
-                  bg: useColorModeValue("gray.100", "gray.700"),
+                  bg: useColorModeValue(
+                    "gray.100",
+                    "radial-gradient(at center, hsl(0.00, 0%, 100%) -300%, transparent 40%)"
+                  ),
                 }}
               >
                 {navItem.label}
@@ -191,7 +198,6 @@ const DesktopNav = () => {
                 fontSize={"sm"}
                 rounded={"xl"}
                 minW={"xs"}
-                zIndex={99}
               >
                 <Stack>
                   {navItem.children.map((child) => (

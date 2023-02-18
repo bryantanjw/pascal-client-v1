@@ -41,14 +41,14 @@ const MarketCard = ({ market }) => {
           borderWidth={1}
           rounded={"10px"}
           backdropFilter={{ base: "none", md: "blur(0px)" }} // <-- Somehow improves page transition latency
-          bg={mode("transparent", "")}
+          bg={mode("transparent", "rgba(255, 255, 255, 0.012)")}
           bgImage={mode(
             "none",
             "radial-gradient(at top left, hsl(265.16, 86%, 86%) -400%, transparent 17%), radial-gradient(at bottom right, hsl(265.16, 86%, 86%) -400%, transparent 10%)"
           )}
+          transition={"all .3s ease"}
           _hover={{
             boxShadow: "2xl",
-            transition: "all .3s ease",
             borderColor: mode("white", "rgb(255, 255, 255, 0.2)"),
             background: mode("white", ""),
             bgImage: mode(
@@ -107,7 +107,7 @@ const MarketCard = ({ market }) => {
                 height={17}
                 alt="liquidity"
               />
-              <h4>{market.liquidityTotal}</h4>
+              <h4>${market.liquidityTotal}</h4>
             </HStack>
             {/* <HStack sx={statStyle}>
               <Image

@@ -1,6 +1,7 @@
 import React, { FunctionComponent, useContext } from "react";
 import {
   Box,
+  Center,
   Divider,
   Flex,
   Heading,
@@ -10,6 +11,8 @@ import {
   useColorMode,
   useColorModeValue as mode,
 } from "@chakra-ui/react";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { PriceLevelRow, TitleRow } from "./Rows";
 import Spread from "./Spread";
 import DepthVisualizer from "./DepthVisualizer";
@@ -17,13 +20,10 @@ import GroupingSelectBox from "./GroupingSelectBox";
 import { ResizablePanel } from "@/components/common/ResizablePanel";
 import { MOBILE_WIDTH, ORDERBOOK_LEVELS } from "@/utils/constants";
 import { formatNumber } from "@/utils/helpers";
-
-import {
-  OrderbookContainer,
-  TableContainer,
-  PriceLevelRowContainer,
-} from "./styles";
 import { PriceDataContext } from "..";
+
+import { TableContainer } from "./styles";
+import styles from "@/styles/Home.module.css";
 
 const outcomeTickers: any = {
   0: "YES / USD",
@@ -46,6 +46,7 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
   prices,
 }) => {
   const { colorMode } = useColorMode();
+  const { publicKey } = useWallet();
   const { priceData } = useContext(PriceDataContext);
 
   const formatPrice = (arg: number): string => {
@@ -77,7 +78,7 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
       const depth = level[2];
 
       return (
-        <PriceLevelRowContainer key={idx + depth}>
+        <Box key={idx + depth} margin={0}>
           <DepthVisualizer key={depth} depth={depth} orderType={orderType} />
           <PriceLevelRow
             key={size + total}
@@ -86,7 +87,7 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
             price={price}
             isRight={orderType === OrderType.BIDS}
           />
-        </PriceLevelRowContainer>
+        </Box>
       );
     });
   };
@@ -108,7 +109,10 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
       {/* <GroupingSelectBox options={groupingOptions[outcomeIndex]} /> */}
 
       <Stack
-        as={OrderbookContainer}
+        display={"flex"}
+        direction={"column"}
+        backdropFilter={"blur(5px)"}
+        justifyContent={"center"}
         rounded={"2xl"}
         borderWidth={1}
         borderColor={mode("#E5E7EB", "rgb(255,255,255,0.1)")}
@@ -135,16 +139,30 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
           </Heading>
         </Flex>
         <Divider borderColor={mode("#E2E8F0", "rgb(255,255,255,0.1)")} />
-        {priceData ? (
+        <TitleRow reversedFieldsOrder={false} />
+        {!publicKey ? (
+          <Center py={9} flexDirection={"column"}>
+            <Text mb={3}>Connect a wallet to view order book</Text>
+            <WalletMultiButton
+              // eslint-disable-next-line react-hooks/rules-of-hooks
+              className={mode(
+                styles.wallet_adapter_button_trigger_light_mode,
+                styles.wallet_adapter_button_trigger_dark_mode
+              )}
+            />
+          </Center>
+        ) : priceData ? (
           <>
             <Box
-              as={TitleRow}
-              reversedFieldsOrder={false}
-              bgColor={mode("#F8F9FA", "gray.700")}
-              borderColor={mode("#F8F9FA", "gray.600")}
-              textColor={mode("#616262", "gray.200")}
-            />
-            <Box as={TableContainer} sx={tableContainerStyle}>
+              as={TableContainer}
+              sx={tableContainerStyle}
+              css={{
+                "&::-webkit-scrollbar": {
+                  width: "0.2em",
+                  backgroundColor: "transparent",
+                },
+              }}
+            >
               {buildPriceLevels(
                 priceData?.marketPriceSummary[outcomeIndex].against,
                 OrderType.ASKS
@@ -172,7 +190,16 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
                 }
               </Text>
             </Stack>
-            <Box as={TableContainer} sx={tableContainerStyle}>
+            <Box
+              as={TableContainer}
+              sx={tableContainerStyle}
+              css={{
+                "&::-webkit-scrollbar": {
+                  width: "0.2em",
+                  backgroundColor: "transparent",
+                },
+              }}
+            >
               {buildPriceLevels(
                 priceData?.marketPriceSummary?.[outcomeIndex].for,
                 OrderType.BIDS

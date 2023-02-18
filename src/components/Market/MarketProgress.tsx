@@ -10,8 +10,12 @@ function addDays(date, days) {
 }
 
 export const MarketProgress = ({ account }) => {
-  const { marketCreateTimestamp, marketLockTimestamp, marketSettleTimestamp } =
-    account;
+  const {
+    marketCreateTimestamp,
+    marketLockTimestamp,
+    marketSettleTimestamp,
+    marketStatus,
+  } = account;
   const formattedLockTimestamp = new Date(
     parseInt(marketLockTimestamp, 16) * 1000
   );
@@ -44,7 +48,7 @@ export const MarketProgress = ({ account }) => {
     if (dt >= formattedLockTimestamp) {
       setStep(2);
     }
-    if (dt >= formattedLockTimestamp) {
+    if (marketStatus.settled) {
       setStep(3);
     }
   }, [dt.getMinutes()]);

@@ -18,6 +18,9 @@ import {
   Text,
   useColorModeValue as mode,
 } from "@chakra-ui/react";
+import { useWallet } from "@solana/wallet-adapter-react";
+
+import styles from "@/styles/Home.module.css";
 
 ChartJS.register(
   CategoryScale,
@@ -31,7 +34,6 @@ ChartJS.register(
 );
 
 export const options = {
-  responsive: true,
   plugins: {
     legend: {
       position: "top" as const,
@@ -54,6 +56,7 @@ export const options = {
       },
     },
   },
+  maintainAspectRatio: false,
 };
 
 const labels = [
@@ -72,10 +75,10 @@ export const cumulativeReturnsData = {
     {
       label: "Cumulative Returns",
       data: [369, 143, 720, 225, 62, 872, 331, 680, -7, 226],
-      borderColor: "rgb(159,122,234)",
-      backgroundColor: "rgba(159,122,234, 0.5)",
+      borderColor: "rgba(0,0,0,0.7)",
+      backgroundColor: "rgba(0,0,0,0.8)",
       tension: 0.1,
-    },
+     },
   ],
 };
 
@@ -85,39 +88,35 @@ export const weeklyReturnsData = {
     {
       label: "Weekly Returns",
       data: [95, 70, 55, 69, 7, 61, -57, 63, -47, 35],
-      borderColor: "rgb(159,122,234)",
-      backgroundColor: "rgba(159,122,234, 0.5)",
+      borderColor: "rgba(0,0,0,0.7)",
+      backgroundColor: "rgba(0,0,0,0.8)",
       tension: 0.1,
     },
   ],
 };
 
-export const ReturnsGraph = ({ user }) => {
+const ReturnsGraph = () => {
+  const { publicKey } = useWallet();
+
   return (
-    <Stack py={2} spacing={8}>
-      {user && (
-        <>
-          <Flex>
-            <Line
-              options={options}
-              data={cumulativeReturnsData}
-              height={55}
-              fallbackContent={<Skeleton height={55} width={"full"} />}
-            />
-          </Flex>
+    <Stack py={4} spacing={9}>
+      <Flex className={styles.returns_canvas_container}>
+        <Line
+          options={options}
+          data={cumulativeReturnsData}
+          fallbackContent={<Skeleton width={"full"} />}
+        />
+      </Flex>
 
-          <Flex>
-            <Bar
-              options={options}
-              data={weeklyReturnsData}
-              height={55}
-              fallbackContent={<Skeleton height={55} width={"full"} />}
-            />
-          </Flex>
-        </>
-      )}
+      <Flex className={styles.returns_canvas_container}>
+        <Bar
+          options={options}
+          data={weeklyReturnsData}
+          fallbackContent={<Skeleton width={"full"} />}
+        />
+      </Flex>
 
-      {!user && (
+      {!publicKey && (
         <Text color={mode("gray.600", "gray.700")} p={6} textAlign={"center"}>
           No positions found
         </Text>
@@ -125,3 +124,5 @@ export const ReturnsGraph = ({ user }) => {
     </Stack>
   );
 };
+
+export default ReturnsGraph;

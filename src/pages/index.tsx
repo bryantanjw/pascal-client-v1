@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import type { NextPage } from "next";
-import Balancer from "react-wrap-balancer";
 import { InferGetStaticPropsType } from "next";
 import Head from "next/head";
 import {
@@ -15,7 +14,7 @@ import {
 import clientPromise from "@/lib/mongodb";
 import Layout from "components/Layout";
 import WithSubnavigation from "components/TopBar";
-import MarketList from "@/components/Home";
+import MarketList from "components/Home/MarketList";
 
 import styles from "@/styles/Home.module.css";
 
@@ -55,7 +54,10 @@ const Home: NextPage = ({
               </Center>
             }
           >
-            <Stack spacing={{ base: 8, md: 10 }}>
+            <Stack
+              spacing={{ base: 8, md: 10 }}
+              className={mode("", styles.homeGradientGlow)}
+            >
               <Heading
                 lineHeight={1.1}
                 fontWeight={600}
@@ -77,7 +79,7 @@ const Home: NextPage = ({
                 color={mode("gray.500", "gray.200")}
                 fontSize={{ base: "xl", md: "2xl" }}
               >
-                An on-chain commodity derivative of real-world events
+                An on-chain commodity derivative of real-world events.
               </Text>
 
               <MarketList markets={markets} />

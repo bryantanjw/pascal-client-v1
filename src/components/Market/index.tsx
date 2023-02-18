@@ -31,9 +31,9 @@ import Outcomes from "./Outcomes";
 import Layout from "../Layout";
 import { useProgram } from "@/context/ProgramProvider";
 import { getPriceData } from "@/utils/monaco";
+import { calculateProbability } from "@/utils/helpers";
 
 import styles from "@/styles/Home.module.css";
-import { calculateProbability } from "@/utils/helpers";
 
 // Dynamically load ResearchGraph component on client side
 const ResearchGraph = dynamic(import("./ResearchGraph"), {
@@ -72,20 +72,13 @@ const Market = ({ market }) => {
     fontSize: "lg",
     fontWeight: "bold",
   };
-  const gradientBackgroundStyle = {
-    filter: "blur(80px)",
-    position: "absolute",
-    zIndex: -1,
-    opacity: "50%",
-    width: "40%",
-  };
   // END: Style config //
 
   const stats = [
     { label: "Total Volume", value: `$${market.liquidityTotal}` },
     // { label: "Liquidity", value: market.volume },
     {
-      label: "Closing Date - UTC",
+      label: "Market Lock Date - UTC",
       value: new Date(
         parseInt(market.marketLockTimestamp, 16) * 1000
       ).toUTCString(),
@@ -99,7 +92,6 @@ const Market = ({ market }) => {
   const probB = 1 - Number(probA);
   probB.toFixed(2);
 
-  console.log("probA", probA);
   useEffect(() => {
     const fetchPriceData = async () => {
       try {
@@ -115,64 +107,68 @@ const Market = ({ market }) => {
   }, [program]);
 
   return (
-    <PriceDataContext.Provider value={{ priceData, probA, probB }}>
-      <div className={styles.container}>
-        <Head>
-          <title>{market.title}</title>
-          <meta
-            name="description"
-            content="Trade directly on the outcome of events"
-          />
-          <meta property="og:title" content={market.title} />
-          <meta
-            property="og:description"
-            content="Trade directly on the outcome of events"
-          />
-          <meta property="og:image" content="/Preview.png" />
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
+    <div className={styles.container}>
+      <Head>
+        <title>{market.title}</title>
+        <meta
+          name="description"
+          content="Trade directly on the outcome of events"
+        />
+        <meta property="og:title" content={market.title} />
+        <meta
+          property="og:description"
+          content="Trade directly on the outcome of events"
+        />
+        <meta property="og:image" content="/Preview.png" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
 
-        <WithSubnavigation />
+      <WithSubnavigation />
 
-        <Layout>
-          <Box
-            overflow={{ base: "hidden", lg: "visible" }}
-            maxW={{ base: "3xl", lg: "5xl" }}
-            mx="auto"
-            px={{ base: "1", md: "8", lg: "12" }}
-            py={{ base: "6", md: "8", lg: "12" }}
+      <Layout>
+        <Box
+          overflow={{ base: "hidden", lg: "visible" }}
+          maxW={{ base: "3xl", lg: "5xl" }}
+          mx="auto"
+          px={{ base: "1", md: "8", lg: "12" }}
+          py={{ base: "6", md: "8", lg: "12" }}
+        >
+          <ChakraNextLink
+            to={"/"}
+            _hover={{ textDecoration: "none" }}
+            display={"inline-block"}
           >
-            <ChakraNextLink
-              to={"/"}
-              _hover={{ textDecoration: "none" }}
-              display={"inline-block"}
+            <Stack
+              mb={3}
+              align={"center"}
+              direction={"row"}
+              width={{ base: "full", md: "full" }}
             >
-              <Stack
-                mb={3}
-                align={"center"}
-                direction={"row"}
-                width={{ base: "full", md: "full" }}
+              <HStack
+                _hover={{ bg: mode("gray.200", "gray.700") }}
+                rounded={"lg"}
+                transition={"all 0.25s ease"}
               >
-                <HStack
-                  _hover={{ bg: mode("gray.200", "gray.700") }}
-                  rounded={"lg"}
-                  py={1}
-                  transition={"all 0.2s ease"}
-                >
-                  <IconButton
-                    aria-label="back"
-                    size={"lg"}
-                    icon={<ArrowBackIcon />}
-                    variant={"unstyled"}
-                  />
-                </HStack>
-              </Stack>
-            </ChakraNextLink>
+                <IconButton
+                  aria-label="back"
+                  size={"lg"}
+                  icon={<ArrowBackIcon />}
+                  variant={"unstyled"}
+                  transition={"transform 0.2s ease"}
+                  _hover={{
+                    transform: "translateX(-3px)",
+                  }}
+                />
+              </HStack>
+            </Stack>
+          </ChakraNextLink>
 
+          <PriceDataContext.Provider value={{ priceData, probA, probB }}>
             <Stack
               direction={{ base: "column", lg: "row" }}
               align={{ lg: "flex-start" }}
               spacing={5}
+              className={mode("", styles.marketGradientGlow)}
             >
               <Stack spacing={4} minW={"sm"} flex="2">
                 <Tabs colorScheme={"black"}>
@@ -180,15 +176,11 @@ const Market = ({ market }) => {
                     <Tab mr={8} sx={tabListStyle}>
                       Outcomes
                     </Tab>
-                    <Tab sx={tabListStyle}>Graph</Tab>
                   </TabList>
 
                   <TabPanels>
                     <TabPanel key={0} px={0}>
                       <Outcomes market={market} />
-                    </TabPanel>
-                    <TabPanel key={1} px={0}>
-                      Price graph coming soon!
                     </TabPanel>
                   </TabPanels>
                 </Tabs>
@@ -289,18 +281,23 @@ const Market = ({ market }) => {
               </Flex>
 
               <Image
-                sx={gradientBackgroundStyle}
+                display={mode("block", "none")}
+                filter={"blur(80px)"}
+                position={"absolute"}
+                zIndex={-1}
+                opacity={"50%"}
+                width={"40%"}
                 src={"/gradient-bg1.png"}
                 // eslint-disable-next-line react-hooks/rules-of-hooks
-                alt={"background"}
+                alt={"Pascal Market"}
                 right={"100px"}
                 transform={"rotate(280deg)"}
               />
             </Stack>
-          </Box>
-        </Layout>
-      </div>
-    </PriceDataContext.Provider>
+          </PriceDataContext.Provider>
+        </Box>
+      </Layout>
+    </div>
   );
 };
 

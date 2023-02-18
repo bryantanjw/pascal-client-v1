@@ -1,6 +1,7 @@
 import React, { FunctionComponent } from "react";
 import { MOBILE_WIDTH } from "@/utils/constants";
-import { TitleContainer, PriceContainer } from "./styles";
+import { PriceContainer } from "./styles";
+import { Box, Text, useColorModeValue as mode } from "@chakra-ui/react";
 
 interface TitleRowProps {
   reversedFieldsOrder?: boolean;
@@ -12,11 +13,18 @@ export const TitleRow: FunctionComponent<TitleRowProps> = ({
   windowWidth,
 }) => {
   return (
-    <TitleContainer>
-      <span>PRICE (USD)</span>
-      <span>SIZE</span>
-      <span>TOTAL</span>
-    </TitleContainer>
+    <Box
+      display={"flex"}
+      justifyContent={"space-around"}
+      py={1}
+      fontSize={"0.8em"}
+      borderBottomWidth={1}
+      borderColor={mode("transparent", "rgb(255,255,255,0.03)")}
+    >
+      <Text>PRICE (USD)</Text>
+      <Text>SIZE</Text>
+      <Text>TOTAL</Text>
+    </Box>
   );
 };
 
@@ -41,9 +49,9 @@ export const PriceLevelRow: FunctionComponent<PriceLevelRowProps> = ({
       isRight={isRight}
       windowWidth={windowWidth}
     >
-      <span className="price">{price}</span>
-      <span>{size}</span>
-      <span className="total">{total}</span>
+      <Text className="price">{price}</Text>
+      <Text>{size}</Text>
+      <Text className="total">{total}</Text>
     </PriceContainer>
   );
 };

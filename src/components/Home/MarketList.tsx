@@ -11,21 +11,13 @@ import {
   AlertIcon,
   Spinner,
   Center,
-  useColorModeValue,
+  useColorModeValue as mode,
+  Portal,
 } from "@chakra-ui/react";
 import { categories } from "@/utils/constants";
 
 const FilterToggle = React.lazy(() => import("./FilterToggle")); // <-- to load Suspense
 const MarketCard = React.lazy(() => import("./MarketCard"));
-
-// Style config //
-const gradientBackgroundStyle = {
-  filter: "blur(110px)",
-  position: "absolute",
-  zIndex: -1,
-  opacity: "50%",
-};
-// Style config //
 
 const MarketList = ({ markets }) => {
   // FilterToggle state management ignored for the time being
@@ -86,14 +78,19 @@ const MarketList = ({ markets }) => {
         </SimpleGrid>
       </Suspense>
 
-      <Image
-        sx={gradientBackgroundStyle}
-        src={"gradient-bg.png"}
-        alt={"background"}
-        right={"40px"}
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        top={useColorModeValue("-200px", "-320px")}
-      />
+      <Portal>
+        <Image
+          display={mode("block", "none")}
+          opacity={0.9}
+          filter={"blur(110px)"}
+          position={"absolute"}
+          zIndex={-1}
+          src={"gradient-bg.png"}
+          alt={"Pascal Home"}
+          right={"40px"}
+          top={"-200px"}
+        />
+      </Portal>
     </Box>
   );
 };

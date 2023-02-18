@@ -52,7 +52,7 @@ export const Form1 = () => {
             <FormLabel htmlFor="title" fontWeight={"normal"}>
               Title
             </FormLabel>
-            <Textarea {...field} id="title" placeholder=" " />
+            <Textarea {...field} id="title" placeholder=" " boxShadow={"sm"} />
             <FormErrorMessage>{form.errors.title}</FormErrorMessage>
             <FormHelperText textAlign={"end"}>
               Keep it short and sweet!
@@ -70,7 +70,7 @@ export const Form1 = () => {
             <FormLabel htmlFor="category" fontWeight={"normal"}>
               Category
             </FormLabel>
-            <Select {...field} placeholder={"-"}>
+            <Select {...field} placeholder={"-"} boxShadow={"sm"}>
               {categories.map((category) => (
                 <option key={category} value={category}>
                   {category}
@@ -89,9 +89,9 @@ export const Form1 = () => {
             isInvalid={form.errors.lockTimestamp && form.touched.lockTimestamp}
           >
             <FormLabel htmlFor="title" fontWeight={"normal"} mt={"5%"}>
-              Resolution date
+              Lock date
             </FormLabel>
-            <Input {...field} type={"datetime-local"} />
+            <Input {...field} type={"datetime-local"} boxShadow={"sm"} />
             <FormErrorMessage>{form.errors.lockTimestamp}</FormErrorMessage>
           </FormControl>
         )}
@@ -122,6 +122,7 @@ export const Form2 = ({ title }) => {
               {...field}
               id="description"
               placeholder="This market resolves to YES if..."
+              boxShadow={"sm"}
             />
             <FormErrorMessage>{form.errors.description}</FormErrorMessage>
             <FormHelperText textAlign={"end"}>
@@ -140,7 +141,7 @@ export const Form2 = ({ title }) => {
             <FormLabel htmlFor="tag" fontWeight={"normal"}>
               Resolution source
             </FormLabel>
-            <Select {...field} placeholder={"-"}>
+            <Select {...field} placeholder={"-"} boxShadow={"sm"}>
               {resolutionSources.map((source) => (
                 <option key={source.title} value={source.title}>
                   {source.title}
@@ -161,7 +162,13 @@ export const Form2 = ({ title }) => {
             <FormLabel htmlFor="tag" fontWeight={"normal"}>
               Tag
             </FormLabel>
-            <Input {...field} id="tag" placeholder=" " autoComplete="off" />
+            <Input
+              {...field}
+              id="tag"
+              placeholder=" "
+              autoComplete="off"
+              boxShadow={"sm"}
+            />
             <FormHelperText textAlign={"end"}>
               Enter a key phrase related to your market.
             </FormHelperText>
@@ -187,7 +194,13 @@ export const Form2 = ({ title }) => {
                 <FormLabel htmlFor="ticker" fontWeight={"normal"}>
                   Ticker
                 </FormLabel>
-                <Input {...field} id="tag" placeholder=" " autoComplete="off" />
+                <Input
+                  {...field}
+                  id="tag"
+                  placeholder=" "
+                  autoComplete="off"
+                  boxShadow={"sm"}
+                />
                 <FormErrorMessage>{form.errors.keyword}</FormErrorMessage>
               </FormControl>
             )}
@@ -199,7 +212,13 @@ export const Form2 = ({ title }) => {
                 <FormLabel htmlFor="oracleSymbol" fontWeight={"normal"}>
                   Oracle symbol
                 </FormLabel>
-                <Input {...field} id="tag" placeholder=" " autoComplete="off" />
+                <Input
+                  {...field}
+                  id="tag"
+                  placeholder=" "
+                  autoComplete="off"
+                  boxShadow={"sm"}
+                />
                 <FormErrorMessage>{form.errors.keyword}</FormErrorMessage>
               </FormControl>
             )}
@@ -211,7 +230,13 @@ export const Form2 = ({ title }) => {
                 <FormLabel htmlFor="resolutionValue" fontWeight={"normal"}>
                   Resolution target value
                 </FormLabel>
-                <Input {...field} id="tag" placeholder=" " autoComplete="off" />
+                <Input
+                  {...field}
+                  id="tag"
+                  placeholder=" "
+                  autoComplete="off"
+                  boxShadow={"sm"}
+                />
                 <FormErrorMessage>{form.errors.keyword}</FormErrorMessage>
               </FormControl>
             )}

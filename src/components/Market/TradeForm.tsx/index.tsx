@@ -32,16 +32,15 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { createOrderUiStake, Orders } from "@monaco-protocol/client";
 import { Field, Formik } from "formik";
 import { motion } from "framer-motion";
-import Confetti from "react-dom-confetti";
 import { Step, Steps, useSteps } from "chakra-ui-steps";
 import { TokenSwapForm } from "./TokenPool";
 import { Airdrop } from "./TokenPool/AirdropForm";
 import { getPriceData, logResponse } from "@/utils/monaco";
 import { PublicKey } from "@solana/web3.js";
 import { useProgram } from "@/context/ProgramProvider";
+import { PriceDataContext } from "..";
 
 import styles from "@/styles/Home.module.css";
-import { PriceDataContext } from "..";
 
 type TradeFormItemProps = {
   label: string | React.ReactNode;
@@ -98,6 +97,7 @@ async function placeOrder(
     marketOutcomeIndex,
     priceData,
   };
+
   // Send data to db
   const response = await fetch("../api/placeOrder", {
     method: "POST",
@@ -111,7 +111,7 @@ async function placeOrder(
 }
 
 const Swap = ({ market }) => {
-  const { marketLockTimestamp, outcomes, prices } = market;
+  const { marketLockTimestamp, marketStatus, outcomes, prices } = market;
   const program = useProgram();
   const { publicKey } = useWallet();
   const { probA } = useContext(PriceDataContext);
@@ -125,10 +125,8 @@ const Swap = ({ market }) => {
     initialStep: 0,
   });
 
-  const dt = new Date(parseInt(marketLockTimestamp, 16) * 1000);
-  const day = dt.getDate().toString();
-  const month = dt.toLocaleString("default", { month: "long" });
-  const year = dt.getFullYear().toString();
+  const lockTimestamp = new Date(parseInt(marketLockTimestamp, 16) * 1000);
+  const dt = new Date();
 
   const marketBuyPrice =
     prices[outcomeIndex].against[prices[outcomeIndex].against.length - 1]
@@ -136,83 +134,93 @@ const Swap = ({ market }) => {
 
   return (
     <Stack>
-      {(activeStep === 0 && (
-        <Stack spacing={4}>
-          <Flex direction={"column"}>
-            <Text
-              color={mode("gray.500", "gray.100")}
-              fontWeight={"bold"}
-              fontSize={"sm"}
-            >
-              Market says
-            </Text>
-            <Heading
-              fontSize={"5xl"}
-              fontWeight={"semibold"}
-              color={mode("purple.500", "purple.200")}
-            >
-              {`${outcomes[0].outcome}
-              ${probA * 100}%`}
-            </Heading>
-          </Flex>
-
-          <Stack spacing={6}>
-            <Heading
-              width={"90%"}
-              fontSize={"2xl"}
-              fontWeight={"semibold"}
-              textColor={mode("gray.800", "gray.100")}
-            >
-              <Balancer>{market.title}</Balancer>
-            </Heading>
-            <Stack pt={2}>
-              <ButtonGroup
-                justifyContent={"center"}
-                size="lg"
-                spacing="4"
-                fontSize="2xl"
-                onClick={nextStep}
+      {marketStatus.settled ? (
+        <Text
+          color={mode("gray.500", "gray.100")}
+          fontWeight={"bold"}
+          fontSize={"sm"}
+        >
+          Market has settled
+        </Text>
+      ) : (
+        (activeStep === 0 && (
+          <Stack spacing={4}>
+            <Flex direction={"column"}>
+              <Text
+                color={mode("gray.500", "gray.100")}
+                fontWeight={"bold"}
+                fontSize={"sm"}
               >
-                <Button
-                  id="buy"
-                  className={mode(
-                    styles.wallet_adapter_button_trigger_light_mode,
-                    styles.wallet_adapter_button_trigger_dark_mode
-                  )}
-                  p="7"
-                  rounded={"xl"}
-                  fontSize={"xl"}
-                  width={"full"}
-                  textColor={mode("white", "#353535")}
-                  bg={mode("#353535", "gray.50")}
-                  onClick={() => setOutcomeIndex(0)}
-                >
-                  Yes
-                </Button>
+                Market says
+              </Text>
+              <Heading
+                fontSize={"5xl"}
+                fontWeight={"semibold"}
+                color={mode("purple.500", "purple.200")}
+              >
+                {`${outcomes[0].outcome}
+                ${probA * 100}%`}
+              </Heading>
+            </Flex>
 
-                <Button
-                  id="sell"
-                  variant={"outline"}
-                  p="7"
-                  fontSize={"xl"}
-                  rounded={"xl"}
-                  width="full"
-                  textColor={mode("gray.600", "whiteAlpha.700")}
-                  borderColor={mode("gray.400", "whiteAlpha.700")}
-                  transition={"all 0.3s ease"}
-                  _hover={{
-                    textColor: mode("gray.800", "white"),
-                    borderColor: mode("gray.800", "white"),
-                  }}
-                  onClick={() => setOutcomeIndex(1)}
+            <Stack spacing={6}>
+              <Heading
+                width={"90%"}
+                fontSize={"2xl"}
+                fontWeight={"semibold"}
+                textColor={mode("gray.800", "gray.100")}
+              >
+                <Balancer>{market.title}</Balancer>
+              </Heading>
+              <Stack pt={2}>
+                <ButtonGroup
+                  justifyContent={"center"}
+                  size="lg"
+                  spacing="4"
+                  fontSize="2xl"
+                  onClick={nextStep}
+                  isDisabled={!publicKey || dt >= lockTimestamp}
                 >
-                  No
-                </Button>
-              </ButtonGroup>
+                  <Button
+                    id="buy"
+                    className={mode(
+                      styles.wallet_adapter_button_trigger_light_mode,
+                      styles.wallet_adapter_button_trigger_dark_mode
+                    )}
+                    p="7"
+                    rounded={"xl"}
+                    fontSize={"xl"}
+                    width={"full"}
+                    textColor={mode("white", "#353535")}
+                    bg={mode("#353535", "gray.50")}
+                    onClick={() => setOutcomeIndex(0)}
+                  >
+                    Yes
+                  </Button>
+
+                  <Button
+                    id="sell"
+                    variant={"outline"}
+                    p="7"
+                    fontSize={"xl"}
+                    rounded={"xl"}
+                    width="full"
+                    textColor={mode("gray.600", "whiteAlpha.700")}
+                    borderColor={mode("gray.400", "whiteAlpha.700")}
+                    transition={"all 0.3s ease"}
+                    _hover={{
+                      textColor: mode("gray.800", "white"),
+                      borderColor: mode("gray.800", "white"),
+                    }}
+                    onClick={() => setOutcomeIndex(1)}
+                  >
+                    No
+                  </Button>
+                </ButtonGroup>
+              </Stack>
             </Stack>
           </Stack>
-        </Stack>
-      )) ||
+        )) ||
         (activeStep === 1 && (
           <Formik
             initialValues={{ stake: 2, limitOrder: marketBuyPrice }}
@@ -226,7 +234,7 @@ const Swap = ({ market }) => {
                   new PublicKey(market.publicKey),
                   outcomeIndex,
                   true,
-                  isMarketBuy ? marketBuyPrice : values.limitOrder,
+                  isMarketBuy ? marketBuyPrice : Number(values.limitOrder),
                   values.stake
                 );
                 setSuccess(true);
@@ -288,8 +296,8 @@ const Swap = ({ market }) => {
                             <NumberInput
                               name="limitOrder"
                               onChange={(val) => {
-                                val.replace(/^\$/, "");
-                                form.setFieldValue(Number(field.name));
+                                // val.replace(/^\$/, "");
+                                form.setFieldValue(field.name, val);
                               }}
                               onKeyPress={(e) => {
                                 e.which === 13 && e.preventDefault();
@@ -306,6 +314,7 @@ const Swap = ({ market }) => {
                                 fontSize={"sm"}
                                 textAlign={"end"}
                                 rounded={"md"}
+                                boxShadow={"sm"}
                               />
                               <NumberInputStepper>
                                 <NumberIncrementStepper />
@@ -337,6 +346,7 @@ const Swap = ({ market }) => {
                               fontSize={"sm"}
                               textAlign={"end"}
                               rounded={"md"}
+                              boxShadow={"sm"}
                             />
                             <NumberInputStepper>
                               <NumberIncrementStepper />
@@ -347,20 +357,20 @@ const Swap = ({ market }) => {
                       </Field>
                     </TradeFormItem>
                     {/* <TradeFormItem
-                      label={
-                        <HStack>
-                          <Text>Fees</Text>
-                          <Tooltip
-                            label={"A 1% fee goes to liquidity providers"}
-                            p={3}
-                          >
-                            <InfoOutlineIcon cursor={"help"} />
-                          </Tooltip>
-                        </HStack>
-                      }
-                    >
-                      1%
-                    </TradeFormItem> */}
+                        label={
+                          <HStack>
+                            <Text>Fees</Text>
+                            <Tooltip
+                              label={"A 1% fee goes to liquidity providers"}
+                              p={3}
+                            >
+                              <InfoOutlineIcon cursor={"help"} />
+                            </Tooltip>
+                          </HStack>
+                        }
+                      >
+                        1%
+                      </TradeFormItem> */}
                     <Flex justify="space-between">
                       <Text fontSize="lg" fontWeight="semibold">
                         Total
@@ -398,7 +408,9 @@ const Swap = ({ market }) => {
                         styles.wallet_adapter_button_trigger_light_mode,
                         styles.wallet_adapter_button_trigger_dark_mode
                       )}
-                      isDisabled={!publicKey || values.stake == 0}
+                      isDisabled={
+                        !publicKey || values.stake == 0 || dt >= lockTimestamp
+                      }
                       isLoading={isSubmitting}
                       textColor={mode("white", "#353535")}
                       bg={mode("#353535", "gray.50")}
@@ -414,7 +426,8 @@ const Swap = ({ market }) => {
               </form>
             )}
           </Formik>
-        ))}
+        ))
+      )}
 
       {activeStep === steps.length && (
         <Stack spacing={8}>
@@ -440,19 +453,6 @@ const Swap = ({ market }) => {
 };
 
 export const TradeForm = ({ market }) => {
-  const confettiConfig = {
-    angle: 90,
-    spread: 360,
-    startVelocity: 40,
-    elementCount: 70,
-    dragFriction: 0.12,
-    duration: 3000,
-    stagger: 3,
-    width: "10px",
-    height: "10px",
-    perspective: "500px",
-    colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"],
-  };
   const tabListStyle = {
     color: "blue.500",
     fontSize: "sm",
@@ -462,9 +462,11 @@ export const TradeForm = ({ market }) => {
     transition: "all .2s ease",
     _hover: { bg: mode("blue.50", "blue.900") },
     _selected: {
-      bg: "blue.500",
-      boxShadow:
+      bg: mode("blue.500", "blue.600"),
+      boxShadow: mode(
         "0px 1px 25px -5px rgb(66 153 225 / 48%), 0 10px 10px -5px rgb(66 153 225 / 43%)",
+        "0px 1px 25px -5px rgb(8 133 225 / 48%), 0 10px 10px -5px rgb(8 133 225 / 43%)"
+      ),
       fontSize: "sm",
       color: "white",
       fontWeight: "semibold",
@@ -472,49 +474,45 @@ export const TradeForm = ({ market }) => {
   };
 
   return (
-    <>
-      {/* TODO: refine progress bar design */}
-      <Stack
-        spacing="8"
-        rounded="2xl"
-        padding="6"
-        borderWidth={"1px"}
-        borderColor={mode("whiteAlpha.800", "")}
-        w={{ base: "full", lg: "340px" }}
-        boxShadow={"0 4px 30px rgba(0, 0, 0, 0.1)"}
-        background={mode("whiteAlpha.800", "rgba(32, 34, 46, 0.2)")}
-        backdropFilter={{ md: "blur(5px)" }}
-      >
-        <Tabs variant={"unstyled"}>
-          <TabList mb={3}>
-            <Tab sx={tabListStyle}>Swap</Tab>
-            <Tab ml={3} sx={tabListStyle}>
-              Pool
-            </Tab>
-            {/* <Tab ml={3} sx={tabListStyle}>
+    <Stack
+      spacing="8"
+      rounded="2xl"
+      padding="6"
+      borderWidth={"1px"}
+      borderColor={mode("whiteAlpha.800", "rgba(255, 255, 255, 0.11)")}
+      w={{ base: "full", lg: "340px" }}
+      boxShadow={"0 4px 30px rgba(0, 0, 0, 0.1)"}
+      background={mode("whiteAlpha.800", "rgba(32, 34, 46, 0.6)")}
+      backdropFilter={{ md: "blur(5px)" }}
+    >
+      <Tabs variant={"unstyled"}>
+        <TabList mb={3}>
+          <Tab sx={tabListStyle}>Swap</Tab>
+          <Tab ml={3} sx={tabListStyle}>
+            Pool
+          </Tab>
+          {/* <Tab ml={3} sx={tabListStyle}>
               Airdrop
             </Tab> */}
-          </TabList>
+        </TabList>
 
-          <TabPanels>
-            {/* Swap Tab */}
-            <TabPanel px={0} pb={2}>
-              <Swap market={market} />
-            </TabPanel>
+        <TabPanels>
+          {/* Swap Tab */}
+          <TabPanel px={0} pb={2}>
+            <Swap market={market} />
+          </TabPanel>
 
-            {/* Pool Tab */}
-            <TabPanel px={0}>
-              <TokenSwapForm />
-            </TabPanel>
+          {/* Pool Tab */}
+          <TabPanel px={0}>
+            <TokenSwapForm />
+          </TabPanel>
 
-            {/* Airdrop Tab for testing */}
-            <TabPanel px={0}>
-              <Airdrop />
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
-      </Stack>
-      {/* <Confetti active={!isLoading} config={confettiConfig} /> */}
-    </>
+          {/* Airdrop Tab for testing */}
+          <TabPanel px={0}>
+            <Airdrop />
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+    </Stack>
   );
 };

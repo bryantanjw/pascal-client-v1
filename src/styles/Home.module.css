@@ -303,3 +303,151 @@
   width: 0.2em;
   background: transparent;
 }
+
+.returns_canvas_container {
+  height: auto;
+  width: auto;
+  position: relative;
+}
+@media (min-width: 768px) {
+  .returns_canvas_container {
+    height: 27vh;
+  }
+}
+
+/* .gradient_border:hover:after {
+  content: "";
+  position: absolute;
+  top: calc(-1 * 2px);
+  left: calc(-1 * 2px);
+  height: calc(100% + 2px * 2);
+  width: calc(100% + 2px * 2);
+  background: linear-gradient(
+    60deg,
+    #f79533,
+    #f37055,
+    #ef4e7b,
+    #a166ab,
+    #5073b8,
+    #1098ad,
+    #07b39b,
+    #6fba82
+  );
+  border-radius: 11px;
+  z-index: -1;
+  animation: animatedgradient 3s ease alternate infinite;
+  background-size: 300% 300%;
+  transition: all 0.3s ease;
+} */
+
+@keyframes animatedgradient {
+  0% {
+    opacity: 0;
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    opacity: 1;
+    background-position: 0% 50%;
+  }
+}
+
+.homeGradientGlow::before {
+  background: var(--primary-glow);
+  border-radius: 50%;
+  width: 400px;
+  height: 300px;
+  margin-left: -300px;
+}
+
+.homeGradientGlow::after {
+  background: var(--primary-glow);
+  width: 400px;
+  height: 400px;
+}
+
+.homeGradientGlow::before,
+.homeGradientGlow::after {
+  z-index: -1;
+  content: "";
+  left: 65%;
+  top: 5%;
+  position: absolute;
+  filter: blur(45px);
+  transform: translateZ(0);
+}
+
+.marketGradientGlow::before {
+  background: var(--primary-glow);
+  border-radius: 50%;
+  width: 400px;
+  height: 300px;
+  margin-top: 180px;
+  margin-left: -100px;
+}
+
+.marketGradientGlow::after {
+  background: var(--primary-glow);
+  width: 400px;
+  height: 300px;
+  margin-left: 80px;
+}
+
+.marketGradientGlow::before,
+.marketGradientGlow::after {
+  z-index: -1;
+  content: "";
+  left: 60%;
+  top: 20%;
+  position: absolute;
+  filter: blur(45px);
+  transform: translateZ(0);
+}
+
+/* START: Portfolio */
+.portfolioCard {
+  transform: translateZ(0);
+  justify-content: center;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+.portfolioCard::before,
+.portfolioCard::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+}
+.portfolioCard::before {
+  background: rgba(255, 255, 255, 0.13);
+  align-self: center;
+}
+/* Conic Gradient Animation */
+.portfolioCard:hover::before {
+  animation: 6s rotate linear infinite;
+  background: var(--tile-border);
+}
+
+/* Inner Square */
+.portfolioCard::after {
+  inset: 0;
+  padding: 1px;
+  border-radius: var(--border-radius);
+  background-clip: content-box;
+}
+
+@media (prefers-reduced-motion) {
+  .portfolioCard::before {
+    animation: none;
+  }
+}
+@keyframes rotate {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+/* END: Portfolio */

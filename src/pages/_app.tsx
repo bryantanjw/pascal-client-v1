@@ -8,10 +8,9 @@ import { AnimatePresence } from "framer-motion";
 import { Analytics } from "@vercel/analytics/react";
 
 import WalletContextProvider from "@/context/WalletContextProvider";
-import { baseURL } from "config";
-
-import "@/styles/globals.css";
 import { ProgramProvider } from "@/context/ProgramProvider";
+import { baseURL } from "config";
+import "@/styles/globals.css";
 
 const colors = {
   brand: {
@@ -23,7 +22,7 @@ const colors = {
 const styles = {
   global: (props) => ({
     body: {
-      bg: mode("#F8FBFC", "#111927")(props),
+      bg: mode("#F5F6FA", "#111927")(props),
       textColor: mode("gray.700", "gray.50")(props),
     },
   }),
@@ -57,6 +56,26 @@ const theme = extendTheme({
               px: 1,
               my: 2,
               transformOrigin: "left top",
+            },
+          },
+        },
+      },
+    },
+    Switch: {
+      variants: {
+        glow: {
+          thumb: {
+            bg: "gray.50",
+            _dark: {
+              bg: "linear-gradient(to bottom, #FFF 0%, #A0AEC0 95%)",
+            },
+          },
+          track: {
+            p: "3px",
+            bg: "gray.800",
+            border: "solid 1px rgba(255, 255, 255, 0.2)",
+            _dark: {
+              bg: "blackAlpha.400",
             },
           },
         },

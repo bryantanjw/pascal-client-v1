@@ -25,7 +25,7 @@ const Layout = ({ children }: Props): JSX.Element => (
       top={-10}
       width={"full"}
       height={{ base: "full", md: "116%" }}
-      opacity={mode("100%", "40%")}
+      opacity={mode("100%", "30%")}
     />
 
     <motion.main
@@ -33,7 +33,7 @@ const Layout = ({ children }: Props): JSX.Element => (
       animate="enter"
       exit="exit"
       variants={variants}
-      transition={{ type: "linear" }}
+      transition={{ type: "tween", duration: 0.3 }}
       className="
                     flex flex-col items-start w-full pt-10
                     px-8 sm:px-16 md:px-36 lg:px-52 xl:px-80 2xl:px-96

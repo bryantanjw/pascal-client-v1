@@ -7,7 +7,7 @@ import {
 import { Connection, PublicKey } from "@solana/web3.js";
 import { settleMarket } from "@monaco-protocol/admin-client";
 import clientPromise from "@/lib/mongodb";
-import { getPriceData, getProgram, logResponse } from "@/utils/monaco";
+import { getProgram, logResponse } from "@/utils/monaco";
 
 // Run job every 10 minutes
 export default async function handler(
@@ -49,10 +49,11 @@ export default async function handler(
               );
 
               const winningOutcomeIndex =
-                price.price > market.resolutionValue ? 0 : 1;
+                price.price > parseInt(market.resolutionValue) ? 0 : 1;
+              console.log("winning outcome index", winningOutcomeIndex);
               const response = await settleMarket(
                 program,
-                market.publicKey,
+                new PublicKey(market.publicKey),
                 winningOutcomeIndex
               );
               logResponse(response);
@@ -60,8 +61,14 @@ export default async function handler(
               if (response.success) {
                 console.log(`Market ${market.title} settled successfully`);
               } else {
-                console.log("settleMarket", response.errors);
+                throw new Error("settleMarket error");
               }
+
+              market.updateOne(
+                { publicKey: market.publicKey },
+                { $set: { "marketStatus.open": "settled" } }
+              );
+              console.log("market status updated to settled");
             } else {
               console.log(
                 `${

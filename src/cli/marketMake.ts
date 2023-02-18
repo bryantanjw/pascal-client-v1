@@ -12,10 +12,10 @@ import { getProgram, getProcessArgs, logResponse } from "@/utils/monaco";
  * so should increase number of orders so the bias will have a cumulative effect over
  * a larger number of orders.
  */
-export async function makeMarket(marketPk: PublicKey) {
+export async function marketMake(marketPk: PublicKey) {
   const program = await getProgram();
   const numOrders = 20;
-  const minPrice = 1.2; // Initializing market buy price at 50
+  const minPrice = 1.2;
   const maxPrice = 1.8;
   const minSize = 1;
   const maxSize = 2;
@@ -78,7 +78,7 @@ export async function makeMarket(marketPk: PublicKey) {
 }
 
 const args = getProcessArgs(["marketPk"], "npm run placeForOrder");
-makeMarket(new PublicKey(args.marketPk));
+marketMake(new PublicKey(args.marketPk));
 
 async function placeBuyOrder(marketPk: PublicKey) {
   const program = await getProgram();

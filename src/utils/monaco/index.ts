@@ -13,17 +13,7 @@ import {
 import { parseMarketPricesAndPendingOrders } from "./parsers";
 import { AnchorProvider, Program, setProvider } from "@project-serum/anchor";
 
-/* To maintain a non-informative distribution while
- * still ensuring that the market price settles at 0.5,
- * we use a combination of both random and uniform distributions.
- * We generate random prices using a uniform distribution, with a range of 0 to 1,
- * and then apply a bias to the prices so that the mean of the prices is 0.5.
- *
- * Note: market price might not exactly settle at 0.5 prob after all market operations
- * so should increase number of orders so the bias will have a cumulative effect over
- * a larger number of orders.
- */
-export async function makeMarket(program, marketPk: PublicKey) {
+export async function marketMake(program, marketPk: PublicKey) {
   const numOrders = 3;
   const minPrice = 50; // Initializing market buy price at 50
   const maxPrice = 70;
@@ -104,7 +94,7 @@ export async function makeMarket(program, marketPk: PublicKey) {
     // }
     console.log("Market made successfully");
   } catch (e) {
-    console.error("makeMarket error", e);
+    console.error("marketMake error", e);
     return;
   }
 }
@@ -165,11 +155,6 @@ export async function getPriceData(program, marketPk: PublicKey) {
   const pendingOrders = parsedMarketPrices.pendingOrders.map((order) => {
     return order.account;
   });
-
-  const pendingOrderSummary = mapOrdersToOutcomesAndForAgainst(
-    outcomeTitles,
-    pendingOrders
-  );
   const marketPriceSummary = mapPricesToOutcomesAndForAgainst(
     outcomeTitles,
     parsedMarketPrices.marketPrices
@@ -185,7 +170,7 @@ export async function getPriceData(program, marketPk: PublicKey) {
   // });
 
   const data = {
-    pendingOrderSummary, // { for: [], against: [] }
+    marketTitle: parsedMarketPrices.market.title,
     marketPriceSummary,
     marketOutcomesSummary,
     liquidityTotal,
@@ -200,18 +185,8 @@ export function logResponse(response: ClientResponse<{}>) {
   function logJson(json: object) {
     console.log(JSON.stringify(json, null, 2));
   }
-
   if (!response.success) {
     console.log(response.errors);
-    // toast({
-    //   title: "Transaction failed",
-    //   description: JSON.stringify(response.errors),
-    //   status: "error",
-    //   duration: 8000,
-    //   position: "bottom-right",
-    //   isClosable: true,
-    //   containerStyle: { marginBottom: "50px" },
-    // });
   } else {
     logJson(response);
   }

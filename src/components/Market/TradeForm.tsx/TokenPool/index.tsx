@@ -40,16 +40,6 @@ export async function findAssociatedTokenAddress(
   return associatedAddress;
 }
 
-export function blurChange(publicKey) {
-  let blur;
-  if (publicKey) {
-    blur = "blur(0px)";
-  } else {
-    blur = "blur(2px)";
-  }
-  return blur;
-}
-
 export const TokenSwapForm = () => {
   const { connection } = useConnection();
   const { publicKey } = useWallet();

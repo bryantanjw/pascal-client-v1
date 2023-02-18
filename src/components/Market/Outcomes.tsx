@@ -10,7 +10,6 @@ import {
   chakra,
   Box,
   Flex,
-  Spacer,
   Collapse,
   UseCheckboxProps,
   useCheckboxGroup,
@@ -58,7 +57,7 @@ const CheckboxOption = (props: CheckboxProps) => {
   return (
     <chakra.label {...htmlProps}>
       <input {...getInputProps()} hidden />
-      <Box
+      <Flex
         borderWidth="1px"
         borderColor={mode("gray.300", "gray.700")}
         px="5"
@@ -67,6 +66,7 @@ const CheckboxOption = (props: CheckboxProps) => {
         cursor="pointer"
         fontWeight={"medium"}
         bg={mode("rgb(255,255,255,0.2)", "blackAlpha.200")}
+        transition={"all 0.2s ease"}
         fontSize={{ base: "sm", md: "md" }}
         _hover={{
           borderColor: "gray.500",
@@ -78,64 +78,57 @@ const CheckboxOption = (props: CheckboxProps) => {
         }}
         {...getCheckboxProps()}
       >
-        <Flex>
-          <Flex width={"full"} alignItems="center">
-            <Box flex={1.8}>
-              <Stack>
-                <HStack justifyContent={"space-between"}>
-                  <Text>{outcome.outcome}</Text>
-                  <Text>{(outcome.index === 0 ? probA : probB) * 100}</Text>
-                </HStack>
-                <Progress
-                  value={(outcome.index === 0 ? probA : probB) * 100}
-                  size={"sm"}
-                  rounded={"xl"}
-                  opacity={state.isChecked ? "100%" : "40%"}
-                  transition={"all 0.2s ease"}
-                  colorScheme={
-                    progressBarColorScheme[
-                      outcome.index % progressBarColorScheme.length
-                    ]
-                  }
-                />
-              </Stack>
-            </Box>
-            <Spacer />
-            <Text>
-              {
-                prices[outcome.index].against[
-                  prices[outcome.index].against.length - 1
-                ]?.price
-              }
-            </Text>
-            <Spacer />
-            <Stack>
-              <Text>
-                {userPosition && publicKey
-                  ? Math.abs(parseInt(userPosition.toString(16), 16)) / 10 ** 6
-                  : 0.0}
-              </Text>
-            </Stack>
-          </Flex>
-
-          <Flex
-            display={{ base: "none", md: "block" }}
-            direction={"column"}
-            pl={5}
-          >
-            <Checkbox
-              as={Box}
-              isChecked={state.isChecked}
-              data-checked={state.isChecked ? "" : undefined}
-              fontSize="xl"
+        <Flex
+          width={"full"}
+          alignItems="center"
+          justifyContent={"space-between"}
+        >
+          <Stack width={"34%"}>
+            <HStack justifyContent={"space-between"}>
+              <Text>{outcome.outcome}</Text>
+              <Text>{(outcome.index === 0 ? probA : probB) * 100}</Text>
+            </HStack>
+            <Progress
+              value={(outcome.index === 0 ? probA : probB) * 100}
+              size={"sm"}
+              rounded={"xl"}
+              opacity={state.isChecked ? "100%" : "40%"}
+              transition={"all 0.2s ease"}
               colorScheme={
-                checkoxColorScheme[outcome.index % checkoxColorScheme.length]
+                progressBarColorScheme[
+                  outcome.index % progressBarColorScheme.length
+                ]
               }
             />
-            <Text visibility={"hidden"}>&nbsp;</Text>
-          </Flex>
+          </Stack>
+          <Text>
+            {
+              prices[outcome.index].against[
+                prices[outcome.index].against.length - 1
+              ]?.price
+            }
+          </Text>
+          <Stack minW={12}>
+            <Text>
+              $
+              {userPosition && publicKey
+                ? parseInt(userPosition.toString(16), 16) / 10 ** 6
+                : 0.0}
+            </Text>
+          </Stack>
         </Flex>
-      </Box>
+
+        <Flex display={{ base: "none", md: "block" }} direction={"column"}>
+          <Checkbox
+            as={Box}
+            isChecked={state.isChecked}
+            data-checked={state.isChecked ? "" : undefined}
+            colorScheme={
+              checkoxColorScheme[outcome.index % checkoxColorScheme.length]
+            }
+          />
+        </Flex>
+      </Flex>
     </chakra.label>
   );
 };
@@ -144,7 +137,7 @@ const Outcomes = ({ market }) => {
   const program = useProgram();
   const { publicKey } = useWallet();
   const { outcomes, prices } = market;
-  const [marketPosition, setMarketPosition] = useState<MarketPosition>();
+  const [marketPosition, setMarketPosition] = useState<any>();
 
   useEffect(() => {
     if (publicKey) {
@@ -179,9 +172,9 @@ const Outcomes = ({ market }) => {
         fontSize={{ base: "2xs", md: "xs" }}
         justifyContent={"space-between"}
       >
-        <Text>OUTCOME / PROBABILITY</Text>
-        <Text pl={{ md: 16 }}>PRICE (USDC)</Text>
-        <Text pr={{ md: 7 }}>YOUR POSITION</Text>
+        <Text minW={12}>OUTCOME / PROBABILITY</Text>
+        <Text minW={12}>PRICE (USDC)</Text>
+        <Text minW={12}>YOUR POSITION</Text>
       </Flex>
       <Stack width={"full"} spacing={3}>
         {outcomes?.map((outcome, index: number) => {
@@ -199,7 +192,9 @@ const Outcomes = ({ market }) => {
                 key={index}
                 outcome={outcome}
                 prices={prices}
-                userPosition={marketPosition?.marketOutcomeSums[index]}
+                userPosition={
+                  marketPosition?.outcomeMaxExposure[index === 0 ? 1 : 0]
+                }
                 {...getCheckboxProps({
                   value: index.toString(), // <-- getCheckboxProps value only accepts String
                 })}

@@ -5,7 +5,7 @@ import {
   Text,
   useCheckbox,
   UseCheckboxProps,
-  useColorModeValue,
+  useColorModeValue as mode,
   useId,
   Image,
 } from "@chakra-ui/react";
@@ -24,15 +24,15 @@ const ToggleButton = (props: BoxProps) => (
     borderRadius="3xl"
     cursor="pointer"
     transition="all 0.2s ease"
-    bg={useColorModeValue("gray.100", "gray.700")}
+    bg={mode("gray.100", "gray.700")}
     _hover={{
-      borderColor: useColorModeValue("black", "white"),
+      borderColor: mode("black", "white"),
       bg: "transparent",
     }}
     _focus={{ shadow: "outline", boxShadow: "none" }}
     _checked={{
-      bg: useColorModeValue("black", "white"),
-      color: useColorModeValue("white", "black"),
+      bg: mode("black", "white"),
+      color: mode("white", "black"),
     }}
     {...props}
   />
@@ -45,10 +45,10 @@ export const FilterToggle = (props: ToggleButtonProps) => {
   const id = useId();
 
   const toggledIcon = {
-    filter: useColorModeValue("invert(100%)", "invert(0%)"),
+    filter: mode("invert(100%)", "invert(0%)"),
   };
   const notToggledIcon = {
-    filter: useColorModeValue("invert(0%)", "invert(100%)"),
+    filter: mode("invert(0%)", "invert(100%)"),
   };
 
   return (
@@ -56,19 +56,15 @@ export const FilterToggle = (props: ToggleButtonProps) => {
       <input {...getInputProps()} aria-labelledby={id} />
       <ToggleButton {...getCheckboxProps()} id={id}>
         <HStack spacing={1}>
-          {/* change icon filter based on toggle checked state */}
           <Image
             src={iconUrl}
             alt={title}
             width={{ base: "11px", md: "15px" }}
             sx={state.isChecked ? toggledIcon : notToggledIcon}
           />
-
-          <Box>
-            <Text fontSize={{ base: "10px", md: "sm" }} fontWeight="bold">
-              {title}
-            </Text>
-          </Box>
+          <Text fontSize={{ base: "10px", md: "sm" }} fontWeight="bold">
+            {title}
+          </Text>
         </HStack>
       </ToggleButton>
     </label>
