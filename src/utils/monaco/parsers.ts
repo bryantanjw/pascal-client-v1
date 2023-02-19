@@ -32,7 +32,7 @@ export function parseMarketPricesAndPendingOrders(
       onlyShowOrdersInQueue
     );
   });
-  marketPricesAndPendingOrders.pendingOrders.map((order) => {
+  marketPricesAndPendingOrders.pendingOrders.map((order: any) => {
     order.account = parseOrderAccount(order.account, mintDecimals);
   });
   return marketPricesAndPendingOrders;

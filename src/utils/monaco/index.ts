@@ -152,7 +152,7 @@ export async function getPriceData(program, marketPk: PublicKey) {
   const outcomeTitles = marketOutcomeAccounts.map((outcome) => {
     return outcome.title;
   });
-  const pendingOrders = parsedMarketPrices.pendingOrders.map((order) => {
+  const pendingOrders = parsedMarketPrices.pendingOrders.map((order: any) => {
     return order.account;
   });
   const marketPriceSummary = mapPricesToOutcomesAndForAgainst(

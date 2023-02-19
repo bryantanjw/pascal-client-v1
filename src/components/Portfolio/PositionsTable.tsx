@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
-import useSWR from "swr";
+import React, { useContext, useState } from "react";
 import {
   FormControl,
   FormLabel,
@@ -30,7 +29,6 @@ import {
 } from "@tanstack/react-table";
 import { PublicKey } from "@solana/web3.js";
 import ChakraNextLink from "../ChakraNextLink";
-import { calculateProbability } from "@/utils/helpers";
 import { PositionsContext } from ".";
 
 import styles from "@/styles/Home.module.css";
@@ -107,7 +105,7 @@ const columns = [
 ];
 
 type DataTableProps<Data extends object> = {
-  data: Data[];
+  data: any[];
   columns: ColumnDef<Data, any>[];
   showHeader?: boolean;
 };

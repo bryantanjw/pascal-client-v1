@@ -16,8 +16,8 @@ const nextConfig = {
     // your project has type errors.
     // !! WARN !!
     // Only ignoring this to resolve Type errors in @monaco-protocol/admin-client package
-    // Set to false when not building with the above package.
-    ignoreBuildErrors: false,
+    // Flag to false when not building with the above package.
+    ignoreBuildErrors: true,
   },
 };
 
