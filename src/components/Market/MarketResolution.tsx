@@ -16,10 +16,18 @@ const MarketResolution = ({ market }) => {
   const year = dt.getFullYear().toString();
 
   return (
-    <Stack spacing={3} direction={"column"} width={{ base: "80%", md: "full" }}>
+    <Stack
+      spacing={3}
+      direction={"column"}
+      width={{ base: "81%", md: "full" }}
+      display={"flex"}
+    >
       <Box
-        borderColor={mode("purple.200", "purple.900")}
-        bg={mode("purple.100", "purple.800")}
+        borderColor={mode(
+          "rgba(128, 90, 213, 0.5)",
+          "rgba(214, 188, 250, 0.6)"
+        )}
+        bg={mode("rgb(128,90,213,0.2)", "rgb(214,188,250,0.1)")}
         mt={3}
         borderWidth={1}
         rounded={"md"}
@@ -29,8 +37,11 @@ const MarketResolution = ({ market }) => {
       </Box>
 
       <Box
-        borderColor={mode("teal.100", "teal.900")}
-        bg={mode("teal.50", "teal.800")}
+        borderColor={mode(
+          "rgba(44, 124, 124, 0.5)",
+          "rgba(129, 230, 217, 0.5)"
+        )}
+        bg={mode("rgb(44,124,124,0.2)", "rgb(129,230,217,0.08)")}
         borderWidth={1}
         rounded={"md"}
         p={4}

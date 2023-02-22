@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react";
+import useSWR from "swr";
 import {
-  Box,
   Heading,
   Text,
   Center,
@@ -25,10 +25,9 @@ import PositionsTable from "components/Portfolio/PositionsTable";
 import ReturnsGraph from "components/Portfolio/ReturnsGraph";
 import ActivityTable from "components/Portfolio/ActivityTable";
 import { useProgram } from "@/context/ProgramProvider";
+import { calculateProbability } from "@/utils/helpers";
 
 import styles from "@/styles/Home.module.css";
-import { calculateProbability } from "@/utils/helpers";
-import useSWR from "swr";
 
 export const PositionsContext = createContext<any>({});
 
@@ -105,11 +104,12 @@ const Portfolio = () => {
                 market.prices[1].against[market.prices[1].against.length - 1]
                   ?.price
               ).toFixed(2);
-              const totalStake =
+              const totalStake = (
                 parseFloat(position.account.outcomeMaxExposure[0].toString()) /
                   10 ** 6 +
                 parseFloat(position.account.outcomeMaxExposure[1].toString()) /
-                  10 ** 6;
+                  10 ** 6
+              ).toFixed(2);
 
               return {
                 ...position,
@@ -134,13 +134,13 @@ const Portfolio = () => {
   return (
     <>
       <Heading size="xl" mb="10">
-        Your Portfolio_ &nbsp; 👋🏼
+        Your Portfolio_
       </Heading>
 
       {!publicKey ? (
         <Center py={12} flexDirection={"column"}>
           <Text py={4} fontSize={"lg"}>
-            Connect your wallet to view your portfolio
+            Connect your wallet to view portfolio
           </Text>
           <WalletMultiButton
             className={mode(
@@ -154,7 +154,7 @@ const Portfolio = () => {
           <Stack spacing={12}>
             <Stats />
 
-            <Tabs index={tabIndex} variant={"unstyled"}>
+            <Tabs pt={4} index={tabIndex} variant={"unstyled"}>
               <FormControl display={"flex"} justifyContent={"center"}>
                 <TabList
                   textColor={mode("gray.500", "gray.500")}
@@ -204,9 +204,9 @@ const Portfolio = () => {
           overflow={"hidden"}
           src={"/portfolioBgGlow.png"}
           alt="Pascal Portfolio"
-          opacity={0.4}
+          opacity={0.3}
           left={"30%"}
-          width={"120%"}
+          width={"100%"}
           height={"180%"}
           top={"10%"}
           transform={"rotate(300deg)"}

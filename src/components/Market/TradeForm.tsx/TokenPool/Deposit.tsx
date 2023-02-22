@@ -27,7 +27,7 @@ import {
 } from "../../../../utils/constants";
 import { TokenSwap, TOKEN_SWAP_PROGRAM_ID } from "@solana/spl-token-swap";
 import * as token from "@solana/spl-token";
-import { MarketLiquidityInfo, CustomTooltip } from "./LiquidityInfo";
+import { MarketLiquidityInfo, LiquidityTooltip } from "./LiquidityInfo";
 import styles from "@/styles/Home.module.css";
 
 export const DepositSingleTokenType: FC = (props: {
@@ -170,6 +170,7 @@ export const DepositSingleTokenType: FC = (props: {
               onChange={handleChange}
               onBlur={handleBlur}
               value={values.depositAmount}
+              boxShadow="sm"
               placeholder="Enter amount to deposit"
               autoComplete="off"
               rounded={"xl"}
@@ -197,7 +198,7 @@ export const DepositSingleTokenType: FC = (props: {
               liquidity before the event occurs.
             </Alert>
 
-            <CustomTooltip
+            <LiquidityTooltip
               publicKey={publicKey}
               label={"Connect wallet to deposit"}
             >
@@ -227,7 +228,7 @@ export const DepositSingleTokenType: FC = (props: {
                   )}
                 </ScaleFade>
               </Button>
-            </CustomTooltip>
+            </LiquidityTooltip>
           </form>
         )}
       </Formik>

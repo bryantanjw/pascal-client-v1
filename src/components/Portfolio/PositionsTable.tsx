@@ -1,4 +1,6 @@
 import React, { useContext, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import {
   FormControl,
   FormLabel,
@@ -14,11 +16,19 @@ import {
   Text,
   Skeleton,
   ScaleFade,
+  Center,
+  Button,
+  useDisclosure,
+  IconButton,
 } from "@chakra-ui/react";
 import { Select as ReactSelect, chakraComponents } from "chakra-react-select";
 import { BsSearch } from "react-icons/bs";
 import { createColumnHelper } from "@tanstack/react-table";
-import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
+import {
+  ChevronRightIcon,
+  TriangleDownIcon,
+  TriangleUpIcon,
+} from "@chakra-ui/icons";
 import {
   useReactTable,
   flexRender,
@@ -28,10 +38,11 @@ import {
   getSortedRowModel,
 } from "@tanstack/react-table";
 import { PublicKey } from "@solana/web3.js";
-import ChakraNextLink from "../ChakraNextLink";
 import { PositionsContext } from ".";
+import PositionModal from "./PositionModal";
 
 import styles from "@/styles/Home.module.css";
+import { formatNumber } from "@/utils/helpers";
 
 // TODO: add sorting table column function using react-table
 // example: https://codesandbox.io/s/mjk1v?file=/src/makeData.js:19-24
@@ -99,7 +110,7 @@ const columns = [
     header: "Status",
   }),
   columnHelper.accessor((row) => row.totalStake, {
-    cell: (info) => info.getValue() + " USDC",
+    cell: (info) => formatNumber(info.getValue()) + " USDC",
     header: "Stake",
   }),
 ];
@@ -126,6 +137,17 @@ const DataTable = <Data extends object>({
       sorting,
     },
   });
+
+  function renderCell(row, index: number) {
+    return flexRender(
+      row.getVisibleCells()[index].column.columnDef.cell,
+      row.getVisibleCells()[index].getContext()
+    );
+  }
+
+  const { isOpen, onClose, onOpen } = useDisclosure();
+  const initialRef = React.useRef(null);
+  const finalRef = React.useRef(null);
 
   return (
     <Stack my={1}>
@@ -175,56 +197,50 @@ const DataTable = <Data extends object>({
               const delay = index * 0.12;
 
               return (
-                <ChakraNextLink
-                  key={row.id}
-                  to={`/market/${row.original.account.market.toBase58()}`}
-                  _hover={{ textDecoration: "none" }}
-                >
-                  <ScaleFade in={true} delay={delay}>
-                    <Flex
-                      className={styles.portfolioCard}
-                      py={5}
-                      px={6}
-                      justifyContent="space-between"
-                      alignItems={"center"}
-                      transition={"all 0.2s ease"}
-                      minH={"65px"}
-                      boxShadow={"0px 2px 8px 0px #0000001a"}
-                      _hover={{
-                        shadow: mode("0px 2px 8px 3px #0000001a", ""),
-                        transform: mode("scale(1.018)", ""),
-                      }}
-                      _after={{
-                        bg: mode("#FBFBFD", ""),
-                        bgImage: mode(
-                          "none",
-                          "linear-gradient(to bottom left, rgb(26,32,44), rgb(26,32,44) 120%)"
-                        ),
-                      }}
-                      _before={{
-                        ml: -7,
-                        width: "130%",
-                        height: "180vh",
-                      }}
-                      letterSpacing={"wide"}
-                    >
+                <ScaleFade key={row.id} in={true} delay={delay}>
+                  <Stack
+                    transition="all 0.2s ease"
+                    minH="80px"
+                    rounded="2xl"
+                    p="6"
+                    borderWidth={"1px"}
+                    borderColor={mode("gray.300", "rgba(255, 255, 255, 0.11)")}
+                    background={mode(
+                      "transparent",
+                      "linear-gradient(to bottom right, rgba(31,33,45,0.5), rgba(200,200,200,0.01) 100%)"
+                    )}
+                    backdropFilter={{ md: "blur(15px)" }}
+                    _hover={{
+                      background: mode(
+                        "linear-gradient(to bottom right, rgba(255,255,255,1), rgba(255,255,255,0.8) 100%)",
+                        "linear-gradient(to bottom right, rgba(31,33,45,0.7), rgba(200,200,200,0.1) 100%)"
+                      ),
+                      boxShadow: "lg",
+                      borderColor: mode("", "rgba(255, 255, 255, 0.3)"),
+                      cursor: "pointer",
+                    }}
+                    _focus={{
+                      background: mode(
+                        "linear-gradient(to bottom right, rgba(255,255,255,1), rgba(255,255,255,0.8) 100%)",
+                        "linear-gradient(to bottom right, rgba(31,33,45,0.7), rgba(200,200,200,0.1) 100%)"
+                      ),
+                      boxShadow: "lg",
+                      borderColor: mode("", "rgba(255, 255, 255, 0.3)"),
+                      cursor: "pointer",
+                    }}
+                    letterSpacing={"wide"}
+                    onClick={onOpen}
+                  >
+                    <Flex justifyContent="space-between" alignItems="center">
                       <Stack spacing={0} width={"65%"}>
-                        <Text>
-                          {flexRender(
-                            row.getVisibleCells()[0].column.columnDef.cell,
-                            row.getVisibleCells()[0].getContext()
-                          )}
-                        </Text>
+                        <Text>{renderCell(row, 0)}</Text>
                         <HStack alignItems={"center"}>
                           <Text
                             fontWeight={"semibold"}
                             fontSize={"lg"}
                             color={mode("purple.500", "purple.200")}
                           >
-                            {flexRender(
-                              row.getVisibleCells()[1].column.columnDef.cell,
-                              row.getVisibleCells()[1].getContext()
-                            )}
+                            {renderCell(row, 1)}
                           </Text>
                           <Text>•</Text>
                           <Text
@@ -233,27 +249,41 @@ const DataTable = <Data extends object>({
                             casing={"capitalize"}
                             color={mode("gray.500", "gray.400")}
                           >
-                            {flexRender(
-                              row.getVisibleCells()[2].column.columnDef.cell,
-                              row.getVisibleCells()[2].getContext()
-                            )}
+                            {renderCell(row, 2)}
                           </Text>
                         </HStack>
                       </Stack>
-                      <Text fontWeight={"semibold"} fontSize={"lg"}>
-                        {flexRender(
-                          row.getVisibleCells()[3].column.columnDef.cell,
-                          row.getVisibleCells()[3].getContext()
-                        )}
-                      </Text>
+
+                      <HStack spacing={6} alignItems={"center"}>
+                        <Text fontWeight={"semibold"} fontSize={"lg"}>
+                          {renderCell(row, 3)}
+                        </Text>
+                        <IconButton
+                          as={Link}
+                          href={`/market/${row.original.account.market.toBase58()}`}
+                          onClick={(e) => e.stopPropagation()}
+                          aria-label="Navigate to market"
+                          icon={<ChevronRightIcon />}
+                          fontSize="3xl"
+                          transition={"all .2s ease"}
+                          variant={"ghost"}
+                          bg={"gray.800"}
+                          color={"gray.50"}
+                          _hover={{
+                            transform: "scale(1.08)",
+                          }}
+                        />
+                      </HStack>
                     </Flex>
-                  </ScaleFade>
-                </ChakraNextLink>
+                  </Stack>
+                </ScaleFade>
               );
             })}
           </Stack>
         </>
       )}
+
+      <PositionModal isOpen={isOpen} onClose={onClose} />
     </Stack>
   );
 };
@@ -265,17 +295,75 @@ const TableContent = () => {
     <>
       {positions ? (
         positions.length === 0 ? (
-          <Text>No market positions found</Text>
+          <HStack as={Center} flexDirection={"row"} spacing={12} pt={2} pb={12}>
+            <ScaleFade in={true} initialScale={0.9}>
+              <Image
+                src="/emptyState.png"
+                alt="Empty Pascal Position Table"
+                width={250}
+                height={250}
+              />
+            </ScaleFade>
+
+            <ScaleFade in={true} initialScale={0.9} delay={0.1}>
+              <Stack spacing={8}>
+                <Text fontSize={"xl"}>You don't have any positions</Text>
+                <Link href={"/"}>
+                  <Button
+                    className={mode(
+                      styles.wallet_adapter_button_trigger_light_mode,
+                      styles.wallet_adapter_button_trigger_dark_mode
+                    )}
+                    p="5"
+                    rounded={"xl"}
+                    fontSize={"lg"}
+                    boxShadow={"xl"}
+                    textColor={mode("white", "#353535")}
+                    bg={mode("#353535", "gray.50")}
+                  >
+                    Start Trading
+                  </Button>
+                </Link>
+              </Stack>
+            </ScaleFade>
+          </HStack>
         ) : (
           <DataTable columns={columns} data={positions} showHeader={false} />
         )
       ) : (
-        Array(3)
+        Array(2)
           .fill(0)
           .map((_, i) => (
-            <Stack key={i} my={2}>
-              <Skeleton borderRadius={"10px"} height="45px" />
-            </Stack>
+            <Flex
+              className={styles.portfolioCard}
+              key={i}
+              my={2}
+              py={5}
+              px={6}
+              justifyContent="space-between"
+              alignItems={"center"}
+              minH={"65px"}
+              boxShadow={"0px 2px 8px 0px #0000001a"}
+              bg={mode("#FBFBFD", "")}
+              _before={{
+                ml: -7,
+                width: "130%",
+                height: "210vh",
+              }}
+              _after={{
+                bgImage: mode(
+                  "none",
+                  "linear-gradient(to bottom right, rgb(26,32,44,1), rgb(26,32,44,1) 120%)"
+                ),
+              }}
+              letterSpacing={"wide"}
+            >
+              <Stack>
+                <Skeleton rounded={"md"} width={"200px"} height="18px" />
+                <Skeleton rounded={"md"} width={"100px"} height="18px" />
+              </Stack>
+              <Skeleton rounded={"md"} width={"80px"} height="20px" />
+            </Flex>
           ))
       )}
     </>

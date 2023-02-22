@@ -31,7 +31,6 @@ export const getStaticProps = async ({ params: { slug } }) => {
       .collection("markets")
       .find({ publicKey: slug })
       .toArray();
-    console.log("market", market);
     return {
       props: { market: JSON.parse(JSON.stringify(market[0])) },
     };

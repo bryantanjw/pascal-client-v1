@@ -76,7 +76,7 @@ const AddressesInfo = (props) => {
 const LiquidityInfo = (props) => {
   const { label, value, children } = props;
   return (
-    <Flex justify="space-between" fontSize="xs">
+    <Flex justify="space-between" fontSize="xs" alignItems={"center"}>
       <Text fontWeight="medium" color={mode("gray.600", "gray.400")}>
         {label}
       </Text>
@@ -190,14 +190,17 @@ export const MarketLiquidityInfo = (props) => {
   );
 };
 
-export const CustomTooltip = (props) => {
+export const LiquidityTooltip = (props) => {
   const { publicKey, label, children } = props;
 
   return (
     <Tooltip
       hasArrow
-      label={label}
-      isDisabled={publicKey ? true : false}
+      isDisabled={false}
+      label={"Liquidity provisioning coming soon."}
+      // Uncomment below to enable tooltip when LP feature is ready
+      // label={label}
+      // isDisabled={publicKey ? true : false}
       p={3}
       rounded={"md"}
       placement={"auto"}

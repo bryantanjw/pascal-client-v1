@@ -167,11 +167,11 @@ const NewsListItem = (props: NewsListItemProp) => {
 
   return (
     <Link href={url} isExternal _hover={{ textDecoration: "none" }}>
-      <Box
+      <Flex
         borderWidth={"1px"}
         p={{ base: 4, md: 5 }}
         rounded={"lg"}
-        width={{ base: "80%", md: "full" }}
+        width={{ base: "82%", md: "full" }}
         height={{ base: "150px", md: "full" }}
         marginTop={1}
         display="flex"
@@ -190,6 +190,7 @@ const NewsListItem = (props: NewsListItemProp) => {
               objectFit="cover"
               fallback={
                 <Skeleton
+                  borderRadius="md"
                   width={{ base: "110px", md: "150px" }}
                   height={{ base: "fit", md: "100px" }}
                 />
@@ -234,7 +235,7 @@ const NewsListItem = (props: NewsListItemProp) => {
             </Text>
           </Suspense>
         </Stack>
-      </Box>
+      </Flex>
     </Link>
   );
 };

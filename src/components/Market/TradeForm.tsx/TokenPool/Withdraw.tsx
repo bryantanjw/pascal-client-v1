@@ -28,7 +28,7 @@ import {
 import { TokenSwap, TOKEN_SWAP_PROGRAM_ID } from "@solana/spl-token-swap";
 import * as token from "@solana/spl-token";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import { MarketLiquidityInfo, CustomTooltip } from "./LiquidityInfo";
+import { MarketLiquidityInfo, LiquidityTooltip } from "./LiquidityInfo";
 import styles from "@/styles/Home.module.css";
 
 export const WithdrawSingleTokenType: FC = (props: {
@@ -170,6 +170,7 @@ export const WithdrawSingleTokenType: FC = (props: {
               onChange={handleChange}
               onBlur={handleBlur}
               value={values.withdrawAmount}
+              boxShadow="sm"
               placeholder="Enter amount to withdraw"
               autoComplete="off"
               rounded={"xl"}
@@ -184,7 +185,7 @@ export const WithdrawSingleTokenType: FC = (props: {
               TOKEN_SWAP_PROGRAM_ID={TOKEN_SWAP_PROGRAM_ID}
             />
 
-            <CustomTooltip
+            <LiquidityTooltip
               publicKey={publicKey}
               label={"Connect wallet to withdraw"}
             >
@@ -214,7 +215,7 @@ export const WithdrawSingleTokenType: FC = (props: {
                   )}
                 </ScaleFade>
               </Button>
-            </CustomTooltip>
+            </LiquidityTooltip>
           </form>
         )}
       </Formik>

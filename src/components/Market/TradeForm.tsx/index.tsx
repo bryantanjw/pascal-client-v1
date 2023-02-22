@@ -484,10 +484,11 @@ export const TradeForm = ({ market }) => {
       boxShadow={"0 4px 30px rgba(0, 0, 0, 0.1)"}
       background={mode("whiteAlpha.800", "rgba(32, 34, 46, 0.6)")}
       backdropFilter={{ md: "blur(5px)" }}
+      mb={{ base: "12", lg: "0" }}
     >
       <Tabs variant={"unstyled"}>
         <TabList mb={3}>
-          <Tab sx={tabListStyle}>Swap</Tab>
+          <Tab sx={tabListStyle}>Trade</Tab>
           <Tab ml={3} sx={tabListStyle}>
             Pool
           </Tab>
@@ -497,12 +498,10 @@ export const TradeForm = ({ market }) => {
         </TabList>
 
         <TabPanels>
-          {/* Swap Tab */}
           <TabPanel px={0} pb={2}>
             <Swap market={market} />
           </TabPanel>
 
-          {/* Pool Tab */}
           <TabPanel px={0}>
             <TokenSwapForm />
           </TabPanel>

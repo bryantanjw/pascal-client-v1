@@ -112,7 +112,7 @@ const TableContent = () => {
 
   return (
     <Box
-      bg={mode("whiteAlpha.800", "rgba(32, 34, 46, 0.7)")}
+      bg={mode("whiteAlpha.800", "rgba(32, 34, 46, 0.3)")}
       backdropFilter={{ base: "", md: "blur(15px)" }}
       boxShadow={"lg"}
       my={1}

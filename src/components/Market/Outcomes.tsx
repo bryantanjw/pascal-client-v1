@@ -42,11 +42,10 @@ const CheckboxOption = (props: CheckboxProps) => {
     useCheckbox(radioProps);
   const { probA, probB } = useContext(PriceDataContext);
 
-  const progressBarColorScheme = ["purple", "teal", "pink"];
-  const checkoxColorScheme = ["purple", "teal", "pink"];
+  const highlightColor = ["purple", "teal", "pink"];
   const bgColorScheme = [
     mode("rgb(128,90,213,0.2)", "rgb(214,188,250,0.1)"),
-    mode("rgb(44,124,124,0.2)", "rgb(129,230,217,0.1)"),
+    mode("rgb(44,124,124,0.2)", "rgb(129,230,217,0.08)"),
     "pink",
   ];
   const borderColorScheme = [
@@ -62,10 +61,14 @@ const CheckboxOption = (props: CheckboxProps) => {
         borderColor={mode("gray.300", "gray.700")}
         px="5"
         py="4"
+        mb={-3}
         rounded="2xl"
         cursor="pointer"
         fontWeight={"medium"}
-        bg={mode("rgb(255,255,255,0.2)", "blackAlpha.200")}
+        bg={mode(
+          "rgb(255,255,255,0.2)",
+          "linear-gradient(to bottom right, rgba(32, 34, 46, 0.3), rgba(32, 34, 46, 0.1))"
+        )}
         transition={"all 0.2s ease"}
         fontSize={{ base: "sm", md: "md" }}
         _hover={{
@@ -86,7 +89,9 @@ const CheckboxOption = (props: CheckboxProps) => {
           <Stack width={"34%"}>
             <HStack justifyContent={"space-between"}>
               <Text>{outcome.outcome}</Text>
-              <Text>{(outcome.index === 0 ? probA : probB) * 100}</Text>
+              <Text>
+                {Math.round((outcome.index === 0 ? probA : probB) * 100)}
+              </Text>
             </HStack>
             <Progress
               value={(outcome.index === 0 ? probA : probB) * 100}
@@ -95,9 +100,7 @@ const CheckboxOption = (props: CheckboxProps) => {
               opacity={state.isChecked ? "100%" : "40%"}
               transition={"all 0.2s ease"}
               colorScheme={
-                progressBarColorScheme[
-                  outcome.index % progressBarColorScheme.length
-                ]
+                highlightColor[outcome.index % highlightColor.length]
               }
             />
           </Stack>
@@ -108,7 +111,7 @@ const CheckboxOption = (props: CheckboxProps) => {
               ]?.price
             }
           </Text>
-          <Stack minW={12}>
+          <Stack minW={12} mr={6}>
             <Text>
               $
               {userPosition && publicKey
@@ -123,9 +126,7 @@ const CheckboxOption = (props: CheckboxProps) => {
             as={Box}
             isChecked={state.isChecked}
             data-checked={state.isChecked ? "" : undefined}
-            colorScheme={
-              checkoxColorScheme[outcome.index % checkoxColorScheme.length]
-            }
+            colorScheme={highlightColor[outcome.index % highlightColor.length]}
           />
         </Flex>
       </Flex>
@@ -199,20 +200,15 @@ const Outcomes = ({ market }) => {
                   value: index.toString(), // <-- getCheckboxProps value only accepts String
                 })}
               />
-              <Collapse
-                style={{
-                  overflow: "visible",
-                  marginBottom: "15px",
-                }}
-                in={isOpen}
-                animateOpacity
-              >
-                <OrderBook
-                  outcomes={outcomes}
-                  outcomeIndex={index}
-                  prices={prices}
-                />
-              </Collapse>
+              <Box>
+                <Collapse in={isOpen} animateOpacity>
+                  <OrderBook
+                    outcomes={outcomes}
+                    outcomeIndex={index}
+                    prices={prices}
+                  />
+                </Collapse>
+              </Box>
             </>
           );
         })}

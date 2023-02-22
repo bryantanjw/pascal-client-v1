@@ -42,4 +42,5 @@ MVP Demo is live on devnet at [pascal.fi](https://www.pascal.fi/)
 ## To-Dos
 
 - [ ] Integration with Human Protocol for resolving arbitrary markets
-- [ ] Comprehensive Portfolio page
+- [ ] Notifications and monitoring for markets
+- [x] Portfolio page

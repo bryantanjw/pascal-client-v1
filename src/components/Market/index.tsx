@@ -150,7 +150,7 @@ const Market = ({ market }) => {
                 transition={"all 0.25s ease"}
               >
                 <IconButton
-                  aria-label="back"
+                  aria-label="Back to markets"
                   size={"lg"}
                   icon={<ArrowBackIcon />}
                   variant={"unstyled"}
@@ -186,7 +186,6 @@ const Market = ({ market }) => {
                 </Tabs>
 
                 <Tabs isLazy colorScheme={"black"}>
-                  {" "}
                   {/* isLazy defers rendering until tab is selected */}
                   <TabList>
                     <Tab sx={tabListStyle} mr={8}>
@@ -245,14 +244,14 @@ const Market = ({ market }) => {
 
                           {/* Discussion */}
                           {/* <Stack py={3} direction={'column'}>
-                                                <HStack spacing={3}>
-                                                    <Image filter={iconColor} alt='Discussion' width={'18px'} src={`/Discussion.png`} />
-                                                    <Heading sx={sectionHeadingStyle}>Discussion</Heading>
-                                                </HStack>
+                              <HStack spacing={3}>
+                                  <Image filter={iconColor} alt='Discussion' width={'18px'} src={`/Discussion.png`} />
+                                  <Heading sx={sectionHeadingStyle}>Discussion</Heading>
+                              </HStack>
 
-                                                <DiscussionForm />
-                                                <DiscussionList />
-                                            </Stack> */}
+                              <DiscussionForm />
+                              <DiscussionList />
+                          </Stack> */}
                         </Stack>
                       </Flex>
                     </TabPanel>

@@ -114,11 +114,11 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
         backdropFilter={"blur(5px)"}
         justifyContent={"center"}
         rounded={"2xl"}
+        mt={3}
         borderWidth={1}
         borderColor={mode("#E5E7EB", "rgb(255,255,255,0.1)")}
         background={mode("#F8F9FA", "rgba(32, 34, 46, 0.2)")}
         spacing={0}
-        boxShadow={"lg"}
       >
         <Flex
           px={6}

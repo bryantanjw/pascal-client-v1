@@ -20,7 +20,7 @@ const ToggleButton = (props: BoxProps) => (
   <Box
     borderWidth="1px"
     py={1}
-    px={{ base: 1, md: 3 }}
+    px={{ base: 5, md: 3 }}
     borderRadius="3xl"
     cursor="pointer"
     transition="all 0.2s ease"
@@ -38,7 +38,7 @@ const ToggleButton = (props: BoxProps) => (
   />
 );
 
-export const FilterToggle = (props: ToggleButtonProps) => {
+const FilterToggle = (props: ToggleButtonProps) => {
   const { iconUrl, title, ...rest } = props;
   const { getCheckboxProps, getInputProps, getLabelProps, state } =
     useCheckbox(rest);
@@ -61,6 +61,7 @@ export const FilterToggle = (props: ToggleButtonProps) => {
             alt={title}
             width={{ base: "11px", md: "15px" }}
             sx={state.isChecked ? toggledIcon : notToggledIcon}
+            ml={{ base: -2, md: 0 }}
           />
           <Text fontSize={{ base: "10px", md: "sm" }} fontWeight="bold">
             {title}

@@ -103,7 +103,7 @@
   border: 1px solid #353535;
 }
 .wallet_adapter_button_trigger_light_mode:hover {
-  background: transparent !important;
+  background: rgba(255, 255, 255, 0.5) !important;
   color: #353535;
 }
 .wallet_adapter_button_trigger_light_mode:hover:disabled {
@@ -315,31 +315,6 @@
   }
 }
 
-/* .gradient_border:hover:after {
-  content: "";
-  position: absolute;
-  top: calc(-1 * 2px);
-  left: calc(-1 * 2px);
-  height: calc(100% + 2px * 2);
-  width: calc(100% + 2px * 2);
-  background: linear-gradient(
-    60deg,
-    #f79533,
-    #f37055,
-    #ef4e7b,
-    #a166ab,
-    #5073b8,
-    #1098ad,
-    #07b39b,
-    #6fba82
-  );
-  border-radius: 11px;
-  z-index: -1;
-  animation: animatedgradient 3s ease alternate infinite;
-  background-size: 300% 300%;
-  transition: all 0.3s ease;
-} */
-
 @keyframes animatedgradient {
   0% {
     opacity: 0;
@@ -382,17 +357,17 @@
 .marketGradientGlow::before {
   background: var(--primary-glow);
   border-radius: 50%;
-  width: 400px;
+  width: 300px;
   height: 300px;
   margin-top: 180px;
-  margin-left: -100px;
+  margin-left: -70px;
 }
 
 .marketGradientGlow::after {
   background: var(--primary-glow);
-  width: 400px;
+  width: 300px;
   height: 300px;
-  margin-left: 80px;
+  margin-left: 120px;
 }
 
 .marketGradientGlow::before,
@@ -404,6 +379,19 @@
   position: absolute;
   filter: blur(45px);
   transform: translateZ(0);
+}
+@media screen and (max-width: 768px) {
+  .homeGradientGlow::before,
+  .homeGradientGlow::after {
+    width: 50px;
+    height: 200px;
+  }
+  .marketGradientGlow::before,
+  .marketGradientGlow::after {
+    left: 0;
+    width: 50px;
+    height: 300px;
+  }
 }
 
 /* START: Portfolio */
@@ -424,7 +412,7 @@
   align-self: center;
 }
 /* Conic Gradient Animation */
-.portfolioCard:hover::before {
+.portfolioCard::before {
   animation: 6s rotate linear infinite;
   background: var(--tile-border);
 }

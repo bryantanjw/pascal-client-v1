@@ -24,12 +24,12 @@ const Home: NextPage = ({
   return (
     <div className={styles.container}>
       <Head>
-        <title>Pascal Protocol</title>
+        <title>Pascal: Trade outcome of events</title>
         <meta
           name="description"
           content="Trade directly on the outcome of events"
         />
-        <meta property="og:title" content="Pascal Protocol" />
+        <meta property="og:title" content="Pascal: Trade  " />
         <meta
           property="og:description"
           content="Trade directly on the outcome of events"
@@ -95,7 +95,15 @@ export async function getStaticProps() {
   try {
     const client = await clientPromise;
     const db = client.db("pascal");
-    const markets = await db.collection("markets").find({}).toArray();
+    const markets = await db
+      .collection("markets")
+      .find({})
+      .sort({
+        "marketStatus.open": -1,
+        "marketStatus.closed": -1,
+        "marketStatus.settled": -1,
+      })
+      .toArray();
 
     return {
       props: { markets: JSON.parse(JSON.stringify(markets)) },

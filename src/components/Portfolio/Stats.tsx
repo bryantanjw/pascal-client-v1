@@ -7,19 +7,14 @@ import {
   Stack,
   Heading,
   Flex,
+  ScaleFade,
+  Image,
 } from "@chakra-ui/react";
 import { PositionsContext } from ".";
 import { IoMdTrendingUp, IoMdTrendingDown } from "react-icons/io";
 
 import styles from "@/styles/Home.module.css";
-
-interface StatCardProps {
-  data: {
-    label: string;
-    value: string | number;
-    change: number;
-  };
-}
+import { formatNumber } from "@/utils/helpers";
 
 interface IndicatorProps {
   type: "up" | "down";
@@ -65,28 +60,9 @@ const Indicator = (props: IndicatorProps) => {
   );
 };
 
-const data: StatCardProps["data"][] = [
-  // {
-  //   label: "Profit",
-  //   value: "$40",
-  //   change: 0.001,
-  // },
-  {
-    label: "Portfolio value",
-    value: "$7,650",
-    change: -0.025,
-  },
-];
-
-const formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
-
-const StatCard = (props: StatCardProps) => {
+const StatCard = ({ label }) => {
   const positions = useContext(PositionsContext);
-  const { label, value, change } = props.data;
-
+  let change = 0;
   const isNegative = change < 0;
   const changeText = `${change * 100}%`;
 
@@ -98,46 +74,56 @@ const StatCard = (props: StatCardProps) => {
   }, 0);
 
   return (
-    <Stack
-      className={styles.portfolioCard}
-      minW={"300px"}
-      minH={"140px"}
-      p={"1.5rem"}
-      mr={"1rem"}
-      mb={{ base: 3, md: 0 }}
-      boxShadow={"0px 2px 8px 0px #0000001a"}
-      _after={{
-        bg: mode("#FBFBFD", ""),
-        bgImage: mode(
-          "none",
-          "linear-gradient(to bottom right, rgba(32, 34, 46, 1), #111927)"
-        ),
-      }}
-      _before={{
-        width: "220%",
-        height: "250%",
-      }}
-    >
-      {/* <Indicator type={isNegative ? "down" : "up"} value={changeText} /> */}
-      <Stack spacing={1} pt="3" letterSpacing={"wide"}>
-        <Text fontSize={"md"} fontWeight="medium" opacity={0.7}>
-          {label}
-        </Text>
+    <ScaleFade in={true} initialScale={0.9}>
+      <Stack
+        className={styles.portfolioCard}
+        minW={"280px"}
+        minH={"140px"}
+        p={"1.5rem"}
+        mb={{ base: 3, md: 0 }}
+        mr={{ base: 0, md: 3 }}
+        boxShadow={"0px 2px 8px 0px #0000001a"}
+        _after={{
+          bg: mode("#FBFBFD", ""),
+          bgImage: mode(
+            "none",
+            "linear-gradient(to bottom right, rgba(32, 34, 46, 1), #111927 100%)"
+          ),
+        }}
+        _before={{
+          width: "220%",
+          height: "250%",
+        }}
+      >
+        {/* <Indicator type={isNegative ? "down" : "up"} value={changeText} /> */}
+        <Stack spacing={1} pt="9" letterSpacing={"wide"}>
+          <Text fontSize={"md"} fontWeight="medium" opacity={0.7}>
+            {label}
+          </Text>
 
-        <Heading lineHeight="1" fontSize={{ base: "lg", md: "2xl" }}>
-          {label === "Portfolio value" ? formatter.format(total) : value}
-        </Heading>
+          <Heading lineHeight="1" fontSize={{ base: "xl", md: "2xl" }}>
+            ${formatNumber(total ?? 0)}
+          </Heading>
+        </Stack>
       </Stack>
-    </Stack>
+    </ScaleFade>
   );
 };
 
 const Stats = () => {
   return (
     <Flex direction={{ base: "column", md: "row" }}>
-      {data.map((stat, idx) => (
-        <StatCard key={idx} data={stat} />
-      ))}
+      <StatCard label={"Portfolio value"} />
+      <Image
+        src="/portfolioCard.png"
+        alt="Pascal Portfolio Image"
+        width={{ base: "100%", md: "35%" }}
+        height={140}
+        rounded="12px"
+        opacity={mode(1, 0.5)}
+        boxShadow={"0px 2px 8px 0px #0000001a"}
+        objectFit={"cover"}
+      />
     </Flex>
   );
 };

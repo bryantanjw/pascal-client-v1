@@ -24,6 +24,7 @@ import {
   useColorModeValue as mode,
   Collapse,
   useDisclosure,
+  ModalFooter,
 } from "@chakra-ui/react";
 import {
   ExternalLinkIcon,
@@ -345,7 +346,7 @@ export const FormStepper = ({ success, marketPk, children, ...props }) => {
     <Form>
       <Stack spacing={4}>{currentChild}</Stack>
 
-      <Flex justifyContent={"flex-end"} mt={10} py={2} textAlign={"center"}>
+      <ModalFooter display={"flex"} mt={8} p={0}>
         {currentStep !== 2 && (
           <Button
             disabled={
@@ -431,7 +432,7 @@ export const FormStepper = ({ success, marketPk, children, ...props }) => {
             )}
           </>
         )}
-      </Flex>
+      </ModalFooter>
     </Form>
   );
 };

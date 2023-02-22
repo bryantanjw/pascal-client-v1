@@ -16,6 +16,8 @@ import {
 } from "@chakra-ui/react";
 import { categories } from "@/utils/constants";
 
+import styles from "@/styles/Home.module.css";
+
 const FilterToggle = React.lazy(() => import("./FilterToggle")); // <-- to load Suspense
 const MarketCard = React.lazy(() => import("./MarketCard"));
 
@@ -41,7 +43,7 @@ const MarketList = ({ markets }) => {
 
   return (
     <Box pt={1}>
-      <HStack py={5}>
+      <HStack py={5} overflowX={"scroll"} className={styles.scroll_container}>
         {categories.map((category, index) => (
           <Stack key={index}>
             <Suspense fallback={<Skeleton height={"30px"} width={"100px"} />}>

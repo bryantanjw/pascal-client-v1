@@ -19,7 +19,7 @@ import {
   TOKEN_PROGRAM_ID,
   ASSOCIATED_TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
-import { CustomTooltip } from "./LiquidityInfo";
+import { LiquidityTooltip } from "./LiquidityInfo";
 
 //  derive the wallet's associated token address.
 export async function findAssociatedTokenAddress(
@@ -58,7 +58,7 @@ export const TokenSwapForm = () => {
     _selected: {
       bg: mode("white", "gray.600"),
       textColor: mode("gray.700", "white"),
-      boxShadow: "md",
+      boxShadow: mode("0px 2px 8px 0px #0000001a", "1px 2px 8px 5px #0000001a"),
     },
   };
   const textStyle = {
@@ -94,7 +94,7 @@ export const TokenSwapForm = () => {
 
   return (
     <Stack spacing={5}>
-      <CustomTooltip
+      <LiquidityTooltip
         publicKey={publicKey}
         label={"Connect wallet to view liquidity"}
       >
@@ -117,7 +117,7 @@ export const TokenSwapForm = () => {
             <Text sx={textStyle}>0 USD</Text>
           </Flex>
         </Stack>
-      </CustomTooltip>
+      </LiquidityTooltip>
 
       <Tabs variant={"unstyled"}>
         <TabList
