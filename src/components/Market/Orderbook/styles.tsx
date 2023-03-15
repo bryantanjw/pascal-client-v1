@@ -53,7 +53,8 @@ export const PriceContainer = styled.div<PriceButtonContainerProps>`
 
   span {
     z-index: 1;
-    min-width: 5rem;
+    min-width: 2rem;
+    margin-left: 3rem;
   }
 
   .total {

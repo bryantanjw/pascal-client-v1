@@ -1,4 +1,5 @@
 import clientPromise from "@/lib/mongodb";
+import apiKeyAuthMiddleware from "./middleware";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {

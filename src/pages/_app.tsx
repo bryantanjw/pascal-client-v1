@@ -72,7 +72,7 @@ const theme = extendTheme({
           },
           track: {
             p: "3px",
-            bg: "gray.800",
+            bg: "gray.700",
             border: "solid 1px rgba(255, 255, 255, 0.2)",
             _dark: {
               bg: "blackAlpha.400",

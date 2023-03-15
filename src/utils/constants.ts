@@ -1,7 +1,7 @@
 import * as Web3 from "@solana/web3.js";
 
 export const categories = [
-  "Financials",
+  "Financial",
   "Economics",
   "Crypto",
   "Climate",
@@ -24,7 +24,15 @@ export const resolutionSources = [
   { title: "Switchboard", url: "https://switchboard.xyz/" },
   { title: "Human Protocol", url: "https://www.humanprotocol.org/" },
   { title: "U.S. Bureau of Labor Statistics", url: "https://www.bls.gov/" },
+  {
+    title: "Federal Reserve Bank of St. Louis",
+    url: "https://fred.stlouisfed.org/",
+  },
 ];
+
+export const usdcMint = new Web3.PublicKey(
+  "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU"
+);
 
 export const tokenSwapStateAccount = new Web3.PublicKey(
   "EV7FEEq2EyTFtKx4ukp2QfW9mWLGcJckGGBNp5cjcHUe"

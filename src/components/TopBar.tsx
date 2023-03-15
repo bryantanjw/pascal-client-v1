@@ -347,16 +347,6 @@ const NAV_ITEMS: Array<NavItem> = [
         // subLabel: 'Trending Design to inspire you',
         href: "https://twitter.com/bryantanjw",
       },
-      {
-        label: "Discord",
-        // subLabel: 'Up-and-coming Designers',
-        href: "#",
-      },
-      {
-        label: "Medium",
-        // subLabel: 'Up-and-coming Designers',
-        href: "#",
-      },
     ],
   },
 ];

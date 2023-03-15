@@ -27,6 +27,7 @@ import {
   ArrowBackIcon,
   ExternalLinkIcon,
   InfoOutlineIcon,
+  LockIcon,
 } from "@chakra-ui/icons";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { createOrderUiStake, Orders } from "@monaco-protocol/client";
@@ -61,7 +62,7 @@ const TradeFormItem = (props: TradeFormItemProps) => {
   );
 };
 
-async function placeOrder(
+async function placeBuyOrder(
   program,
   publicKey,
   marketPk: PublicKey,
@@ -111,7 +112,13 @@ async function placeOrder(
 }
 
 const Swap = ({ market }) => {
-  const { marketLockTimestamp, marketStatus, outcomes, prices } = market;
+  const {
+    marketLockTimestamp,
+    marketStatus,
+    outcomes,
+    prices,
+    marketWinningOutcomeIndex,
+  } = market;
   const program = useProgram();
   const { publicKey } = useWallet();
   const { probA } = useContext(PriceDataContext);
@@ -140,7 +147,7 @@ const Swap = ({ market }) => {
           fontWeight={"bold"}
           fontSize={"sm"}
         >
-          Market has settled
+          Market has settled to {outcomes[marketWinningOutcomeIndex]?.outcome}
         </Text>
       ) : (
         (activeStep === 0 && (
@@ -173,50 +180,71 @@ const Swap = ({ market }) => {
                 <Balancer>{market.title}</Balancer>
               </Heading>
               <Stack pt={2}>
-                <ButtonGroup
-                  justifyContent={"center"}
-                  size="lg"
-                  spacing="4"
-                  fontSize="2xl"
-                  onClick={nextStep}
-                  isDisabled={!publicKey || dt >= lockTimestamp}
+                <Tooltip
+                  p={3}
+                  mt={2}
+                  display={dt >= lockTimestamp ? "block" : "none"}
+                  label={
+                    <HStack alignContent={"center"}>
+                      <LockIcon /> <Text>Market has locked.</Text>
+                    </HStack>
+                  }
+                  aria-label="Market has locked."
+                  width={"full"}
+                  boxShadow={"2xl"}
+                  border={mode(
+                    "1px solid rgba(0,0,0,0.12)",
+                    "1px solid rgba(255,255,255,0.12)"
+                  )}
+                  bg={mode("#F9FAFB", "gray.900")}
+                  rounded={"lg"}
+                  textColor={mode("gray.600", "gray.100")}
                 >
-                  <Button
-                    id="buy"
-                    className={mode(
-                      styles.wallet_adapter_button_trigger_light_mode,
-                      styles.wallet_adapter_button_trigger_dark_mode
-                    )}
-                    p="7"
-                    rounded={"xl"}
-                    fontSize={"xl"}
-                    width={"full"}
-                    textColor={mode("white", "#353535")}
-                    bg={mode("#353535", "gray.50")}
-                    onClick={() => setOutcomeIndex(0)}
+                  <ButtonGroup
+                    justifyContent={"center"}
+                    size="lg"
+                    spacing="4"
+                    fontSize="2xl"
+                    onClick={nextStep}
+                    isDisabled={!publicKey || dt >= lockTimestamp}
                   >
-                    Yes
-                  </Button>
+                    <Button
+                      id="buy"
+                      className={mode(
+                        styles.wallet_adapter_button_trigger_light_mode,
+                        styles.wallet_adapter_button_trigger_dark_mode
+                      )}
+                      p="7"
+                      rounded={"xl"}
+                      fontSize={"xl"}
+                      width={"full"}
+                      textColor={mode("white", "#353535")}
+                      bg={mode("#353535", "gray.50")}
+                      onClick={() => setOutcomeIndex(0)}
+                    >
+                      Yes
+                    </Button>
 
-                  <Button
-                    id="sell"
-                    variant={"outline"}
-                    p="7"
-                    fontSize={"xl"}
-                    rounded={"xl"}
-                    width="full"
-                    textColor={mode("gray.600", "whiteAlpha.700")}
-                    borderColor={mode("gray.400", "whiteAlpha.700")}
-                    transition={"all 0.3s ease"}
-                    _hover={{
-                      textColor: mode("gray.800", "white"),
-                      borderColor: mode("gray.800", "white"),
-                    }}
-                    onClick={() => setOutcomeIndex(1)}
-                  >
-                    No
-                  </Button>
-                </ButtonGroup>
+                    <Button
+                      id="sell"
+                      variant={"outline"}
+                      p="7"
+                      fontSize={"xl"}
+                      rounded={"xl"}
+                      width="full"
+                      textColor={mode("gray.600", "whiteAlpha.700")}
+                      borderColor={mode("gray.400", "whiteAlpha.700")}
+                      transition={"all 0.3s ease"}
+                      _hover={{
+                        textColor: mode("gray.800", "white"),
+                        borderColor: mode("gray.800", "white"),
+                      }}
+                      onClick={() => setOutcomeIndex(1)}
+                    >
+                      No
+                    </Button>
+                  </ButtonGroup>
+                </Tooltip>
               </Stack>
             </Stack>
           </Stack>
@@ -226,9 +254,8 @@ const Swap = ({ market }) => {
             initialValues={{ stake: 2, limitOrder: marketBuyPrice }}
             onSubmit={async (values) => {
               console.log("values", values);
-              // transferTo(values.contractAmount)
               try {
-                const txId = await placeOrder(
+                const txId = await placeBuyOrder(
                   program,
                   publicKey,
                   new PublicKey(market.publicKey),
@@ -272,7 +299,7 @@ const Swap = ({ market }) => {
               }
             }}
           >
-            {({ values, errors, handleChange, handleSubmit, isSubmitting }) => (
+            {({ values, handleSubmit, isSubmitting }) => (
               <form onSubmit={handleSubmit}>
                 <Stack spacing={6}>
                   <Heading size="md">Swap summary</Heading>

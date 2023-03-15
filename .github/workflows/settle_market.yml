@@ -1,10 +1,10 @@
 name: Check and/or Settle Market
 on:
   schedule:
-    - cron: "59 23 * * *"
+    - cron: "0 20 * * *"
 
 jobs:
-  update-price-data:
+  settle-market:
     runs-on: ubuntu-latest
     steps:
       - name: Check and/or Settle Market

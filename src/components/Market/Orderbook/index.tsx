@@ -1,4 +1,9 @@
-import React, { FunctionComponent, useContext } from "react";
+import React, {
+  FunctionComponent,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import {
   Box,
   Center,
@@ -48,49 +53,7 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
   const { colorMode } = useColorMode();
   const { publicKey } = useWallet();
   const { priceData } = useContext(PriceDataContext);
-
-  const formatPrice = (arg: number): string => {
-    return arg.toLocaleString("en", {
-      useGrouping: true,
-      minimumFractionDigits: 0,
-    });
-  };
-
-  const buildPriceLevels = (
-    priceData,
-    orderType: OrderType = OrderType.BIDS
-  ): React.ReactNode => {
-    // sort the data in descending order of price
-    const sortedData = priceData?.sort((a, b) => b.price - a.price);
-    // create a variable to keep track of total liquidity
-    let totalLiquidity = 0;
-    // map over the sorted data and create new array with the desired format
-    const sortedPriceLevels = sortedData?.map((item) => {
-      totalLiquidity += item.liquidity;
-      return [item.price, item.liquidity, totalLiquidity];
-    });
-
-    return sortedPriceLevels?.map((level, idx) => {
-      const price: string = formatPrice(level[0]);
-      const size: string = formatNumber(level[1]);
-      const calculatedTotal: number = level[2];
-      const total: string = formatNumber(calculatedTotal);
-      const depth = level[2];
-
-      return (
-        <Box key={idx + depth} margin={0}>
-          <DepthVisualizer key={depth} depth={depth} orderType={orderType} />
-          <PriceLevelRow
-            key={size + total}
-            total={total}
-            size={size}
-            price={price}
-            isRight={orderType === OrderType.BIDS}
-          />
-        </Box>
-      );
-    });
-  };
+  const [sortedPriceLevels, setSortedPriceLevels] = useState([]);
 
   const lowestAskPrice =
     prices[outcomeIndex].against[prices[outcomeIndex].against.length - 1]
@@ -163,10 +126,10 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
                 },
               }}
             >
-              {buildPriceLevels(
-                priceData?.marketPriceSummary[outcomeIndex].against,
-                OrderType.ASKS
-              )}
+              <PriceLevels
+                priceData={priceData?.marketPriceSummary[outcomeIndex].against}
+                orderType={OrderType.ASKS}
+              />
             </Box>
             <Stack
               display={"flex"}
@@ -200,10 +163,10 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
                 },
               }}
             >
-              {buildPriceLevels(
-                priceData?.marketPriceSummary?.[outcomeIndex].for,
-                OrderType.BIDS
-              )}
+              <PriceLevels
+                priceData={priceData?.marketPriceSummary?.[outcomeIndex].for}
+                orderType={OrderType.BIDS}
+              />
             </Box>
           </>
         ) : (
@@ -220,3 +183,51 @@ export const OrderBook: FunctionComponent<OrderBookProps> = ({
 };
 
 export default OrderBook;
+
+const PriceLevels = ({ priceData, orderType }) => {
+  const [sortedPriceLevels, setSortedPriceLevels] = useState([]);
+
+  useEffect(() => {
+    // create a variable to keep track of total liquidity
+    let totalLiquidity = 0;
+    // map over the sorted data and create new array with the desired format
+    const newSortedPriceLevels = priceData?.map((item) => {
+      totalLiquidity += item.liquidity;
+      return [item.price, item.liquidity, totalLiquidity];
+    });
+    // update state with new sorted price levels
+    setSortedPriceLevels(newSortedPriceLevels);
+  }, [priceData]);
+
+  return (
+    <>
+      {sortedPriceLevels?.map((level, idx) => {
+        const price: string = formatPrice(level[0]);
+        const size: string = formatNumber(level[1]);
+        const calculatedTotal: number = level[2];
+        const total: string = formatNumber(calculatedTotal);
+        const depth = level[2];
+
+        return (
+          <Box key={idx + depth} margin={0}>
+            <DepthVisualizer key={depth} depth={depth} orderType={orderType} />
+            <PriceLevelRow
+              key={size + total}
+              total={total}
+              size={size}
+              price={price}
+              isRight={orderType === OrderType.BIDS}
+            />
+          </Box>
+        );
+      })}
+    </>
+  );
+};
+
+function formatPrice(arg: number): string {
+  return arg.toLocaleString("en", {
+    useGrouping: true,
+    minimumFractionDigits: 0,
+  });
+}

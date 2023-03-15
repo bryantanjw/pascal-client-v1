@@ -171,6 +171,7 @@ export async function getPriceData(program, marketPk: PublicKey) {
 
   const data = {
     marketTitle: parsedMarketPrices.market.title,
+    pendingOrders,
     marketPriceSummary,
     marketOutcomesSummary,
     liquidityTotal,
@@ -197,9 +198,7 @@ function logJson(json: object) {
 }
 
 export async function getProgram() {
-  const secret = JSON.parse(
-    process.env.NEXT_PUBLIC_USER_PRIVATE_KEY as string
-  ) as number[];
+  const secret = JSON.parse(process.env.USER_PRIVATE_KEY as string) as number[];
   const secretKey = Uint8Array.from(secret);
   const keypairFromSecretKey = Keypair.fromSecretKey(secretKey);
   const wallet = {

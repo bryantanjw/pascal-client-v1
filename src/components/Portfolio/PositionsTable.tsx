@@ -1,16 +1,9 @@
-import React, { useContext, useState } from "react";
+import { memo, useContext, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  FormControl,
-  FormLabel,
   HStack,
-  Input,
-  InputGroup,
-  InputLeftElement,
   useColorModeValue as mode,
-  Badge,
-  chakra,
   Flex,
   Stack,
   Text,
@@ -21,14 +14,14 @@ import {
   useDisclosure,
   IconButton,
 } from "@chakra-ui/react";
-import { Select as ReactSelect, chakraComponents } from "chakra-react-select";
-import { BsSearch } from "react-icons/bs";
-import { createColumnHelper } from "@tanstack/react-table";
 import {
-  ChevronRightIcon,
-  TriangleDownIcon,
-  TriangleUpIcon,
-} from "@chakra-ui/icons";
+  createColumnHelper,
+  FilterFn,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  PaginationState,
+} from "@tanstack/react-table";
+import { ChevronRightIcon } from "@chakra-ui/icons";
 import {
   useReactTable,
   flexRender,
@@ -39,52 +32,37 @@ import {
 } from "@tanstack/react-table";
 import { PublicKey } from "@solana/web3.js";
 import { PositionsContext } from ".";
+import { Pagination, TableActions } from "../common/Pagination";
 import PositionModal from "./PositionModal";
-
-import styles from "@/styles/Home.module.css";
 import { formatNumber } from "@/utils/helpers";
 
-// TODO: add sorting table column function using react-table
-// example: https://codesandbox.io/s/mjk1v?file=/src/makeData.js:19-24
+import styles from "@/styles/Home.module.css";
 
-// Custom style config for ReactSelect
-// Documentation: https://github.com/csandman/chakra-react-select
-const ReactSelectMenuItem = {
-  Option: ({ children, ...props }) => (
-    // @ts-ignore
-    <chakraComponents.Option {...props}>
-      <Badge my={1} colorScheme={props.data.colorScheme}>
-        {children}
-      </Badge>
-    </chakraComponents.Option>
-  ),
-};
-
-const statusOptions = [
+const marketStatusOptions = [
   {
-    label: "ACTIVE",
-    value: "matched",
-    colorScheme: "green",
-  },
-  {
-    label: "PENDING",
+    label: "OPEN",
     value: "open",
-    colorScheme: "orange",
+    colorScheme: "green",
   },
   {
     label: "CLOSED",
     value: "closed",
+    colorScheme: "orange",
+  },
+  {
+    label: "SETTLED",
+    value: "settled",
     colorScheme: "gray",
   },
 ];
 
 const badgeEnum: Record<string, string> = {
-  matched: "green",
-  open: "orange",
-  closed: "gray",
+  open: "green",
+  closed: "orange",
+  settled: "gray",
 };
 
-type Positions = {
+type Position = {
   publicKey: PublicKey;
   account: any;
   marketTitle: string;
@@ -92,9 +70,10 @@ type Positions = {
   prices: any;
   probYes: string | number;
   totalStake: number;
+  lockTimestamp: string;
 };
 
-const columnHelper = createColumnHelper<Positions>();
+const columnHelper = createColumnHelper<Position>();
 
 const columns = [
   columnHelper.accessor((row) => row.marketTitle, {
@@ -110,8 +89,12 @@ const columns = [
     header: "Status",
   }),
   columnHelper.accessor((row) => row.totalStake, {
-    cell: (info) => formatNumber(info.getValue()) + " USDC",
+    cell: (info) => formatNumber(info.getValue()),
     header: "Stake",
+  }),
+  columnHelper.accessor((row) => row.lockTimestamp, {
+    cell: (info) => info.getValue(),
+    header: "Market Lock on",
   }),
 ];
 
@@ -126,15 +109,49 @@ const DataTable = <Data extends object>({
   columns,
   showHeader = true,
 }: DataTableProps<Data>) => {
+  const [position, setPosition] = useState<Position | null>(null);
+  const { isOpen, onClose, onOpen } = useDisclosure();
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 5,
+  });
+  const pagination = useMemo(
+    () => ({
+      pageIndex,
+      pageSize,
+    }),
+    [pageIndex, pageSize]
+  );
+  const [globalFilter, setGlobalFilter] = useState("");
+  const globalFilterFn: FilterFn<any> = (
+    row,
+    columnId,
+    filterValue: string
+  ) => {
+    const search = filterValue.toLowerCase();
+
+    let value = row.getValue(columnId) as string;
+    if (typeof value === "number") value = String(value);
+
+    return value?.toLowerCase().includes(search);
+  };
+
   const table = useReactTable({
     columns,
     data,
+    onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onPaginationChange: setPagination,
+    getFilteredRowModel: getFilteredRowModel(),
+    globalFilterFn: globalFilterFn,
     state: {
       sorting,
+      pagination,
+      globalFilter,
     },
   });
 
@@ -145,54 +162,18 @@ const DataTable = <Data extends object>({
     );
   }
 
-  const { isOpen, onClose, onOpen } = useDisclosure();
-  const initialRef = React.useRef(null);
-  const finalRef = React.useRef(null);
-
   return (
-    <Stack my={1}>
+    <>
+      <TableActions
+        globalFilter={globalFilter}
+        setGlobalFilter={setGlobalFilter}
+        menuOptions={marketStatusOptions}
+        badgeEnum={badgeEnum}
+      />
+
       {data && (
         <>
-          {showHeader &&
-            table.getHeaderGroups().map((headerGroup) => (
-              <Flex
-                key={headerGroup.id}
-                justifyContent={"space-between"}
-                px={4}
-              >
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <Text
-                      _hover={{
-                        cursor: "pointer",
-                        textDecoration: "underline",
-                      }}
-                      key={header.id}
-                      onClick={header.column.getToggleSortingHandler()}
-                    >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-
-                      <chakra.span
-                        pl="4"
-                        display={
-                          header.column.getIsSorted() ? "inline-block" : "none"
-                        }
-                      >
-                        {header.column.getIsSorted() === "desc" ? (
-                          <TriangleDownIcon aria-label="sorted descending" />
-                        ) : (
-                          <TriangleUpIcon aria-label="sorted ascending" />
-                        )}
-                      </chakra.span>
-                    </Text>
-                  );
-                })}
-              </Flex>
-            ))}
-          <Stack spacing={2}>
+          <Stack spacing={2} mb={5}>
             {table.getRowModel().rows.map((row, index) => {
               const delay = index * 0.12;
 
@@ -205,6 +186,7 @@ const DataTable = <Data extends object>({
                     p="6"
                     borderWidth={"1px"}
                     borderColor={mode("gray.300", "rgba(255, 255, 255, 0.11)")}
+                    boxShadow="sm"
                     background={mode(
                       "transparent",
                       "linear-gradient(to bottom right, rgba(31,33,45,0.5), rgba(200,200,200,0.01) 100%)"
@@ -212,10 +194,10 @@ const DataTable = <Data extends object>({
                     backdropFilter={{ md: "blur(15px)" }}
                     _hover={{
                       background: mode(
-                        "linear-gradient(to bottom right, rgba(255,255,255,1), rgba(255,255,255,0.8) 100%)",
+                        "rgba(255,255,255,0.5)",
                         "linear-gradient(to bottom right, rgba(31,33,45,0.7), rgba(200,200,200,0.1) 100%)"
                       ),
-                      boxShadow: "lg",
+                      boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
                       borderColor: mode("", "rgba(255, 255, 255, 0.3)"),
                       cursor: "pointer",
                     }}
@@ -229,7 +211,10 @@ const DataTable = <Data extends object>({
                       cursor: "pointer",
                     }}
                     letterSpacing={"wide"}
-                    onClick={onOpen}
+                    onClick={() => {
+                      onOpen();
+                      setPosition(row.original);
+                    }}
                   >
                     <Flex justifyContent="space-between" alignItems="center">
                       <Stack spacing={0} width={"65%"}>
@@ -256,12 +241,12 @@ const DataTable = <Data extends object>({
 
                       <HStack spacing={6} alignItems={"center"}>
                         <Text fontWeight={"semibold"} fontSize={"lg"}>
-                          {renderCell(row, 3)}
+                          {renderCell(row, 3)} USDC
                         </Text>
                         <IconButton
                           as={Link}
                           href={`/market/${row.original.account.market.toBase58()}`}
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={(e) => e.stopPropagation()} // Prevent button from triggering parent onClick
                           aria-label="Navigate to market"
                           icon={<ChevronRightIcon />}
                           fontSize="3xl"
@@ -280,15 +265,23 @@ const DataTable = <Data extends object>({
               );
             })}
           </Stack>
+
+          {position && (
+            <PositionModal
+              isOpen={isOpen}
+              onClose={onClose}
+              position={position}
+            />
+          )}
+
+          <Pagination table={table} />
         </>
       )}
-
-      <PositionModal isOpen={isOpen} onClose={onClose} />
-    </Stack>
+    </>
   );
 };
 
-const TableContent = () => {
+const PositionsTable = () => {
   const positions = useContext(PositionsContext);
 
   return (
@@ -299,7 +292,7 @@ const TableContent = () => {
             <ScaleFade in={true} initialScale={0.9}>
               <Image
                 src="/emptyState.png"
-                alt="Empty Pascal Position Table"
+                alt="Empty Pascal Position Tab"
                 width={250}
                 height={250}
               />
@@ -331,82 +324,45 @@ const TableContent = () => {
           <DataTable columns={columns} data={positions} showHeader={false} />
         )
       ) : (
-        Array(2)
-          .fill(0)
-          .map((_, i) => (
-            <Flex
-              className={styles.portfolioCard}
-              key={i}
-              my={2}
-              py={5}
-              px={6}
-              justifyContent="space-between"
-              alignItems={"center"}
-              minH={"65px"}
-              boxShadow={"0px 2px 8px 0px #0000001a"}
-              bg={mode("#FBFBFD", "")}
-              _before={{
-                ml: -7,
-                width: "130%",
-                height: "210vh",
-              }}
-              _after={{
-                bgImage: mode(
-                  "none",
-                  "linear-gradient(to bottom right, rgb(26,32,44,1), rgb(26,32,44,1) 120%)"
-                ),
-              }}
-              letterSpacing={"wide"}
-            >
-              <Stack>
-                <Skeleton rounded={"md"} width={"200px"} height="18px" />
-                <Skeleton rounded={"md"} width={"100px"} height="18px" />
-              </Stack>
-              <Skeleton rounded={"md"} width={"80px"} height="20px" />
-            </Flex>
-          ))
+        <Stack spacing={0}>
+          {Array(2)
+            .fill(0)
+            .map((_, i) => (
+              <Flex
+                className={styles.portfolioCard}
+                key={i}
+                my={2}
+                mt={14}
+                py={5}
+                px={6}
+                justifyContent="space-between"
+                alignItems={"center"}
+                boxShadow={"0px 2px 8px 0px #0000001a"}
+                bg={mode("#FBFBFD", "")}
+                _before={{
+                  ml: -7,
+                  width: "130%",
+                  height: "210vh",
+                }}
+                _after={{
+                  bgImage: mode(
+                    "none",
+                    "linear-gradient(to bottom right, rgb(26,32,44,1), rgb(26,32,44,1) 120%)"
+                  ),
+                }}
+                letterSpacing={"wide"}
+              >
+                <Stack>
+                  <Skeleton rounded={"md"} width={"200px"} height="18px" />
+                  <Skeleton rounded={"md"} width={"100px"} height="18px" />
+                </Stack>
+                <Skeleton rounded={"md"} width={"80px"} height="20px" />
+              </Flex>
+            ))}
+        </Stack>
       )}
     </>
   );
 };
 
-const TableActions = () => {
-  return (
-    <HStack spacing={3} justifyContent={"flex-end"}>
-      <FormControl w={"300px"} id="search">
-        <InputGroup size="sm" variant={"filled"}>
-          <FormLabel srOnly>Search</FormLabel>
-          <InputLeftElement pointerEvents="none" color="gray.400">
-            <BsSearch />
-          </InputLeftElement>
-          <Input rounded="base" type="search" placeholder="Search" />
-        </InputGroup>
-      </FormControl>
-
-      <FormControl minW={{ base: "100px", md: "150px" }} w={"auto"}>
-        <ReactSelect
-          variant="outline"
-          isMulti
-          useBasicStyles
-          size="sm"
-          name="status"
-          options={statusOptions}
-          placeholder="Status"
-          closeMenuOnSelect={false}
-          components={ReactSelectMenuItem}
-        />
-      </FormControl>
-    </HStack>
-  );
-};
-
-const PositionsTable = () => {
-  return (
-    <>
-      {/* <TableActions /> */}
-      <TableContent />
-    </>
-  );
-};
-
-export default React.memo(PositionsTable);
+export default memo(PositionsTable);

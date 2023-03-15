@@ -9,5 +9,5 @@ jobs:
     steps:
       - name: Update Price Data
         run: |
-          curl -X POST https://www.pascal.fi/api/updatePriceData
+          curl -X POST https://www.pascal.fi/api/update/updatePriceData
           echo "End updatePriceData job"

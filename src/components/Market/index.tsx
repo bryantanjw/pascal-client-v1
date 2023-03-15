@@ -75,8 +75,8 @@ const Market = ({ market }) => {
   // END: Style config //
 
   const stats = [
-    { label: "Total Volume", value: `$${market.liquidityTotal}` },
-    // { label: "Liquidity", value: market.volume },
+    { label: "Liquidity", value: `$${market.liquidityTotal}` },
+    { label: "Volume Traded", value: `$${market.matchedTotal}` },
     {
       label: "Market Lock Date - UTC",
       value: new Date(
@@ -102,7 +102,10 @@ const Market = ({ market }) => {
       } catch (error) {
         console.log("fetchPriceData error: ", error);
       }
+      // Fetch price data every 5 seconds after updating price data
+      setTimeout(fetchPriceData, 5000);
     };
+
     fetchPriceData();
   }, [program]);
 
@@ -258,7 +261,7 @@ const Market = ({ market }) => {
 
                     <TabPanel key={1} px={0}>
                       <Stack marginTop={2}>
-                        {(market.category === "Financials" ||
+                        {(market.category === "Financial" ||
                           market.category === "Crypto" ||
                           market.category === "Economics") && (
                           <ResearchGraph market={market} />
@@ -286,7 +289,7 @@ const Market = ({ market }) => {
                 zIndex={-1}
                 opacity={"50%"}
                 width={"40%"}
-                src={"/gradient-bg1.png"}
+                src={"/gradient-bg.png"}
                 // eslint-disable-next-line react-hooks/rules-of-hooks
                 alt={"Pascal Market"}
                 right={"100px"}

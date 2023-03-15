@@ -1,0 +1,13 @@
+name: Update Market Status
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+
+jobs:
+  update-market-status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update Market Status
+        run: |
+          curl -X POST https://www.pascal.fi/api/update/updateMarketStatus
+          echo "End updateMarketStatus job"

@@ -16,26 +16,20 @@ import {
   Progress,
   Flex,
   Link,
-  HStack,
-  Image,
-  keyframes,
   Button,
   IconButton,
   useColorModeValue as mode,
   Collapse,
   useDisclosure,
   ModalFooter,
+  Tooltip,
 } from "@chakra-ui/react";
 import {
   ExternalLinkIcon,
   ChevronRightIcon,
   ChevronLeftIcon,
+  InfoOutlineIcon,
 } from "@chakra-ui/icons";
-import {
-  Select as ReactSelect,
-  chakraComponents,
-  ChakraStylesConfig,
-} from "chakra-react-select";
 import { Field, Form } from "formik";
 import { categories, resolutionSources } from "@/utils/constants";
 
@@ -90,7 +84,19 @@ export const Form1 = () => {
             isInvalid={form.errors.lockTimestamp && form.touched.lockTimestamp}
           >
             <FormLabel htmlFor="title" fontWeight={"normal"} mt={"5%"}>
-              Lock date
+              Market lock date
+              <Tooltip
+                label={
+                  "Trading will be halted after this time (local timezone)."
+                }
+                p={3}
+                ml={2}
+                placement={"right"}
+                hasArrow
+                rounded={"md"}
+              >
+                <InfoOutlineIcon ml={3} width={"18px"} cursor={"help"} />
+              </Tooltip>
             </FormLabel>
             <Input {...field} type={"datetime-local"} boxShadow={"sm"} />
             <FormErrorMessage>{form.errors.lockTimestamp}</FormErrorMessage>
@@ -329,6 +335,7 @@ export const SubmittedForm = ({ publicKey, success, isSubmitting, status }) => {
 
 export const FormStepper = ({ success, marketPk, children, ...props }) => {
   const { isSubmitting, handleSubmit, errors, values, setSubmitting } = props;
+  console.log("values", values);
   const stepsArray = React.Children.toArray(children);
   const [currentStep, setCurrentStep] = useState(0);
   const currentChild = stepsArray[currentStep];
@@ -436,168 +443,3 @@ export const FormStepper = ({ success, marketPk, children, ...props }) => {
     </Form>
   );
 };
-
-// START: Custom styling ReactSelect //
-const collapse = keyframes`
-  0% {
-    opacity: 0;
-  }
-
-  100% {
-    opacity: 1;
-  }
-`;
-
-const shine = keyframes`
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-`;
-
-const chakraStyles: ChakraStylesConfig = {
-  menuList: () => ({
-    background: "transparent",
-  }),
-  menu: () => ({
-    position: "relative",
-    pt: 2,
-    mb: 4,
-    marginTop: 0,
-    height: "0px",
-    animation: `${collapse} 0.2s ease-in-out`,
-  }),
-  option: () => ({
-    background: "transparent",
-  }),
-  input: (provided, state) => ({
-    ...provided,
-    color: state.hasValue ? "transparent" : "normal",
-  }),
-  dropdownIndicator: (provided, state) => ({
-    ...provided,
-    transform: state.selectProps.menuIsOpen ? "rotate(180deg)" : 0,
-    transition: "all 0.3s ease",
-  }),
-  placeholder: () => ({
-    visibility: "hidden",
-  }),
-};
-
-const CustomReactSelect = {
-  Option: ({ children, ...props }) => (
-    // @ts-ignore
-    <chakraComponents.Option {...props}>
-      <Box
-        borderWidth="1px"
-        py={1}
-        px={{ base: 1, md: 3 }}
-        borderRadius="3xl"
-        cursor="pointer"
-        transition="all 0.2s ease"
-        bg={mode("gray.100", "gray.700")}
-        _hover={{
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          borderColor: mode("black", "white"),
-          bg: "transparent",
-        }}
-        _focus={{ shadow: "outline", boxShadow: "none" }}
-      >
-        <HStack spacing={1}>
-          <Image
-            src={props.data.iconUrl}
-            alt={props.data.title}
-            width={{ base: "9px", md: "14px" }}
-            filter={mode("invert(0%)", "invert(100%)")}
-          />
-          <Box>
-            <Text fontSize={{ base: "10px", md: "sm" }} fontWeight="bold">
-              {props.data.title}
-            </Text>
-          </Box>
-        </HStack>
-      </Box>
-    </chakraComponents.Option>
-  ),
-
-  SingleValue: ({ children, ...props }) => {
-    return (
-      // @ts-ignore
-      <chakraComponents.SingleValue {...props}>
-        <Box
-          borderWidth="1px"
-          py={1}
-          px={{ base: 1, md: 2 }}
-          borderRadius="3xl"
-          cursor="pointer"
-          transition="all 0.2s"
-          bg={mode("black", "white")}
-          color={mode("white", "black")}
-        >
-          <HStack spacing={2}>
-            <Image
-              src={props.data.iconUrl}
-              alt={props.data.title}
-              width={{ base: "11px", md: "9px" }}
-              filter={mode("invert(100%)", "invert(0%)")}
-            />
-            <Box>
-              <Text fontSize={{ base: "10px", md: "2xs" }} fontWeight="bold">
-                {props.data.title}
-              </Text>
-            </Box>
-          </HStack>
-        </Box>
-      </chakraComponents.SingleValue>
-    );
-  },
-
-  MenuList: ({ children, ...props }) => {
-    return (
-      // @ts-ignore
-      <chakraComponents.MenuList {...props}>
-        <HStack
-          pt={1}
-          bg={"transparent"}
-          border={0}
-          mb={"30px"}
-          position="relative"
-        >
-          {children}
-        </HStack>
-      </chakraComponents.MenuList>
-    );
-  },
-
-  Menu: ({ children, ...props }) => {
-    return (
-      // @ts-ignore
-      <chakraComponents.Menu {...props}>{children}</chakraComponents.Menu>
-    );
-  },
-};
-
-// CustomSelect design to be revisited; field values are not propagating to formik
-const CustomSelect = () => {
-  const categoryOptions = categories.map((category) => ({
-    value: category,
-    label: category,
-    iconUrl: `./${category}.svg`,
-    title: category,
-  }));
-  return (
-    <ReactSelect
-      useBasicStyles
-      name="category"
-      options={categoryOptions}
-      components={CustomReactSelect}
-      chakraStyles={chakraStyles}
-    />
-  );
-};
-// END: Custom styling ReactSelect //

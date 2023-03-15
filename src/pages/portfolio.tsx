@@ -35,7 +35,7 @@ const PortfolioPage: NextPage = ({}: InferGetStaticPropsType<
         <Box
           maxW={{ base: "3xl", lg: "5xl" }}
           mx="auto"
-          py={{ base: "10", md: "10", lg: "12" }}
+          py={{ base: "10", md: "0" }}
           zIndex={1}
         >
           <Suspense

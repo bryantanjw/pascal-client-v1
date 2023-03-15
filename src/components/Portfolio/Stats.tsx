@@ -12,9 +12,9 @@ import {
 } from "@chakra-ui/react";
 import { PositionsContext } from ".";
 import { IoMdTrendingUp, IoMdTrendingDown } from "react-icons/io";
+import { formatNumber } from "@/utils/helpers";
 
 import styles from "@/styles/Home.module.css";
-import { formatNumber } from "@/utils/helpers";
 
 interface IndicatorProps {
   type: "up" | "down";

@@ -42,7 +42,7 @@ const MarketList = ({ markets }) => {
   }
 
   return (
-    <Box pt={1}>
+    <Box>
       <HStack py={5} overflowX={"scroll"} className={styles.scroll_container}>
         {categories.map((category, index) => (
           <Stack key={index}>

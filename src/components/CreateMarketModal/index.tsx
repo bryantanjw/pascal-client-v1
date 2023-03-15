@@ -18,12 +18,13 @@ import {
   MarketType,
   initialiseOutcomes,
   batchAddPricesToAllOutcomePools,
+  checkOperatorRoles,
 } from "@monaco-protocol/admin-client";
 import { Form1, Form2, SubmittedForm, FormStepper } from "./StepForms";
 import { useProgram } from "@/context/ProgramProvider";
 import { getPriceData, logResponse, marketMake } from "@/utils/monaco";
 import { ResizablePanel } from "../common/ResizablePanel";
-import { PRICE_LADDER } from "@/utils/constants";
+import { PRICE_LADDER, usdcMint } from "@/utils/constants";
 
 import styles from "@/styles/Home.module.css";
 
@@ -36,20 +37,32 @@ enum CreateStatus {
   Success = "Success",
 }
 
+const headers = { "Content-Type": "application/json" };
+if (process.env.CREATE_MARKET_API_KEY) {
+  headers["X-API-KEY"] = process.env.CREATE_MARKET_API_KEY;
+}
+
 async function createVerboseMarket(
   program,
   marketName,
   lockTimestamp,
   setCreateStatus
 ) {
-  const mintToken = new PublicKey(
-    "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU" // <-- USDC devnet token address
+  const checkRoles = await checkOperatorRoles(
+    program,
+    program.provider.publicKey
   );
+
+  if (!checkRoles.data.market)
+    throw new Error(
+      `Currently set wallet ${program.provider.publicKey} does not have the operator role`
+    );
+
   // Generate a publicKey to represent the event
   const eventAccountKeyPair = Keypair.generate();
   const eventPk = eventAccountKeyPair.publicKey;
 
-  const marketLock = Date.parse(lockTimestamp) / 1000; // <-- lockTimestamp in seconds
+  const marketLock = Date.parse(lockTimestamp) / 1000; // lockTimestamp in seconds
   const type = MarketType.EventResultWinner;
   const outcomes = ["Yes", "No"];
   const batchSize = 50;
@@ -59,7 +72,7 @@ async function createVerboseMarket(
     program,
     marketName,
     type,
-    mintToken,
+    usdcMint,
     marketLock,
     eventPk
   );
@@ -123,7 +136,7 @@ export const CreateMarketModal = () => {
   );
   let duration = 0.5;
 
-  const addMarket = async (values) => {
+  async function addMarket(values) {
     const {
       title,
       category,
@@ -190,7 +203,7 @@ export const CreateMarketModal = () => {
       setIsSuccess(false);
       console.log("addMarket", error);
     }
-  };
+  }
 
   const validationSchema = yup.object().shape({
     title: yup.string().required("Market title is required"),

@@ -16,8 +16,10 @@ import {
   FormLabel,
   Image as ChakraImage,
   Portal,
+  Box,
 } from "@chakra-ui/react";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { Trades } from "@monaco-protocol/client";
 import { MarketPositions } from "@monaco-protocol/client/src/market_position_query";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import Stats from "components/Portfolio/Stats";
@@ -38,7 +40,7 @@ const Portfolio = () => {
   const [positions, setPositions] = useState<any>(null);
 
   const fetcher = (url) => fetch(url).then((res) => res.json());
-  const { data, error } = useSWR("/api/getMarket", fetcher);
+  const { data, error } = useSWR("/api/getMarkets", fetcher);
 
   const tabStyle = {
     transform: "translateZ(0)",
@@ -98,11 +100,16 @@ const Portfolio = () => {
                 (market) =>
                   market.publicKey === position.account.market.toBase58()
               );
-              const probYes = calculateProbability(
+
+              const marketBidYes =
                 market.prices[0].against[market.prices[0].against.length - 1]
-                  ?.price,
+                  ?.price;
+              const marketBidNo =
                 market.prices[1].against[market.prices[1].against.length - 1]
-                  ?.price
+                  ?.price;
+              const probYes = calculateProbability(
+                marketBidYes,
+                marketBidNo
               ).toFixed(2);
               const totalStake = (
                 parseFloat(position.account.outcomeMaxExposure[0].toString()) /
@@ -113,13 +120,31 @@ const Portfolio = () => {
 
               return {
                 ...position,
+                marketPk: market.publicKey,
                 marketTitle: market.title,
+                lockTimestamp: parseInt(market.marketLockTimestamp, 16) * 1000,
                 probYes: probYes,
                 marketStatus: Object.keys(market.marketStatus)[0],
                 totalStake: totalStake,
+                prices: market.prices,
               };
             });
-          setPositions(mapping);
+
+          // Map over the positions array to fetch trades for each position
+          const positionsWithTrades = await Promise.all(
+            mapping.map(async (position) => {
+              const trades = await Trades.tradeQuery(program)
+                .filterByMarket(position.account.market)
+                .filterByPurchaser(publicKey!)
+                .fetch();
+              return {
+                ...position,
+                trades: trades.data.tradeAccounts,
+              };
+            })
+          );
+
+          setPositions(positionsWithTrades);
         } else {
           console.log("Error fetching positions: ", response.errors);
           throw new Error();
@@ -132,7 +157,7 @@ const Portfolio = () => {
   }, [program, data]);
 
   return (
-    <>
+    <Box pt={14}>
       <Heading size="xl" mb="10">
         Your Portfolio_
       </Heading>
@@ -154,17 +179,32 @@ const Portfolio = () => {
           <Stack spacing={12}>
             <Stats />
 
-            <Tabs pt={4} index={tabIndex} variant={"unstyled"}>
-              <FormControl display={"flex"} justifyContent={"center"}>
+            <Tabs pt={4} index={tabIndex} variant={"unstyled"} isLazy>
+              <FormControl
+                display={"flex"}
+                width={{ base: "full", md: "fit-content" }}
+                justifyContent={{ base: "center", md: "flex-start" }}
+                mb={{ base: 0, md: -14 }}
+              >
                 <TabList
+                  transition={"all 0.3s ease"}
                   textColor={mode("gray.500", "gray.500")}
                   display={"inline-flex"}
                   backdropFilter={{ base: "", md: "blur(10px)" }}
                   alignItems={"center"}
-                  border={"solid 1px rgba(255, 255, 255, 0.07)"}
+                  border={mode(
+                    "solid 1px rgba(0,0,0,0.1)",
+                    "solid 1px rgba(255, 255, 255, 0.07)"
+                  )}
                   rounded={"12px"}
-                  bg={mode("#FBFBFD", "rgba(32, 34, 46, 0.6)")}
+                  bg={mode("rgba(255,255,255,0.6)", "rgba(32, 34, 46, 0.5)")}
                   boxShadow={"0px 2px 8px -1px #0000001a"}
+                  _hover={{
+                    borderColor: mode(
+                      "rgba(0,0,0,0.15)",
+                      "rgba(255, 255, 255, 0.15)"
+                    ),
+                  }}
                 >
                   <Tab mr={-2} sx={tabStyle} onClick={() => setTabIndex(0)}>
                     Positions
@@ -204,15 +244,15 @@ const Portfolio = () => {
           overflow={"hidden"}
           src={"/portfolioBgGlow.png"}
           alt="Pascal Portfolio"
-          opacity={0.3}
-          left={"30%"}
-          width={"100%"}
-          height={"180%"}
-          top={"10%"}
-          transform={"rotate(300deg)"}
+          opacity={0.12}
+          left={"20%"}
+          width={"80%"}
+          height={"100%"}
+          top={"35%"}
+          transform={"rotate(180deg)"}
         />
       </Portal>
-    </>
+    </Box>
   );
 };
 

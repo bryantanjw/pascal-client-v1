@@ -17,5 +17,6 @@ export default async function handler(req, res) {
     res.status(200).json(market);
   } catch (e) {
     console.error(e);
+    res.status(500).json({ statusCode: 500, message: e });
   }
 }

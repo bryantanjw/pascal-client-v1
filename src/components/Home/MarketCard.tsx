@@ -105,9 +105,20 @@ const MarketCard = ({ market }) => {
                 src={"/liquidity.png"}
                 width={17}
                 height={17}
-                alt="liquidity"
+                alt="Liquidity"
+                mr={-1}
               />
               <h4>${market.liquidityTotal}</h4>
+            </HStack>
+            <HStack sx={statStyle}>
+              <Image
+                filter={iconColor}
+                src={"/volume-traded.png"}
+                width={17}
+                height={17}
+                alt="Volume Traded"
+              />
+              <h4>${market.matchedTotal}</h4>
             </HStack>
             {/* <HStack sx={statStyle}>
               <Image

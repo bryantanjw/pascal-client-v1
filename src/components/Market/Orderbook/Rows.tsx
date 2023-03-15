@@ -49,9 +49,9 @@ export const PriceLevelRow: FunctionComponent<PriceLevelRowProps> = ({
       isRight={isRight}
       windowWidth={windowWidth}
     >
-      <Text className="price">{price}</Text>
-      <Text>{size}</Text>
-      <Text className="total">{total}</Text>
+      <span className="price">{price}</span>
+      <span>{size}</span>
+      <span className="total">{total}</span>
     </PriceContainer>
   );
 };

@@ -1,8 +1,12 @@
 {
   "crons": [
     {
-      "path": "/api/updatePriceData",
-      "schedule": "*/5 * * * *"
+      "path": "/api/update/updatePriceData",
+      "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/settleMarket",
+      "schedule": "59 23 * * *"
     }
   ]
 }

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import { useContext, useEffect, useState } from "react";
 import {
   Progress,
@@ -179,10 +178,12 @@ const Outcomes = ({ market }) => {
       </Flex>
       <Stack width={"full"} spacing={3}>
         {outcomes?.map((outcome, index: number) => {
+          // eslint-disable-next-line react-hooks/rules-of-hooks
           const [isOpen, setIsOpen] = useState(false);
           const handleChange = (value) => {
             setIsOpen(!isOpen);
           };
+          // eslint-disable-next-line react-hooks/rules-of-hooks
           const { value, getCheckboxProps } = useCheckboxGroup({
             onChange: handleChange,
           });
@@ -197,10 +198,10 @@ const Outcomes = ({ market }) => {
                   marketPosition?.outcomeMaxExposure[index === 0 ? 1 : 0]
                 }
                 {...getCheckboxProps({
-                  value: index.toString(), // <-- getCheckboxProps value only accepts String
+                  value: index.toString(), // getCheckboxProps value only accepts String
                 })}
               />
-              <Box>
+              <Box key={index}>
                 <Collapse in={isOpen} animateOpacity>
                   <OrderBook
                     outcomes={outcomes}

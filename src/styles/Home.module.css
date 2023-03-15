@@ -339,8 +339,9 @@
 
 .homeGradientGlow::after {
   background: var(--primary-glow);
-  width: 400px;
+  width: 320px;
   height: 400px;
+  overflow: hidden;
 }
 
 .homeGradientGlow::before,

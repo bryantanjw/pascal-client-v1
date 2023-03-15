@@ -169,7 +169,7 @@ const NewsListItem = (props: NewsListItemProp) => {
     <Link href={url} isExternal _hover={{ textDecoration: "none" }}>
       <Flex
         borderWidth={"1px"}
-        p={{ base: 4, md: 5 }}
+        p={4}
         rounded={"lg"}
         width={{ base: "82%", md: "full" }}
         height={{ base: "150px", md: "full" }}
