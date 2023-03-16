@@ -12,13 +12,13 @@ import { getProgram, getProcessArgs, logResponse } from "@/utils/monaco";
  * so should increase number of orders so the bias will have a cumulative effect over
  * a larger number of orders.
  */
-export async function marketMake(marketPk: PublicKey) {
+async function marketMakeUniform(marketPk: PublicKey) {
   const program = await getProgram();
-  const numOrders = 20;
-  const minPrice = 1.2;
+  const numOrders = 10;
+  const minPrice = 1.3;
   const maxPrice = 1.8;
-  const minSize = 1;
-  const maxSize = 2;
+  const minSize = 4;
+  const maxSize = 10;
 
   const buyOrders: Array<{ price: number; size: number }> = [];
   const sellOrders: Array<{ price: number; size: number }> = [];
@@ -77,39 +77,69 @@ export async function marketMake(marketPk: PublicKey) {
   }
 }
 
-const args = getProcessArgs(["marketPk"], "npm run placeForOrder");
+export async function marketMake(marketPk: PublicKey) {
+  const program = await getProgram();
+  const numOrders = 4;
+  const minBidPrice = 1.35;
+  const maxBidPrice = 1.45;
+  const minAskPrice = 1.55;
+  const maxAskPrice = 1.65;
+  const minSize = 4;
+  const maxSize = 7;
+
+  const buyOrders: Array<{ bidPrice: number; size: number }> = [];
+  const sellOrders: Array<{ askPrice: number; size: number }> = [];
+
+  for (let i = 0; i < numOrders; i++) {
+    // Generate random prices
+    let bidPrice = parseFloat(
+      (Math.random() * (maxBidPrice - minBidPrice) + minBidPrice).toFixed(2)
+    );
+    let askPrice = parseFloat(
+      (Math.random() * (maxAskPrice - minAskPrice) + minAskPrice).toFixed(2)
+    );
+    // Generate a random size between the min and max size
+    const size = Math.floor(Math.random() * (maxSize - minSize + 1)) + minSize;
+
+    buyOrders.push({ bidPrice, size });
+    sellOrders.push({ askPrice, size });
+  }
+  // buyOrders.forEach((order) => order.price);
+  console.log("buyOrders", buyOrders);
+  console.log("sellOrders", sellOrders);
+
+  // Place the orders for sell and buy side for first outcome
+  try {
+    for (let i = 0; i < 2; i++) {
+      for (const order of sellOrders) {
+        const response = await createOrderUiStake(
+          program,
+          marketPk,
+          i, // outcome index
+          false, // sell side
+          order.askPrice,
+          order.size // stake
+        );
+        logResponse(response);
+      }
+      for (const order of buyOrders) {
+        const response = await createOrderUiStake(
+          program,
+          marketPk,
+          i,
+          true,
+          order.bidPrice,
+          order.size
+        );
+        logResponse(response);
+      }
+      console.log("Done!");
+    }
+  } catch (e) {
+    console.error("marketMake error", e);
+    return;
+  }
+}
+
+const args = getProcessArgs(["marketPk"], "npm run marketMake");
 marketMake(new PublicKey(args.marketPk));
-
-async function placeBuyOrder(marketPk: PublicKey) {
-  const program = await getProgram();
-  const marketOutcomeIndex = 0;
-  const forOutcome = false;
-  const price = 2;
-  const stake = 1;
-  const response = await createOrderUiStake(
-    program,
-    marketPk,
-    marketOutcomeIndex,
-    forOutcome,
-    price,
-    stake
-  );
-  logResponse(response);
-}
-
-async function placeSellOrder(marketPk: PublicKey) {
-  const program = await getProgram();
-  const marketOutcomeIndex = 0;
-  const forOutcome = false;
-  const price = 2;
-  const stake = 1;
-  const response = await createOrderUiStake(
-    program,
-    marketPk,
-    marketOutcomeIndex,
-    forOutcome,
-    price,
-    stake
-  );
-  logResponse(response);
-}

@@ -54,7 +54,7 @@ import { useProgram } from "@/context/ProgramProvider";
 import { createOrderUiStake } from "@monaco-protocol/client";
 import { Formik, Field, useFormikContext } from "formik";
 import { usdcMint } from "@/utils/constants";
-import { getPriceData } from "@/utils/monaco";
+import { getPriceData, logResponse } from "@/utils/monaco";
 import {
   formatNumber,
   calculateAverageEntryPrices,
@@ -156,7 +156,7 @@ const FormBody = ({ position }) => {
         })}
         onSubmit={async (values) => {
           console.log("values", values);
-          await placeSellOrder(
+          await placeSellOrders(
             position.account.market,
             outcomeIndex,
             values.stake!
@@ -204,8 +204,8 @@ const FormBody = ({ position }) => {
     return null;
   };
 
-  async function placeSellOrder(
-    marketPk: PublicKey | null,
+  async function placeSellOrders(
+    marketPk: PublicKey,
     outcomeIndex: number,
     stake: number
   ) {
@@ -214,22 +214,32 @@ const FormBody = ({ position }) => {
       const bids = priceData.marketPriceSummary[outcomeIndex].for;
       console.log("bids", bids);
 
-      // const matchingAsks = getSellOrderMatches(
-      //   averageEntryPrices[outcomeIndex].entryPrice,
-      //   outcomeStake,
-      //   bids
-      // );
-      // console.log("matchingAsks", matchingAsks);
-      // const response = await createOrderUiStake(
-      //   program,
-      //   marketPk,
-      //   outcomeIndex,
-      //   false,
-      //   price,
-      //   stake
-      // );
+      const matchingAsks = getSellOrderMatches(
+        averageEntryPrices[outcomeIndex].entryPrice,
+        stake,
+        bids
+      );
+      console.log("matchingAsks", matchingAsks);
+      const { sellOrders } = matchingAsks;
+
+      for (let i = 0; i < sellOrders.length; i++) {
+        const order = sellOrders[i];
+        const response = await createOrderUiStake(
+          program,
+          marketPk,
+          outcomeIndex,
+          false,
+          order.price,
+          order.stake
+        );
+        if (response.success) {
+          logResponse(response);
+        } else {
+          console.log("error", response.errors);
+        }
+      }
     } catch (error) {
-      console.log("placeSellOrder error", error);
+      console.log("placeSellOrders error", error);
     }
   }
 

@@ -8,9 +8,10 @@
     "start": "next start",
     "test": "ts-node test/main.ts",
     "lint": "next lint",
-    "marketMake": "ts-node -O '{\"module\": \"commonjs\"}' -r tsconfig-paths/register src/cli/marketMake.ts",
+    "marketMake": "ts-node -r tsconfig-paths/register src/cli/marketMake.ts",
     "initializeOutcomeTokens": "ts-node -O '{\"module\": \"commonjs\"}' -r tsconfig-paths/register src/cli/initializeOutcomeTokens.ts",
-    "binaryOptionTests": "ts-node -O '{\"module\": \"commonjs\"}' -r tsconfig-paths/register src/context/Anchor/spl-binary-options"
+    "binaryOptionTests": "ts-node -O '{\"module\": \"commonjs\"}' -r tsconfig-paths/register src/context/Anchor/spl-binary-options",
+    "settleMarket": "ts-node -O '{\"module\": \"commonjs\"}' -r tsconfig-paths/register src/cli/settleMarket.ts"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.2",
@@ -38,6 +39,7 @@
     "chakra-ui-steps": "^1.7.4",
     "chart.js": "^3.9.1",
     "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
     "formik": "^2.2.9",
     "framer-motion": "^7.6.1",
     "fs": "^0.0.1-security",

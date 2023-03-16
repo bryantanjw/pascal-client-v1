@@ -39,17 +39,14 @@ export default async function handler(
         const marketResolutionDate = new Date(
           parseInt(market.marketLockTimestamp, 16) * 1000
         );
-        console.log("Currently resolving market", market.publicKey);
+        console.log("Currently resolving market", market.title);
         console.log(
           "Resolution is later than today?",
           dt >= marketResolutionDate
         );
 
         if (dt >= marketResolutionDate) {
-          if (
-            market.resolutionSource === "Pyth" &&
-            market.category !== "Financial"
-          ) {
+          if (market.resolutionSource === "Pyth") {
             const connection = new Connection(getPythClusterApiUrl("pythnet"));
             const pythPublicKey = getPythProgramKeyForCluster("pythnet");
             const pythClient = new PythHttpClient(connection, pythPublicKey);

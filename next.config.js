@@ -6,6 +6,7 @@ const nextConfig = {
       "@solana/spl-token-swap": require.resolve("@solana/spl-token-swap"),
       crypto: false,
       stream: false,
+      fs: false,
     };
 
     return config;

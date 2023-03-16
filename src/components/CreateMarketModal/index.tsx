@@ -22,7 +22,7 @@ import {
 } from "@monaco-protocol/admin-client";
 import { Form1, Form2, SubmittedForm, FormStepper } from "./StepForms";
 import { useProgram } from "@/context/ProgramProvider";
-import { getPriceData, logResponse, marketMake } from "@/utils/monaco";
+import { getPriceData, logResponse } from "@/utils/monaco";
 import { ResizablePanel } from "../common/ResizablePanel";
 import { PRICE_LADDER, usdcMint } from "@/utils/constants";
 
@@ -166,7 +166,7 @@ export const CreateMarketModal = () => {
       // Get market creation timestamp
       const marketCreateTimestamp = (new Date().getTime() / 1000).toString(16);
 
-      // Make market
+      // Market make
       // setCreateStatus(CreateStatus.MakingMarket);
       // await marketMake(program, marketPk);
 

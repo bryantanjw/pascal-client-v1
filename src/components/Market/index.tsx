@@ -98,12 +98,14 @@ const Market = ({ market }) => {
         const res = await getPriceData(program, new PublicKey(marketPk));
         if (res) {
           setPriceData(res);
+          console.log("price data: ", res);
         } else console.log("loading...");
       } catch (error) {
         console.log("fetchPriceData error: ", error);
       }
-      // Fetch price data every 5 seconds after updating price data
-      setTimeout(fetchPriceData, 5000);
+      // Fetch price data every 30 seconds after updating price data to prevent rate limit
+      setTimeout(fetchPriceData, 30000);
+      // fetchPriceData();
     };
 
     fetchPriceData();

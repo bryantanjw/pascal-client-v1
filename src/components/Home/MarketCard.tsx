@@ -56,6 +56,8 @@ const MarketCard = ({ market }) => {
               "radial-gradient(at 20% 20%, hsl(0.00, 0%, 100%) -600%, transparent 80%)"
             ),
           }}
+          minH={"300px"}
+          justifyContent={"space-between"}
         >
           <Image
             filter={iconColor}

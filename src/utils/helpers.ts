@@ -175,7 +175,7 @@ export function getSellOrderMatches(
 
   return {
     sellOrders: Object.entries(sellOrders).map(([price, stake]) => ({
-      price,
+      price: parseFloat(price),
       stake,
     })),
     totalMatchingStake: totalStake - remainingStake,

@@ -22,7 +22,6 @@ const FilterToggle = React.lazy(() => import("./FilterToggle")); // <-- to load 
 const MarketCard = React.lazy(() => import("./MarketCard"));
 
 const MarketList = ({ markets }) => {
-  // FilterToggle state management ignored for the time being
   const { value, getCheckboxProps } = useCheckboxGroup({ defaultValue: [] });
 
   if (!markets) {

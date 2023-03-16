@@ -10,7 +10,7 @@ export default async function handler(req, res) {
       .find({})
       .sort({
         "marketStatus.open": -1,
-        "marketStatus.closed": -1,
+        "marketStatus.locked": -1,
         "marketStatus.settled": -1,
       })
       .toArray();
