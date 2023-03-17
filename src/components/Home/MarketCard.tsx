@@ -109,6 +109,7 @@ const MarketCard = ({ market }) => {
                 height={17}
                 alt="Liquidity"
                 mr={-1}
+                fallback={<Skeleton width={17} height={17} />}
               />
               <h4>${market.liquidityTotal}</h4>
             </HStack>
@@ -119,6 +120,7 @@ const MarketCard = ({ market }) => {
                 width={17}
                 height={17}
                 alt="Volume Traded"
+                fallback={<Skeleton width={17} height={17} />}
               />
               <h4>${market.matchedTotal}</h4>
             </HStack>

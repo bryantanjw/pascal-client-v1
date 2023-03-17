@@ -57,12 +57,12 @@ const Market = ({ market }) => {
     fontSize: "lg",
     px: 0,
     textColor: "gray.400",
+    _hover: {
+      textColor: mode("gray.600", "gray.200"),
+    },
     _selected: {
       textColor: mode("black", "gray.100"),
       borderColor: mode("black", "gray.100"),
-    },
-    _hover: {
-      textColor: mode("gray.600", "gray.200"),
     },
     _active: {
       bg: "none",

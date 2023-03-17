@@ -174,7 +174,7 @@ const Outcomes = ({ market }) => {
       >
         <Text minW={12}>OUTCOME / PROBABILITY</Text>
         <Text minW={12}>PRICE (USDC)</Text>
-        <Text minW={12}>YOUR POSITION</Text>
+        <Text minW={12}>YOUR STAKE</Text>
       </Flex>
       <Stack width={"full"} spacing={3}>
         {outcomes?.map((outcome, index: number) => {

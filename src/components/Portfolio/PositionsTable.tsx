@@ -288,7 +288,13 @@ const PositionsTable = () => {
     <>
       {positions ? (
         positions.length === 0 ? (
-          <HStack as={Center} flexDirection={"row"} spacing={12} pt={2} pb={12}>
+          <HStack
+            as={Center}
+            flexDirection={"row"}
+            spacing={12}
+            pt={12}
+            pb={12}
+          >
             <ScaleFade in={true} initialScale={0.9}>
               <Image
                 src="/emptyState.png"
@@ -299,7 +305,7 @@ const PositionsTable = () => {
             </ScaleFade>
 
             <ScaleFade in={true} initialScale={0.9} delay={0.1}>
-              <Stack spacing={8}>
+              <Stack spacing={5}>
                 <Text fontSize={"xl"}>You don't have any positions</Text>
                 <Link href={"/"}>
                   <Button

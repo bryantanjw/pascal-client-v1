@@ -270,27 +270,41 @@ const DataTable = <Data extends object>({
           )}
           <Tbody>
             {data ? (
-              table.getRowModel().rows.map((row, index) => {
-                const delay = index * 0.08;
+              data.length === 0 ? (
+                <Tr>
+                  <Td colSpan={columns.length}>
+                    <Text
+                      color={mode("gray.600", "gray.50")}
+                      p={6}
+                      textAlign={"center"}
+                    >
+                      No activities found
+                    </Text>
+                  </Td>
+                </Tr>
+              ) : (
+                table.getRowModel().rows.map((row, index) => {
+                  const delay = index * 0.08;
 
-                return (
-                  <Tr key={row.id}>
-                    {row.getVisibleCells().map((cell) => {
-                      const meta: any = cell.column.columnDef.meta;
-                      return (
-                        <Td key={cell.id} isNumeric={meta?.isNumeric}>
-                          <ScaleFade key={row.id} in={true} delay={delay}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </ScaleFade>
-                        </Td>
-                      );
-                    })}
-                  </Tr>
-                );
-              })
+                  return (
+                    <Tr key={row.id}>
+                      {row.getVisibleCells().map((cell) => {
+                        const meta: any = cell.column.columnDef.meta;
+                        return (
+                          <Td key={cell.id} isNumeric={meta?.isNumeric}>
+                            <ScaleFade key={row.id} in={true} delay={delay}>
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </ScaleFade>
+                          </Td>
+                        );
+                      })}
+                    </Tr>
+                  );
+                })
+              )
             ) : (
               <Tr>
                 {Array(7)
@@ -352,11 +366,6 @@ export const ActivityTable = () => {
   return (
     <>
       <DataTable columns={columns} data={activities} showHeader={true} />
-      {activities?.length === 0 && (
-        <Text color={mode("gray.600", "gray.700")} p={6} textAlign={"center"}>
-          No activities found
-        </Text>
-      )}
     </>
   );
 };

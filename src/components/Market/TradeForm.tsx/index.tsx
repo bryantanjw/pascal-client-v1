@@ -22,6 +22,7 @@ import {
   HStack,
   useToast,
   Link,
+  Skeleton,
 } from "@chakra-ui/react";
 import {
   ArrowBackIcon,
@@ -121,7 +122,7 @@ const Swap = ({ market }) => {
   } = market;
   const program = useProgram();
   const { publicKey } = useWallet();
-  const { probA } = useContext(PriceDataContext);
+  const { priceData, probA } = useContext(PriceDataContext);
   const [outcomeIndex, setOutcomeIndex] = useState<number>(0);
   const [isMarketBuy, setIsMarketBuy] = useState<boolean>(true);
   const [isSuccess, setSuccess] = useState(false);
@@ -136,8 +137,9 @@ const Swap = ({ market }) => {
   const dt = new Date();
 
   const marketBuyPrice =
-    prices[outcomeIndex].against[prices[outcomeIndex].against.length - 1]
-      ?.price;
+    priceData?.marketPriceSummary[outcomeIndex].against[
+      prices[outcomeIndex].against.length - 1
+    ]?.price;
 
   return (
     <Stack>
@@ -316,7 +318,13 @@ const Swap = ({ market }) => {
                       }
                     >
                       {isMarketBuy ? (
-                        marketBuyPrice
+                        marketBuyPrice ?? (
+                          <Skeleton
+                            rounded={"md"}
+                            width={"80px"}
+                            height={"20px"}
+                          />
+                        )
                       ) : (
                         <Field name="limitOrder">
                           {({ field, form }) => (

@@ -26,7 +26,7 @@ const Home: NextPage = ({
     <div>
       <div className={styles.container}>
         <Head>
-          <title>Pascal: Trade outcome of events</title>
+          <title>Pascal: Trade on the outcome of events</title>
           <meta
             name="description"
             content="Trade directly on the outcome of events"
@@ -78,7 +78,7 @@ const Home: NextPage = ({
                   color={mode("gray.500", "gray.200")}
                   fontSize={{ base: "xl", md: "2xl" }}
                 >
-                  An on-chain commodity derivative of real-world events.
+                  An on-chain futures derivative of real-world events.
                 </Text>
 
                 <MarketList markets={markets} />
